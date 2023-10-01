@@ -4,9 +4,33 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WSMS"
+        xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
-        Title="WSMS" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="{Binding Title}" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="File"></MenuItem>
+            <MenuItem Header="Settings"></MenuItem>
+        </Menu>
+        <TabControl Margin="5">
+            <TabItem Width="100" Header="Home"></TabItem>
+            <TabItem Width="100" Header="Contacts"></TabItem>
+            <TabItem Header="Message">
+                <Grid Height="500" Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="500"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Image>
+                        <Image.Source>
+                            <BitmapImage UriSource="D:\Notes\Работа Вова\Discount\Cool guy.png"></BitmapImage>
+                        </Image.Source> 
+                    </Image>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>
