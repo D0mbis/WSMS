@@ -10,10 +10,17 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Shift" Key="Esc" Command="{Binding CloseApplicationCommand}"/>
+    </Window.InputBindings>
     <DockPanel >
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="File"></MenuItem>
-            <MenuItem Header="Settings"></MenuItem>
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Settings">
+                <MenuItem Header="Update chrome driver" Command="{Binding UpdateChromeDriverComand}"/>
+            </MenuItem>
         </Menu>
         <TabControl Margin="5">
             <TabItem Width="100" Header="Home"></TabItem>
