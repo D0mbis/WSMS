@@ -13,7 +13,7 @@ namespace WSMS.ViewModels
 {
     internal class MainWindowViewModel : ViewModel
     {
-        #region Title
+        #region Title Window
         private string _Title = "WSMS";
         /// <summary Header MainWindow </summary>
 		public string Title
@@ -22,7 +22,10 @@ namespace WSMS.ViewModels
             set => Set(ref _Title, value);
         }
         #endregion
-
+        #region driverButton Content
+        private string driverBtnContent = "Start browser";
+        public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
+        #endregion
         #region Comands
         #region CloseApplicationCommand
         public ICommand CloseApplicationCommand { get; }
@@ -41,10 +44,27 @@ namespace WSMS.ViewModels
 
         private void OnUpdateChromeDriverComandExecuted(object p)
         {
-            using (WebService driver = new()) 
-            { 
+            using (WebService driver = new())
+            {
                 driver.UpdateChromeDriver();
             };
+        }
+        #endregion
+        #region Start/Close browser Comand
+        public ICommand StartBrowserCommand { get; }
+        private bool CanStartBrowserCommandExecute(object parameter) => true;
+        private void OnStartBrowserCommandExecuted(object p)
+        {
+            if (DriverBtnContent == "Start browser")
+            {
+                WebService.StartBrowser();
+                DriverBtnContent = "Close browser";
+            }
+            else
+            {
+                WebService.CloseBrowser();
+                DriverBtnContent = "Start browser";
+            }
         }
         #endregion
         #endregion
@@ -52,6 +72,9 @@ namespace WSMS.ViewModels
         {
             CloseApplicationCommand = new ActionCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             UpdateChromeDriverComand = new ActionCommand(OnUpdateChromeDriverComandExecuted, CanUpdateChromeDriverComandExecute);
+            StartBrowserCommand = new ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
         }
+
+        
     }
 }

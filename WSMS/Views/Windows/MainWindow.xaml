@@ -23,7 +23,12 @@
             </MenuItem>
         </Menu>
         <TabControl Margin="5">
-            <TabItem Width="100" Header="Home"></TabItem>
+            <TabItem Width="100" Header="Home">
+                <Button Grid.Column="0" Height="30" 
+                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                        Content="{Binding DriverBtnContent, UpdateSourceTrigger=PropertyChanged}"
+                        Command="{Binding StartBrowserCommand}"/>
+            </TabItem>
             <TabItem Width="100" Header="Contacts"></TabItem>
             <TabItem Header="Message">
                 <Grid>
@@ -34,7 +39,7 @@
                     <Image Height="400" Width="400" Grid.Column="0">
                         <Image.Source>
                             <BitmapImage UriSource="D:\Notes\Работа Вова\Discount\Cool guy.png"></BitmapImage>
-                        </Image.Source> 
+                        </Image.Source>
                     </Image>
                     <TextBlock Grid.Column="1" Height="400" Text="Test message"/>
                 </Grid>
