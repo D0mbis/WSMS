@@ -37,24 +37,12 @@ namespace WSMS.ViewModels
             Application.Current.Shutdown();
         }
         #endregion
-        #region UpdateChromeDriverComand
-        public ICommand UpdateChromeDriverComand { get; }
-
-        private bool CanUpdateChromeDriverComandExecute(object parameter) => true;
-
-        private void OnUpdateChromeDriverComandExecuted(object p)
-        {
-            using (WebService driver = new())
-            {
-                driver.UpdateChromeDriver();
-            };
-        }
-        #endregion
         #region Start/Close browser Comand
         public ICommand StartBrowserCommand { get; }
         private bool CanStartBrowserCommandExecute(object parameter) => true;
         private void OnStartBrowserCommandExecuted(object p)
         {
+            
             if (DriverBtnContent == "Start browser")
             {
                 WebService.StartBrowser();
@@ -71,7 +59,6 @@ namespace WSMS.ViewModels
         public MainWindowViewModel()
         {
             CloseApplicationCommand = new ActionCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
-            UpdateChromeDriverComand = new ActionCommand(OnUpdateChromeDriverComandExecuted, CanUpdateChromeDriverComandExecute);
             StartBrowserCommand = new ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
         }
 

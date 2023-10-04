@@ -1,55 +1,55 @@
 ﻿using System;
-using WebDriverManager.DriverConfigs.Impl;
-using WebDriverManager;
 using System.Windows;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
+using System.Security.Policy;
 
 namespace WSMS.Services
 {
-    internal class WebService : IDisposable
+    internal static class WebService
     {
-        private DriverManager? Manager = null;
         private static IWebDriver Driver = default;
         private static readonly string Url = "https://web.whatsapp.com/";
-        private static readonly string PATH = $"{Environment.CurrentDirectory}\\Cookies"; // allow to add different accounts like "Cookies\\Account name(number phone)
+        private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; // allow to add different accounts like "Cookies\\Account name(number phone)
         public static int ProcessID { get; private set; }
 
         public static void StartBrowser()
         {
+            /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService("PATH of chromedriver.exe folder");
+            */
+            
             ChromeOptions options = new ChromeOptions();
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
-            options.AddArgument("--user-data-dir=" + PATH);
-            //options.AddArguments("chrome.switches", "--disable-extensions");
-            Driver = new ChromeDriver(service, options);
-            Driver.Navigate().GoToUrl(Url);
-            ProcessID = service.ProcessId;
+            options.AddArgument("--user-data-dir=" + SessionsPath); // saving every 2 last sessions
+            try
+            {
+                Driver = new ChromeDriver(service, options);
+                Driver.Navigate().GoToUrl(Url);
+                ProcessID = service.ProcessId;
+            }
+            catch (Exception ex)
+            {
+                string link = "https://chromedriver.chromium.org/downloads";
+                MessageBoxResult result = MessageBox.Show($"Browser don`t started, do you want to copy in your clipboard the link of download new version?\n{link}" +
+                    $"\n\nDetails:\n{ex.Message}",
+                    "Your driver is outdated", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Clipboard.SetText($"{link}");
+                    MessageBox.Show("The link has been copied, paste it into your browser.");
+                }
+            }
         }
         public static void CloseBrowser()
         {
             if (Driver != default)
                 Driver.Dispose();
         }
-
-        public void UpdateChromeDriver()
+        public static void Dispose()
         {
-            try
-            {
-                Manager = new DriverManager();
-                Manager.SetUpDriver(new ChromeConfig());
-                MessageBox.Show("Chromedriver was updated to {} version.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Chromedriver was not updated./n Error: {ex.Message}");
-            }
-        }
-        public void Dispose()
-        {
-            if (Manager != null) { Manager = default; }
-            if (Driver != null) { Driver.Dispose(); }
+            if (Driver != null) { Driver.Close(); Driver.Quit(); Driver.Dispose(); }
         }
     }
 }

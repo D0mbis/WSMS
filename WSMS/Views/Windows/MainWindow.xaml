@@ -19,7 +19,6 @@
                 <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"/>
             </MenuItem>
             <MenuItem Header="Settings">
-                <MenuItem Header="Update chrome driver" Command="{Binding UpdateChromeDriverComand}"/>
             </MenuItem>
         </Menu>
         <TabControl Margin="5">
