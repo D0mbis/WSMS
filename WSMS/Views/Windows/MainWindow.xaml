@@ -23,24 +23,34 @@
         </Menu>
         <TabControl Margin="5">
             <TabItem Width="100" Header="Home">
-                <Button Grid.Column="0" Height="30" 
-                        HorizontalAlignment="Left" VerticalAlignment="Top"
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Height="30" 
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
                         Content="{Binding DriverBtnContent, UpdateSourceTrigger=PropertyChanged}"
                         Command="{Binding StartBrowserCommand}"/>
+                    <Button Grid.Column="1" Height="30" 
+                         HorizontalAlignment="Left" VerticalAlignment="Top" 
+                         Content="Start Sending"
+                         Command="{Binding StartSendingCommand}"/>
+                </Grid>
             </TabItem>
             <TabItem Width="100" Header="Contacts"></TabItem>
             <TabItem Header="Message">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="430"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image Height="400" Width="400" Grid.Column="0">
-                        <Image.Source>
-                            <BitmapImage UriSource="D:\Notes\Работа Вова\Discount\Cool guy.png"></BitmapImage>
-                        </Image.Source>
-                    </Image>
-                    <TextBlock Grid.Column="1" Height="400" Text="Test message"/>
+                    <Image x:Name="ImageBlock" Height="400" Width="400" Grid.Column="0" Source="{Binding Image}" 
+                            AllowDrop="True" Drop="Image_Drop" 
+                            />
+                    <TextBox Grid.Column="1" Height="400" 
+                               TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
+                               Text="{Binding MessageText}" />
                 </Grid>
             </TabItem>
         </TabControl>

@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WSMS.Services;
+using WSMS.ViewModels;
 
 namespace WSMS
 {
@@ -23,6 +25,12 @@ namespace WSMS
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Image_Drop(object sender, DragEventArgs e)
+        {
+            string [] file =(string[]) e.Data.GetData(DataFormats.FileDrop);
+            ImageBlock.Source = MessageService.GetImage(file[0]);
         }
     }
 }

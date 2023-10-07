@@ -2,13 +2,13 @@
 using System.Windows;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using System.Security.Policy;
 
 namespace WSMS.Services
 {
-    internal static class WebService
+    internal class WebService
     {
-        private static IWebDriver Driver = default;
+        private static IWebDriver Driver { get; set; }
+        private static MessageService? MessageService { get; set; } = default;
         private static readonly string Url = "https://web.whatsapp.com/";
         private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; // allow to add different accounts like "Cookies\\Account name(number phone)
         public static int ProcessID { get; private set; }
@@ -18,8 +18,9 @@ namespace WSMS.Services
             /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
             ChromeDriverService service = ChromeDriverService.CreateDefaultService("PATH of chromedriver.exe folder");
             */
-            
-            ChromeOptions options = new ChromeOptions();
+
+            ChromeOptions options = new ();
+            options.AddUserProfilePreference("intl.accept_languages", "ru-RU");
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
             options.AddArgument("--user-data-dir=" + SessionsPath); // saving every 2 last sessions
@@ -45,11 +46,25 @@ namespace WSMS.Services
         public static void CloseBrowser()
         {
             if (Driver != default)
-                Driver.Dispose();
+                Dispose();
+        }
+        public static void StartSending(Models.Message message)
+        {
+            if (Driver != default)
+            {
+                MessageService = new MessageService();
+                MessageService.StartSending(Driver, message);
+                MessageService = default;
+            }
+            else
+            {
+                MessageBox.Show("Please, start the browser first.");
+            }
         }
         public static void Dispose()
         {
-            if (Driver != null) { Driver.Close(); Driver.Quit(); Driver.Dispose(); }
+            if (Driver != default) { Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default; }
+            //if (MessageService != default) { MessageService = default; }
         }
     }
 }
