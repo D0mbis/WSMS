@@ -38,7 +38,17 @@
                          Command="{Binding StartSendingCommand}"/>
                 </Grid>
             </TabItem>
-            <TabItem Width="100" Header="Contacts"></TabItem>
+            <TabItem Width="100" Header="Contacts">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" 
+                             Text="{Binding Contacts}"
+                             VerticalScrollBarVisibility="Auto" AcceptsReturn="True"  AcceptsTab="True"/>
+                </Grid>
+            </TabItem>
             <TabItem Header="Message">
                 <Grid>
                     <Grid.ColumnDefinitions>

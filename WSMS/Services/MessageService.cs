@@ -1,15 +1,8 @@
-﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chromium;
-using OpenQA.Selenium.Support.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using WSMS.Models;
 
@@ -17,46 +10,92 @@ namespace WSMS.Services
 {
     internal class MessageService
     {
+        private static readonly string LogsDirectoryPath = $"{Environment.CurrentDirectory}\\Logs";
+        private static readonly string LogsFilePath = LogsDirectoryPath + $"\\{DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)")}.txt";
         public static BitmapSource GetImage(string url)
         {
-            BitmapImage bi = new ();
+            BitmapImage bi = new();
             bi.BeginInit();
             bi.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
             bi.EndInit();
             return bi;
         }
-        private Dictionary<string, string> ElementsPaths = new()
+
+        public static void StartSending(Message message)
         {
-            { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
-            { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
-            { "Send button", "._2xy_p._3XKXx" }
-           // { "Button delete", "//*[@aria-label='Отменить поиск']" }
-        };
-        public void StartSending(IWebDriver driver, Message message, string contact = default)
-        { //@D:\Notes\Работа Вова\Discount\Burs.jpeg
+            Dictionary<string, List<string>> resultSending = new();
+            if (WebService.IsRunning)
+            {
+                resultSending = SendMessage(message);
+                if (resultSending["Not sent"].Count > 0)
+                {
+                    var result = MessageBox.Show($"Was not sent {resultSending["Not sent"].Count} messages, do you want to resend for them?",
+                                   "Resemding not sent messages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        message.Contacts = resultSending["Not sent"].ToArray();
+                        Dictionary<string, List<string>> tempResultD = SendMessage(message);
+                        resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
+                        resultSending["Not sent"] = tempResultD["Not sent"];
+                        WebService.CloseBrowser();
+                        //logs
+                        resultSending["Message Text"] = message.Text.Split("\n").ToList();
+                        ToWriteLogs(resultSending);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please, start the browser first.");
+            }
+        }
+        private static void ToWriteLogs(Dictionary<string, List<string>> resultSending)
+        {
             try
             {
-                contact = "Виктор и я";
-                var waitTime = TimeSpan.FromMilliseconds(7000);
-                WebDriverWait wait = new(driver, waitTime) { PollingInterval = TimeSpan.FromMilliseconds(300) };
-                IWebElement searchField = driver.FindElement(By.CssSelector(ElementsPaths["Search field"]));
-                wait.Until(e => { searchField.SendKeys(contact); return true; });
-                IWebElement foundContact = driver.FindElement(By.XPath($"//span[@class='matched-text _11JPr'][text()='{contact}']")); // css selector can not to search by text into web element
-                wait.Until(e => { foundContact.Click(); return true; });
-                IWebElement messageInput = driver.FindElement(By.CssSelector(ElementsPaths["Message input"]));
-                //Clipboard.SetImage(message.Image.ToString());
-                //wait.Until(e => { messageInput.SendKeys(Keys.LeftShift + Keys.Insert); return true; });
-                wait.Until(e => { messageInput.SendKeys(message.Image.ToString()); return true; });
-                wait.Until(e => { messageInput.SendKeys(message.Text); return true; });
-                IWebElement sendButton = driver.FindElement(By.CssSelector(ElementsPaths["Send button"]));
-                Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(5, 15)));
-                wait.Until(e => { sendButton.Click(); return true; });
+                if (!Directory.Exists(LogsDirectoryPath)) { Directory.CreateDirectory(LogsDirectoryPath); }
+
+                File.Create(LogsFilePath).Close();
+                if (resultSending["Successful sent"].Count > 0 || resultSending["Not sent"].Count > 0)
+                {
+                    using (StreamWriter stream = new(LogsFilePath, true))
+                    {
+                        if (resultSending["Successful sent"].Count > 0)
+                        {
+                            stream.WriteLine($"Total was successfully sent {resultSending["Successful sent"].Count} messages for:\n"
+                                + string.Join("\n", resultSending["Successful sent"]) + "\n");
+                        }
+                        if (resultSending["Not sent"].Count > 0)
+                        {
+                            stream.WriteLine($"Not sent {resultSending["Not sent"].Count} messages:\n" +
+                                string.Join("\n", resultSending["Not sent"]) + "\n");
+                            stream.WriteLine($"Message text was:\n{string.Join("\n", resultSending["Message Text"])}\n");
+                            for (int i = 0; i < 10; i++) stream.Write("_");
+                            stream.WriteLine($"\nErrors:\n{WebService.Errors}");
+                        }
+                    }
+                }
             }
-            catch (Exception ex)
+            catch (Exception ex) { MessageBox.Show($"Logs error:\n{ex.Message}"); }
+        }
+        private static Dictionary<string, List<string>> SendMessage(Message message)
+        {
+            Dictionary<string, List<string>> outputD = new();
+            outputD["Successful sent"] = new List<string>();
+            outputD["Not sent"] = new List<string>();
+            //string[] contacts = message.Contacts.Split("\r\n");
+            for (int i = 0; i < message.Contacts.Length; i++)
             {
-                MessageBox.Show(ex.Message);
-                WebService.CloseBrowser();
+                if (WebService.ToSend(message.Contacts[i].ToString(), message.Text, message.Image))
+                {
+                    outputD["Successful sent"].Add(message.Contacts[i].ToString());
+                }
+                else
+                {
+                    outputD["Not sent"].Add(message.Contacts[i].ToString());
+                }
             }
+            return outputD;
         }
     }
 }

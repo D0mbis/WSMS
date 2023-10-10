@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 
 namespace WSMS.Models
 {
-    internal class Message 
+    internal class Message
     {
-        public Message(string? messageText = default, BitmapSource? image = default)
+        public string[] Contacts { get; set; }
+        public string? Text { get; set; } = default;
+        public BitmapSource? Image { get; set; } = default;
+        public Message(string[] contacts, string? messageText = default, BitmapSource? image = default)
         {
+            Contacts = contacts;
             Text = messageText;
             Image = image;
         }
-
-        public string? Text { get; set; } = default;
-        public BitmapSource? Image { get; set; } = default;
     }
 }

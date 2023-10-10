@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using WSMS.Infrastructure.Commands;
 using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
 using WSMS.Services;
@@ -31,8 +24,13 @@ namespace WSMS.ViewModels
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
         #endregion
         #region Message 
-        private string messageText = default;
-
+        private string[] contacts = { };
+        public string Contacts
+        {
+            get { if (contacts.Length > 0) return string.Join("\r\n", contacts); else return default; }
+            set { Set(ref contacts, value.Split("\r\n")); }
+        }
+        private string messageText;
         public string MessageText { get => messageText; set => Set(ref messageText, value); }
         private BitmapSource image = MessageService.GetImage("D:\\Notes\\Работа Вова\\Discount\\DubleRotor.png");
         public BitmapSource Image { get => image; set => Set(ref image, value); }
@@ -56,7 +54,7 @@ namespace WSMS.ViewModels
 
             if (DriverBtnContent == "Start browser")
             {
-                WebService.StartBrowser();
+                WebService.OpenBrowser();
                 DriverBtnContent = "Close browser";
             }
             else
@@ -75,8 +73,8 @@ namespace WSMS.ViewModels
         }
         private void OnStartSendingCommandExecuted(object p)
         {
-            Message message = new(messageText, image);
-            WebService.StartSending(message);
+            Message message = new(contacts, messageText, image);
+            MessageService.StartSending(message);
         }
         #endregion
         #endregion
@@ -86,8 +84,5 @@ namespace WSMS.ViewModels
             StartBrowserCommand = new ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
             StartSendingCommand = new ActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
         }
-
-
-
     }
 }
