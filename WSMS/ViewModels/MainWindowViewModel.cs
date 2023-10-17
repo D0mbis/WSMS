@@ -32,8 +32,7 @@ namespace WSMS.ViewModels
         }
         private string messageText;
         public string MessageText { get => messageText; set => Set(ref messageText, value); }
-        private BitmapSource image = MessageService.GetImage("D:\\Notes\\Работа Вова\\Discount\\DubleRotor.png");
-        public BitmapSource Image { get => image; set => Set(ref image, value); }
+        public BitmapSource Image { get; } = Message.Image;
         #endregion
         #region Comands
         #region CloseApplicationCommand
@@ -73,7 +72,7 @@ namespace WSMS.ViewModels
         }
         private void OnStartSendingCommandExecuted(object p)
         {
-            Message message = new(contacts, messageText, image);
+            Message message = new(contacts, messageText);
             MessageService.StartSending(message);
         }
         #endregion

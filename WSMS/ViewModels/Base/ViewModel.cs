@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace WSMS.ViewModels.Base
 {
@@ -15,7 +16,7 @@ namespace WSMS.ViewModels.Base
         {
             if(Equals(field, value)) return false;
             field = value;
-            OnPropertyChanged(PropertyName); 
+            OnPropertyChanged(PropertyName);
             return true;
         }
     }

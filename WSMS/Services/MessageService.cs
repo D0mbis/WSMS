@@ -10,14 +10,20 @@ namespace WSMS.Services
 {
     internal class MessageService
     {
+        /* TODO:
+            1. Interactive progress sending
+            2. upgrade Errors message (like hide "time out waitings")
+        */
         private static readonly string LogsDirectoryPath = $"{Environment.CurrentDirectory}\\Logs";
         private static readonly string LogsFilePath = LogsDirectoryPath + $"\\{DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)")}.txt";
+
         public static BitmapSource GetImage(string url)
         {
             BitmapImage bi = new();
             bi.BeginInit();
             bi.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
             bi.EndInit();
+            Message.Image = bi;
             return bi;
         }
 
@@ -38,11 +44,11 @@ namespace WSMS.Services
                         resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
                         resultSending["Not sent"] = tempResultD["Not sent"];
                         WebService.CloseBrowser();
-                        //logs
-                        resultSending["Message Text"] = message.Text.Split("\n").ToList();
-                        ToWriteLogs(resultSending);
                     }
                 }
+                //logs
+                resultSending["Message Text"] = message.Text.Split("\n").ToList();
+                ToWriteLogs(resultSending);
             }
             else
             {
@@ -69,10 +75,10 @@ namespace WSMS.Services
                         {
                             stream.WriteLine($"Not sent {resultSending["Not sent"].Count} messages:\n" +
                                 string.Join("\n", resultSending["Not sent"]) + "\n");
-                            stream.WriteLine($"Message text was:\n{string.Join("\n", resultSending["Message Text"])}\n");
-                            for (int i = 0; i < 10; i++) stream.Write("_");
-                            stream.WriteLine($"\nErrors:\n{WebService.Errors}");
                         }
+                        stream.WriteLine($"The message text was:\n{string.Join("\n", resultSending["Message Text"])}\n");
+                        for (int i = 0; i < 10; i++) stream.Write("_");
+                        stream.WriteLine($"\nErrors:\n{WebService.Errors}");
                     }
                 }
             }
@@ -86,7 +92,7 @@ namespace WSMS.Services
             //string[] contacts = message.Contacts.Split("\r\n");
             for (int i = 0; i < message.Contacts.Length; i++)
             {
-                if (WebService.ToSend(message.Contacts[i].ToString(), message.Text, message.Image))
+                if (WebService.ToSend(message.Contacts[i].ToString(), message.Text, Message.Image))
                 {
                     outputD["Successful sent"].Add(message.Contacts[i].ToString());
                 }

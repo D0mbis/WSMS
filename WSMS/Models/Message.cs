@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media.Imaging;
+using WSMS.Services;
 
 namespace WSMS.Models
 {
@@ -6,12 +7,12 @@ namespace WSMS.Models
     {
         public string[] Contacts { get; set; }
         public string? Text { get; set; } = default;
-        public BitmapSource? Image { get; set; } = default;
-        public Message(string[] contacts, string? messageText = default, BitmapSource? image = default)
+        public static BitmapSource? Image { get; set; } = MessageService.GetImage("D:\\Notes\\Работа Вова\\Discount\\DubleRotor.png");
+        public Message(string[] contacts, string? messageText = default)
         {
             Contacts = contacts;
             Text = messageText;
-            Image = image;
+            //Image = image;
         }
     }
 }
