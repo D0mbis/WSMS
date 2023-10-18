@@ -13,6 +13,7 @@ namespace WSMS.Services
         /* TODO:
             1. Interactive progress sending
             2. upgrade Errors message (like hide "time out waitings")
+            3. Test start button wich checking all selectors paths*
         */
         private static readonly string LogsDirectoryPath = $"{Environment.CurrentDirectory}\\Logs";
         private static readonly string LogsFilePath = LogsDirectoryPath + $"\\{DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)")}.txt";

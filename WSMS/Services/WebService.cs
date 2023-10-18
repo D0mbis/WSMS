@@ -22,8 +22,9 @@ namespace WSMS.Services
             { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Send button", "div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
-            { "Delete SearchText btn", "._38r4-" },
-            {"Delete img btn", "._2QnjM button" }
+            //{ "Delete SearchText btn", "._38r4-" },
+            {"Delete img btn", "._2QnjM button" },
+            { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
 
         public static void OpenBrowser()
@@ -103,11 +104,11 @@ namespace WSMS.Services
                 wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
                 return true;
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
                 //MessageBox.Show(ex.Message);
                 //CloseBrowser();
-                Errors += $"{ex.Source}: {ex.Message}\n";
+                //Errors += $"{ex.Source}: {ex.Message}\n";
                 return false;
             }
             finally
