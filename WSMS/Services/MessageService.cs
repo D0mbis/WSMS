@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WSMS.Models;
@@ -93,13 +94,14 @@ namespace WSMS.Services
             //string[] contacts = message.Contacts.Split("\r\n");
             for (int i = 0; i < message.Contacts.Length; i++)
             {
-                if (WebService.ToSend(message.Contacts[i].ToString(), message.Text, Message.Image))
+                string contact = message.Contacts[i];
+                if (WebService.ToSend(contact, message.Text, Message.Image))
                 {
-                    outputD["Successful sent"].Add(message.Contacts[i].ToString());
+                        outputD["Successful sent"].Add(contact);
                 }
                 else
                 {
-                    outputD["Not sent"].Add(message.Contacts[i].ToString());
+                        outputD["Not sent"].Add(contact);
                 }
             }
             return outputD;

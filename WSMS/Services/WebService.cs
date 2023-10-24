@@ -7,6 +7,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using SeleniumExtras.WaitHelpers;
+using System.Linq;
 
 namespace WSMS.Services
 {
@@ -17,12 +18,11 @@ namespace WSMS.Services
         public static bool IsRunning { get; set; } = false;
         private static readonly string Url = "https://web.whatsapp.com/";
         private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; //is possible to add different accounts like "Cookies\\Account name(number phone)
-        private static Dictionary<string, string> ElementsPaths = new()
+        private static readonly Dictionary<string, string> ElementsPaths = new()
         {
             { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Send button", "div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
-            //{ "Delete SearchText btn", "._38r4-" },
             {"Delete img btn", "._2QnjM button" },
             { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
@@ -59,63 +59,103 @@ namespace WSMS.Services
         }
         public static bool ToSend(string contact, string text, BitmapSource image)
         {
-            WebDriverWait wait = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
-            WebDriverWait waitMin = new(Driver, TimeSpan.FromMilliseconds(2000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
+            WebDriverWait wait5sec = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
+            WebDriverWait wait2sec = new(Driver, TimeSpan.FromMilliseconds(2000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
             try
             {
-                wait.IgnoreExceptionTypes(typeof(NotSupportedException));
-                wait.IgnoreExceptionTypes(typeof(ElementNotInteractableException));
-                try
+                SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
+                int counter = 0;
+                // checking contact paste result:
+                while (counter < 2)
                 {
-                    waitMin.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Delete SearchText btn"]))).Click();
+                    bool pasteResult = wait5sec.Until(d =>
+                    {
+                        try { d.FindElement(By.XPath($"//span//span[text()=\'{contact}\']")); return true; }
+                        catch { return false; }
+                    });
+                    if (pasteResult) { break; }
+                    counter++;
+                    SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
                 }
-                catch { }
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Search field"]))).SendKeys(contact);
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector($"span[title='{contact}']"))).Click();
-                IWebElement messageInput = wait.Until(ExpectedConditions.ElementIsVisible((By.CssSelector(ElementsPaths["Message input"]))));
+
+                wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector($"[title='{contact}']"))).Click();
+                IWebElement messageInput = wait5sec.Until(ExpectedConditions.ElementIsVisible((By.CssSelector(ElementsPaths["Message input"]))));
+                // deleting old image and text if exists 
                 try
                 {
-                    waitMin.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Delete img btn"]))).Click();
+                    wait2sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Delete img btn"]))).Click();
                 }
                 catch
                 {
                     try
                     {
-                        messageInput.SendKeys(Keys.LeftControl + "A");
-                        messageInput.SendKeys(Keys.Backspace);
+                        SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftControl + "A", Keys.Backspace });
+                        //messageInput.SendKeysWithWait(Keys.LeftControl + "A");
+                        //SendKeysWithWait(messageInput, Keys.Backspace);
                     }
                     catch { }
                 }
                 try
                 {
-                    //messageInput.SendKeys(text);
                     Clipboard.SetText(text);
-                    messageInput.SendKeys(Keys.LeftShift + Keys.Insert);
+                    SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
                     Clipboard.SetImage(image);
-                    wait.Until(ExpectedConditions.ElementToBeClickable(messageInput));
-                    messageInput.SendKeys(Keys.LeftShift + Keys.Insert);
+                    SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
                     Clipboard.Clear();
                 }
                 catch (Exception ex)
                 {
-                    Errors += $"Clipboard error:\n{ex.Message}\n";
+                    Errors += $"Contact name: {contact} {DateTime.Now}\nClipboard error:\n{ex.Message}\n";
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(3, 7)));
-                wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
+                Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(3, 10)));
+                wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
+                wait5sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"img[alt*=\"{text.Split("\r\n").First()}\"]")));// checking successful sent 
                 return true;
             }
-            catch //(Exception ex)
-            {
-                //MessageBox.Show(ex.Message);
-                //CloseBrowser();
-                //Errors += $"{ex.Source}: {ex.Message}\n";
-                return false;
-            }
+            catch { return false; }
             finally
             {
-                wait = null;
-                waitMin = null;
+                wait5sec = null;
+                wait2sec = null;
             }
+        }
+        /// <summary>
+        /// Searching for a web element using a locator to insert content and checking the element's availability after
+        /// </summary>
+        private static void SendKeysWithWait(By locator, string[] content = default)
+        {
+            int counter = 0;
+            IWebElement element = default;
+            WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(2));
+            while (counter < 2)
+            {
+                try
+                {
+                    element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+                    int counter1 = 0;
+                    for (int i = 0; i < content.Length; i++)
+                    {
+                        element.SendKeys(content[i]);
+                        while (counter1 < 5)
+                        {
+                            Thread.Sleep(200);
+                            if (element.Enabled == true) break;
+                            else
+                            {
+                                counter1++;
+                                if (counter1 == 5)
+                                {
+                                    Errors += $"\nSendKeysWithWait error:\n{locator.ToString}";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                catch { counter++; }
+            }
+            wait = default;
         }
         public static void CloseBrowser()
         {
