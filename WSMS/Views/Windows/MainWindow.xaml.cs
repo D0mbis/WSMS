@@ -30,6 +30,7 @@ namespace WSMS
         private void Image_Drop(object sender, DragEventArgs e)
         {
             string [] file =(string[]) e.Data.GetData(DataFormats.FileDrop);
+            DropLabel.Visibility = Visibility.Collapsed;
             ImageBlock.Source = MessageService.GetImage(file[0]);
         }
     }

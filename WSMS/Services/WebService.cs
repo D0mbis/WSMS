@@ -22,7 +22,7 @@ namespace WSMS.Services
         {
             { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
-            { "Send button", "div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
+            { "Send button", "span[data-icon='send']" }, //"div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
             {"Delete img btn", "._2QnjM button" },
             { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
@@ -97,10 +97,16 @@ namespace WSMS.Services
                 }
                 try
                 {
-                    Clipboard.SetText(text);
-                    SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
-                    Clipboard.SetImage(image);
-                    SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
+                    if (text != "" || text != default)
+                    {
+                        Clipboard.SetText(text);
+                        SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
+                    }
+                    if (image != default)
+                    {
+                        Clipboard.SetImage(image);
+                        SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftShift + Keys.Insert });
+                    }
                     Clipboard.Clear();
                 }
                 catch (Exception ex)
@@ -109,7 +115,11 @@ namespace WSMS.Services
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(3, 10)));
                 wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
-                wait5sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"img[alt*=\"{text.Split("\r\n").First()}\"]")));// checking successful sent 
+                try
+                {
+                    wait5sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"img[alt*=\"{text.Split("\r\n").First()}\"]"))); 
+                }
+                catch { } // checking successful sent + some wait
                 return true;
             }
             catch { return false; }

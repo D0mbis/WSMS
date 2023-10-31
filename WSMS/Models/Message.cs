@@ -7,7 +7,7 @@ namespace WSMS.Models
     {
         public string[] Contacts { get; set; }
         public string? Text { get; set; } = default;
-        public static BitmapSource? Image { get; set; } = MessageService.GetImage("D:\\Notes\\Работа Вова\\Discount\\DubleRotor.png");
+        public static BitmapSource? Image { get; set; } = default;//MessageService.GetImage("D:\\Notes\\Работа Вова\\Discount\\DubleRotor.png");
         public Message(string[] contacts, string? messageText = default)
         {
             Contacts = contacts;
