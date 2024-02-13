@@ -24,18 +24,36 @@
         <TabControl Margin="5">
             <TabItem Width="100" Header="Home">
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="91*"/>
+                        <RowDefinition Height="381*"/>
+                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="317*"/>
+                        <ColumnDefinition Width="118*"/>
+                        <ColumnDefinition Width="199*"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Height="30" 
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                         Content="{Binding DriverBtnContent, UpdateSourceTrigger=PropertyChanged}"
-                        Command="{Binding StartBrowserCommand}"/>
+                        Command="{Binding StartBrowserCommand}" Width="93"/>
                     <Button Grid.Column="1" Height="30" 
                          HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Content="Start Sending"
-                         Command="{Binding StartSendingCommand}"/>
+                         Command="{Binding StartSendingCommand}" Width="93"/>
+                    <Button Grid.Row="1" Grid.Column="1" Height="30" 
+                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0"
+                         Content="Check delivery" Width="100"
+                         Command="{Binding CheckDeliveryCommand}"/>
+                    <TextBox x:Name="IdentifierText"
+                        Grid.Column="2" Grid.Row="1"
+                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" 
+                        Height="30" Width="180" AutomationProperties.HelpText="Message identifier text"
+                        TextAlignment="Left"  VerticalContentAlignment="Center" 
+                        Text="{Binding IdentifierText}"/>
+                    <Label Grid.Column="2" Grid.Row="1" Margin="30,35,0,0"
+                           HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="11">
+                        Message identifier text</Label>
                 </Grid>
             </TabItem>
             <TabItem Width="100" Header="Contacts">
@@ -52,18 +70,20 @@
             <TabItem Header="Message">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="430"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width="390"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <StackPanel AllowDrop="True" Drop="Image_Drop" VerticalAlignment="Center"  Height="400" Width="400" IsEnabled="True" 
-                                Background="Azure">
+                                Background="Azure" Grid.ColumnSpan="3" Margin="15,0,15,0">
                         <Label x:Name="DropLabel" HorizontalAlignment="Center" Margin="20">Drop images here</Label>
                         <Image x:Name="ImageBlock" Height="400" Width="400" Grid.Column="0" Grid.Row="0"
                                Source="{Binding Image, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
-                    <TextBox Grid.Column="1" Height="400" 
+                    <TextBox Grid.Column="3" Height="400" 
                                TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
-                               Text="{Binding MessageText}" />
+                               Text="{Binding MessageText}" Margin="0,36,0,36" />
                 </Grid>
             </TabItem>
         </TabControl>

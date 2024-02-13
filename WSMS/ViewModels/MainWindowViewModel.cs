@@ -76,12 +76,26 @@ namespace WSMS.ViewModels
             MessageService.StartSending(message);
         }
         #endregion
+        private string identifierText;
+        public string IdentifierText { get => identifierText; set => Set(ref identifierText, value); }
+        public ICommand CheckDeliveryCommand { get; }
+        private bool CanStartCheckDeliveryCommandExecute(object parameter)
+        {
+            if (IdentifierText != default && MessageText != "") {
+                return true; }
+            return false;
+        }
+        private void OnStartCheckDeliveryCommandExecuted(object p)
+        {
+            WebService.GetNotDeliveredContacts(contacts, IdentifierText);
+        }
         #endregion
         public MainWindowViewModel()
         {
             CloseApplicationCommand = new ActionCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
             StartBrowserCommand = new ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
             StartSendingCommand = new ActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
+            CheckDeliveryCommand = new ActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
         }
     }
 }

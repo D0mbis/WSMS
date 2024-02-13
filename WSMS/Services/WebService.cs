@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using SeleniumExtras.WaitHelpers;
 using System.Linq;
+using OpenQA.Selenium.DevTools.V85.Network;
 
 namespace WSMS.Services
 {
@@ -23,7 +24,7 @@ namespace WSMS.Services
             { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
             { "Send button", "span[data-icon='send']" }, //"div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
-            {"Delete img btn", "._2QnjM button" },
+            { "Delete img btn", "._2QnjM button" },
             { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
 
@@ -57,29 +58,54 @@ namespace WSMS.Services
                 }
             }
         }
+        public static string[] GetNotDeliveredContacts(string[] contactsArray, string checkText)
+        {
+            string[] result = Array.Empty<string>();
+            WebDriverWait wait5sec = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
+            foreach (string contact in contactsArray)
+            {
+                bool found = false;
+                try
+                {
+                    SearchContact(wait5sec, contact);
+                    found = true;
+                }
+                catch { }
+                if (found)
+                {
+                    IWebElement? messageFull = default;
+                    try { messageFull = Driver.FindElement(By.XPath($"//*[text()='{checkText}']/../../../../..")); } catch { }
+                    try { messageFull?.FindElement(By.XPath("//*[text()='msg-dblcheck']")); } catch { result.Append(contact); }
+                }
+            }
+            return result;
+        }
+        private static void SearchContact(WebDriverWait wait, string contact)
+        {
+            SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
+            int counter = 0;
+            // checking contact paste result:
+            while (counter < 2)
+            {
+                bool pasteResult = wait.Until(d =>
+                {
+                    try { d.FindElement(By.XPath($"//span//span[text()=\'{contact}\']")); return true; }
+                    catch { return false; }
+                });
+                if (pasteResult) { break; }
+                counter++;
+                SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
+            }
+
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector($"[title='{contact}']"))).Click();
+        }
         public static bool ToSend(string contact, string text, BitmapSource image)
         {
             WebDriverWait wait5sec = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
             WebDriverWait wait2sec = new(Driver, TimeSpan.FromMilliseconds(2000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
             try
             {
-                SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
-                int counter = 0;
-                // checking contact paste result:
-                while (counter < 2)
-                {
-                    bool pasteResult = wait5sec.Until(d =>
-                    {
-                        try { d.FindElement(By.XPath($"//span//span[text()=\'{contact}\']")); return true; }
-                        catch { return false; }
-                    });
-                    if (pasteResult) { break; }
-                    counter++;
-                    SendKeysWithWait(By.CssSelector(ElementsPaths["Search field"]), new string[] { Keys.LeftControl + "A", Keys.Backspace, contact });
-                }
-
-                wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector($"[title='{contact}']"))).Click();
-                IWebElement messageInput = wait5sec.Until(ExpectedConditions.ElementIsVisible((By.CssSelector(ElementsPaths["Message input"]))));
+                SearchContact(wait5sec, contact);
                 // deleting old image and text if exists 
                 try
                 {
@@ -90,8 +116,6 @@ namespace WSMS.Services
                     try
                     {
                         SendKeysWithWait(By.CssSelector(ElementsPaths["Message input"]), new string[] { Keys.LeftControl + "A", Keys.Backspace });
-                        //messageInput.SendKeysWithWait(Keys.LeftControl + "A");
-                        //SendKeysWithWait(messageInput, Keys.Backspace);
                     }
                     catch { }
                 }
@@ -117,7 +141,7 @@ namespace WSMS.Services
                 wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
                 try
                 {
-                    wait5sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"img[alt*=\"{text.Split("\r\n").First()}\"]"))); 
+                    wait5sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector($"img[alt*=\"{text.Split("\r\n").First()}\"]")));
                 }
                 catch { } // checking successful sent + some wait
                 return true;
