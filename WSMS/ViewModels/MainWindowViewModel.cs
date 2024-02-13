@@ -76,6 +76,7 @@ namespace WSMS.ViewModels
             MessageService.StartSending(message);
         }
         #endregion
+        #region Check delivery command
         private string identifierText;
         public string IdentifierText { get => identifierText; set => Set(ref identifierText, value); }
         public ICommand CheckDeliveryCommand { get; }
@@ -87,8 +88,9 @@ namespace WSMS.ViewModels
         }
         private void OnStartCheckDeliveryCommandExecuted(object p)
         {
-            WebService.GetNotDeliveredContacts(contacts, IdentifierText);
+           Contacts = string.Join("\n", WebService.GetNotDeliveredContacts(contacts, IdentifierText));
         }
+        #endregion
         #endregion
         public MainWindowViewModel()
         {

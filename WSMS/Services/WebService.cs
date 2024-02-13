@@ -60,7 +60,7 @@ namespace WSMS.Services
         }
         public static string[] GetNotDeliveredContacts(string[] contactsArray, string checkText)
         {
-            string[] result = Array.Empty<string>();
+            List<string> result = new();
             WebDriverWait wait5sec = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
             foreach (string contact in contactsArray)
             {
@@ -70,15 +70,18 @@ namespace WSMS.Services
                     SearchContact(wait5sec, contact);
                     found = true;
                 }
-                catch { }
+                catch
+                {
+                }
                 if (found)
                 {
                     IWebElement? messageFull = default;
                     try { messageFull = Driver.FindElement(By.XPath($"//*[text()='{checkText}']/../../../../..")); } catch { }
-                    try { messageFull?.FindElement(By.XPath("//*[text()='msg-dblcheck']")); } catch { result.Append(contact); }
+                    try { messageFull?.FindElement(By.XPath("//*[text()='msg-dblcheck']")); } catch { result.Add(contact); }
                 }
             }
-            return result;
+            Logger.SaveNotDeliveryReport(result.ToArray());
+            return result.ToArray();
         }
         private static void SearchContact(WebDriverWait wait, string contact)
         {

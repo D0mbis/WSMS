@@ -63,7 +63,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" 
-                             Text="{Binding Contacts}"
+                             Text="{Binding Contacts, NotifyOnSourceUpdated=True}"
                              VerticalScrollBarVisibility="Auto" AcceptsReturn="True"  AcceptsTab="True"/>
                 </Grid>
             </TabItem>

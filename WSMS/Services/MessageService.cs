@@ -16,8 +16,6 @@ namespace WSMS.Services
             2. upgrade Errors message (like hide "time out waitings")
             3. Test start button wich checking all selectors paths*
         */
-        private static readonly string LogsDirectoryPath = $"{Environment.CurrentDirectory}\\Logs";
-        private static readonly string LogsFilePath = LogsDirectoryPath + $"\\{DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)")}.txt";
 
         public static BitmapSource GetImage(string url)
         {
@@ -50,42 +48,14 @@ namespace WSMS.Services
                 }
                 //logs
                 resultSending["Message Text"] = message.Text.Split("\n").ToList();
-                ToWriteLogs(resultSending);
+                Logger.SaveSendingLogs(resultSending);
             }
             else
             {
                 MessageBox.Show("Please, start the browser first.");
             }
         }
-        private static void ToWriteLogs(Dictionary<string, List<string>> resultSending)
-        {
-            try
-            {
-                if (!Directory.Exists(LogsDirectoryPath)) { Directory.CreateDirectory(LogsDirectoryPath); }
-
-                File.Create(LogsFilePath).Close();
-                if (resultSending["Successful sent"].Count > 0 || resultSending["Not sent"].Count > 0)
-                {
-                    using (StreamWriter stream = new(LogsFilePath, true))
-                    {
-                        if (resultSending["Successful sent"].Count > 0)
-                        {
-                            stream.WriteLine($"Total was successfully sent {resultSending["Successful sent"].Count} messages for:\n"
-                                + string.Join("\n", resultSending["Successful sent"]) + "\n");
-                        }
-                        if (resultSending["Not sent"].Count > 0)
-                        {
-                            stream.WriteLine($"Not sent {resultSending["Not sent"].Count} messages:\n" +
-                                string.Join("\n", resultSending["Not sent"]) + "\n");
-                        }
-                        stream.WriteLine($"The message text was:\n{string.Join("\n", resultSending["Message Text"])}\n");
-                        for (int i = 0; i < 10; i++) stream.Write("_");
-                        stream.WriteLine($"\nErrors:\n{WebService.Errors}");
-                    }
-                }
-            }
-            catch (Exception ex) { MessageBox.Show($"Logs error:\n{ex.Message}"); }
-        }
+        
         private static Dictionary<string, List<string>> SendMessage(Message message)
         {
             Dictionary<string, List<string>> outputD = new();
