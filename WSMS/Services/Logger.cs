@@ -49,7 +49,7 @@ namespace WSMS.Services
                 string reportsFolderPath = $"{Environment.CurrentDirectory}\\Reports";
                 if (!Directory.Exists(reportsFolderPath)) { Directory.CreateDirectory(reportsFolderPath); }
 
-                //File.Create($"{reportsFolderPath}\\Were not delivered on {dateNow}.txt").Close();
+                File.Create($"{reportsFolderPath}\\Were not delivered on {dateNow}.txt").Close();
 
                 using (StreamWriter stream = new($"{reportsFolderPath}\\Were not delivered on {dateNow}.txt", true))
                 {

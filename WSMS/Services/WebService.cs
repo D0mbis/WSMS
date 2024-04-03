@@ -21,13 +21,12 @@ namespace WSMS.Services
         private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; //is possible to add different accounts like "Cookies\\Account name(number phone)
         private static readonly Dictionary<string, string> ElementsPaths = new()
         {
-            { "Search field", ".to2l77zo.gfz4du6o.ag5g9lrv.bze30y65.kao4egtt.qh0vvdkp .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
-            { "Message input", "._3Uu1_ .selectable-text.copyable-text.iq0m558w.g0rxnol2" },
-            { "Send button", "span[data-icon='send']" }, //"div.g0rxnol2.thghmljt.p357zi0d.rjo8vgbg.ggj6brxn span[data-icon='send']" },
+            { "Search field", "div[title='Текстовое поле поиска']"},
+            { "Message input", "div[title='Введите сообщение'" },
+            { "Send button", "span[data-icon='send']" },
             { "Delete img btn", "._2QnjM button" },
             { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
-
         public static void OpenBrowser()
         {
             /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
@@ -61,13 +60,13 @@ namespace WSMS.Services
         public static string[] GetNotDeliveredContacts(string[] contactsArray, string checkText)
         {
             List<string> result = new();
-            WebDriverWait wait5sec = new(Driver, TimeSpan.FromMilliseconds(5000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
+            WebDriverWait wait2sec = new(Driver, TimeSpan.FromMilliseconds(2000)) { PollingInterval = TimeSpan.FromMilliseconds(300) };
             foreach (string contact in contactsArray)
             {
                 bool found = false;
                 try
                 {
-                    SearchContact(wait5sec, contact);
+                    SearchContact(wait2sec, contact);
                     found = true;
                 }
                 catch
@@ -76,7 +75,7 @@ namespace WSMS.Services
                 if (found)
                 {
                     IWebElement? messageFull = default;
-                    try { messageFull = Driver.FindElement(By.XPath($"//*[text()='{checkText}']/../../../../..")); } catch { }
+                    try { messageFull = wait2sec.Until(ExpectedConditions.ElementIsVisible(By.XPath($"//*[text()='{checkText}']/../../../../.."))); } catch { }
                     try { messageFull?.FindElement(By.XPath("//*[text()='msg-dblcheck']")); } catch { result.Add(contact); }
                 }
             }
@@ -168,7 +167,12 @@ namespace WSMS.Services
             {
                 try
                 {
-                    element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+                    //element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
+                    element = wait.Until(d => { 
+                        IWebElement? e = default;
+                        try { return d.FindElement(locator); }
+                        catch { Errors += $"Selector not found: {locator.Criteria}\n"; return e; }});
+                    wait.Until(ExpectedConditions.ElementToBeClickable(element));
                     int counter1 = 0;
                     for (int i = 0; i < content.Length; i++)
                     {
@@ -182,7 +186,7 @@ namespace WSMS.Services
                                 counter1++;
                                 if (counter1 == 5)
                                 {
-                                    Errors += $"\nSendKeysWithWait error:\n{locator.ToString}";
+                                    Errors += $"\nSendKeysWithWait error:\n{locator.Criteria}";
                                     break;
                                 }
                             }
