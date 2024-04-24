@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WSMS"
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="550" Width="650">
+        Title="{Binding Title}" Height="550" Width="700">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
@@ -77,13 +77,13 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel AllowDrop="True" Drop="Image_Drop" VerticalAlignment="Center"  Height="400" Width="400" IsEnabled="True" 
                                 Background="Azure" Grid.ColumnSpan="3" Margin="15,0,15,0">
-                        <Label x:Name="DropLabel" HorizontalAlignment="Center" Margin="20">Drop images here</Label>
                         <Image x:Name="ImageBlock" Height="400" Width="400" Grid.Column="0" Grid.Row="0"
                                Source="{Binding Image, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
+                    <Label x:Name="DropLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2">Drop images here</Label>
                     <TextBox Grid.Column="3" Height="400" 
                                TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
-                               Text="{Binding MessageText}" Margin="0,36,0,36" />
+                               Text="{Binding MessageText}" Margin="0,0,15,0" />
                 </Grid>
             </TabItem>
         </TabControl>

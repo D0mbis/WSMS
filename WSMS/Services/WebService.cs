@@ -27,6 +27,8 @@ namespace WSMS.Services
             { "Delete img btn", "._2QnjM button" },
             { "Delete SearchText btn", "button span[data-icon='x-alt']" }
         };
+
+        //
         public static void OpenBrowser()
         {
             /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
