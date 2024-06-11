@@ -21,11 +21,11 @@ namespace WSMS.Services
         private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; //is possible to add different accounts like "Cookies\\Account name(number phone)
         private static readonly Dictionary<string, string> ElementsPaths = new()
         {
-            { "Search field", "div[title='Текстовое поле поиска']"},
-            { "Message input", "div[title='Введите сообщение'" },
+            { "Search field", "div[aria-label='Текстовое поле поиска']"},
+            { "Message input", "div[aria-label='Введите сообщение']" },
             { "Send button", "span[data-icon='send']" },
-            { "Delete img btn", "._2QnjM button" },
-            { "Delete SearchText btn", "button span[data-icon='x-alt']" }
+            { "Delete img btn", "button[aria-label='Закрыть']" },
+            { "Delete SearchText btn", "button[aria-label='Отменить поиск']" }
         };
 
         //
