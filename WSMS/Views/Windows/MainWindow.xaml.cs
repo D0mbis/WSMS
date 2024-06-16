@@ -25,6 +25,7 @@ namespace WSMS
         public MainWindow()
         {
             InitializeComponent();
+            GoogleSheetsAPI.PulldbCustomers();
         }
 
         private void Image_Drop(object sender, DragEventArgs e)

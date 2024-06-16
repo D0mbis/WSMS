@@ -1,21 +1,20 @@
-﻿using System;
-using System.Windows;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System.Threading;
-using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 using SeleniumExtras.WaitHelpers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
-using OpenQA.Selenium.DevTools.V85.Network;
+using System.Threading;
+using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace WSMS.Services
 {
-    internal class WebService
+    public class WebService
     {
         private static IWebDriver Driver { get; set; }
-        public static string Errors { get; private set; }
+        public static string Errors { get; set; }
         public static bool IsRunning { get; set; } = false;
         private static readonly string Url = "https://web.whatsapp.com/";
         private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; //is possible to add different accounts like "Cookies\\Account name(number phone)

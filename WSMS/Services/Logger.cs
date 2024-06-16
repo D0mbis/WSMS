@@ -11,6 +11,7 @@ namespace WSMS.Services
 {
     public static class Logger
     {
+        public static string Message;
         private static readonly string dateNow = DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)");
         public static void SaveSendingLogs(Dictionary<string, List<string>> resultSending)
         {
@@ -59,10 +60,29 @@ namespace WSMS.Services
                     }
                 }
             }
-            catch (Exception)
+            catch
             {
+            }
+        }
 
-                throw;
+        public static void SaveReport (string fileName)
+        {
+            try
+            {
+                string reportsFolderPath = $"{Environment.CurrentDirectory}\\Reports";
+                if (!Directory.Exists(reportsFolderPath)) { Directory.CreateDirectory(reportsFolderPath); }
+                using (StreamWriter stream = new($"{reportsFolderPath}\\{fileName}", true))
+                {
+                    if (!string.IsNullOrEmpty(Message))
+                    {
+                        stream.Write(Message);
+                    }
+                }
+                Message = string.Empty;
+            }
+            catch
+            {
+                MessageBox.Show("Not saved report!");
             }
         }
     }
