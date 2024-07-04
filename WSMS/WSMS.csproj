@@ -9,15 +9,11 @@
 
   <ItemGroup>
     <None Remove="Services\GoogleSheetsAPI\credentials.json" />
-    <None Remove="Services\GoogleSheetsAPI\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Services\GoogleSheetsAPI\credentials.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Services\GoogleSheetsAPI\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
@@ -25,6 +21,12 @@
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.68.0.3421" />
     <PackageReference Include="Selenium.Support" Version="4.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Services\GoogleSheetsAPI\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

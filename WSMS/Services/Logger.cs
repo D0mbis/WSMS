@@ -1,18 +1,14 @@
-﻿using OpenQA.Selenium;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace WSMS.Services
 {
     public static class Logger
     {
-        public static string Message;
-        private static readonly string dateNow = DateTime.Now.ToString("dd-MM-yy (HH.mm.ss)");
+        public static string Message { get; set; }
+        private static readonly string dateNow = DateTime.Now.ToString("dd.MM.yy (HH:mm:ss) ");
         public static void SaveSendingLogs(Dictionary<string, List<string>> resultSending)
         {
             try
@@ -64,8 +60,11 @@ namespace WSMS.Services
             {
             }
         }
-
-        public static void SaveReport (string fileName)
+        /// <summary>
+        /// Save text from Message to Reports folder
+        /// </summary>
+        /// <param name="fileName"></param>
+        public static void SaveReport(string fileName)
         {
             try
             {
@@ -75,7 +74,7 @@ namespace WSMS.Services
                 {
                     if (!string.IsNullOrEmpty(Message))
                     {
-                        stream.Write(Message);
+                        stream.Write(dateNow + Message);
                     }
                 }
                 Message = string.Empty;

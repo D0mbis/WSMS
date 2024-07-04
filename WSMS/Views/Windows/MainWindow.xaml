@@ -5,11 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WSMS"
         xmlns:vm="clr-namespace:WSMS.ViewModels"
+        xmlns:models="clr-namespace:WSMS.Models"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="550" Width="700">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Infrastructure/Styles/styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Modifiers="Shift" Key="Esc" Command="{Binding CloseApplicationCommand}"/>
     </Window.InputBindings>
@@ -37,6 +45,8 @@
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                         Content="{Binding DriverBtnContent, UpdateSourceTrigger=PropertyChanged}"
                         Command="{Binding StartBrowserCommand}" Width="93"/>
+                    <Button Grid.Column="0" Height="30" Width="93"
+                            Content="Contacts" Command="{Binding OpenContactsCommand}"/>
                     <Button Grid.Column="1" Height="30" 
                          HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Content="Start Sending"
@@ -56,16 +66,42 @@
                         Message identifier text</Label>
                 </Grid>
             </TabItem>
-            <TabItem Width="100" Header="Contacts">
+            <TabItem Width="Auto" Header="Create sanding">
+                <!-- realy name is "Create sanding"-->
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="232.545"/>
+                        <ColumnDefinition Width="297.455"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" 
-                             Text="{Binding Contacts, NotifyOnSourceUpdated=True}"
-                             VerticalScrollBarVisibility="Auto" AcceptsReturn="True"  AcceptsTab="True"/>
+                    <ListView Name="ContactsView" ItemsSource="{Binding CustomerGroups}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              HorizontalContentAlignment="Left" Grid.ColumnSpan="2">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                           Width="530"/>
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <CheckBox IsChecked="{Binding IsSelected}" 
+                                              Width="15"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left"/>
+                                    <TextBlock Text="{Binding Category}" Margin="20,0,0,0"
+                                               Width="100"
+                                               VerticalAlignment="Center"></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Button Grid.Column="2" Content="Button" Command="{Binding LoadCustomersCommand}"
+                            HorizontalAlignment="Center"  VerticalAlignment="Top"/>
                 </Grid>
+
             </TabItem>
             <TabItem Header="Message">
                 <Grid>
