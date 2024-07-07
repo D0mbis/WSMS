@@ -11,48 +11,39 @@ namespace WSMS.Services
 {
     public class CustomersService
     {
-        private static Dictionary<string, ObservableCollection<Customer>> AllCustomersInGroups;
-        private static ObservableCollection<Customer> AllCustomers { get; set; }
-        public static List<CustomersGroup> LoadCustomersGroup()
+        public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
+        private static ObservableCollection<Customer>? AllCustomers { get; set; }
+        public static void LoadAllCustomersInGroups()
         {
             try
             {
                 string dbPath = $"{Environment.CurrentDirectory}\\data\\dbCustomers.json";
                 if (File.Exists(dbPath) && AllCustomersInGroups == default)
                 {
+                    AllCustomersInGroups = new();
                     var jsonData = File.ReadAllText(dbPath);
-                    AllCustomersInGroups = JsonConvert.DeserializeObject<Dictionary<string, ObservableCollection<Customer>>>(jsonData);
-                    var customerGroups = new List<CustomersGroup>();
-
-                    foreach (var entry in AllCustomersInGroups)
+                    var items = JsonConvert.DeserializeObject<Dictionary<string, ObservableCollection<Customer>>>(jsonData);
+                    AllCustomersInGroups = new();
+                    foreach (var item in items.Keys)
                     {
-                        customerGroups.Add(new CustomersGroup
-                        {
-                            Category = entry.Key,
-                            Customers = entry.Value
-                        });
+                        AllCustomersInGroups.Add(new CustomersGroup(item, items[item]));
                     }
-                    return customerGroups;
                 }
-                //MessageBox.Show("CustomersService.cs -> LoadCustomersGroup ERROR!\n");
-
-                return default;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("CustomersService.cs -> LoadCustomersGroup ERROR!\n" + ex.Message);
-                return default;
+                MessageBox.Show("CustomersService.cs -> LoadAllCustomersInGroups ERROR!\n" + ex.Message);
             }
         }
-        public static ObservableCollection<Customer> LoadAllCustomers()
+        public static ObservableCollection<Customer> GetCustomersWithoutGroups()
         {
             if (AllCustomers == null)
             {
-                LoadCustomersGroup();
+                LoadAllCustomersInGroups();
                 AllCustomers = new ObservableCollection<Customer>();
                 foreach (var entry in AllCustomersInGroups)
                 {
-                    foreach (Customer customer in entry.Value)
+                    foreach (Customer customer in entry.Customers)
                     {
                         AllCustomers.Add(customer);
                     }

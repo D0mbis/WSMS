@@ -5,6 +5,11 @@
              StartupUri="Views/Windows/MainWindow.xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Infrastructure/Resources/styles.xaml"/>
+                <ResourceDictionary Source="Infrastructure/Resources/CustomerTemplates.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

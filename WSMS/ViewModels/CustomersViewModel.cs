@@ -6,17 +6,17 @@ using System.Windows.Data;
 using WSMS.Models;
 using WSMS.Services;
 using System.Windows.Input;
-using WSMS.Views.Windows;
 using WSMS.Infrastructure.Commands.Base;
 using System.Collections.Generic;
 namespace WSMS.ViewModels
 {
-    //  NEEED to create  a new window for this 
+    //  TODO: add save updated values to excel
     internal class CustomersViewModel : ViewModel
     {
         private ObservableCollection<Customer> customers;
         private string searchText;
-
+        private Customer selectedCustomer;
+        public ICollectionView CustomersView { get; set; }
         public ObservableCollection<Customer> Customers
         {
             get => customers;
@@ -25,8 +25,6 @@ namespace WSMS.ViewModels
                 Set(ref customers, value);
             }
         }
-        public ICollectionView CustomersView { get; set; }
-
         public string SearchText
         {
             get => searchText;
@@ -36,6 +34,28 @@ namespace WSMS.ViewModels
                 ApplyFilter();
             }
         }
+        public Customer SelectedCustomer
+        {
+            get => selectedCustomer;
+            set
+            {
+                if (selectedCustomer != value)
+                {
+                    if (selectedCustomer != null)
+                    {
+                        selectedCustomer.IsSelected = false;
+                    }
+                    selectedCustomer = value;
+                    if (selectedCustomer != null)
+                    {
+                        selectedCustomer.IsSelected = true;
+                    }
+                    Set(ref selectedCustomer, value);
+                    CustomersView.Refresh();
+                }
+            }
+        }
+
         #region Commands
         #region PullCustomersFromRemote
         public ICommand PullCustomersFromRemote { get; }
@@ -65,14 +85,13 @@ namespace WSMS.ViewModels
 
         private void OnPushValuesToRemoteExcelExecuted(object p)
         {
-            GoogleSheetsAPI.PushValues("", new List<object>() { "NEWtest"});
+            GoogleSheetsAPI.PushValues("", new List<object>() { "NEWtest" });
         }
         #endregion
         #endregion
         public CustomersViewModel()
         {
-            // Populate with sample data
-            CustomersView = CollectionViewSource.GetDefaultView(CustomersService.LoadAllCustomers());
+            CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
             PullCustomersFromRemote = new ActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
             AddNewCredentials = new ActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
             PushValuesToRemoteExcel = new ActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
@@ -87,6 +106,7 @@ namespace WSMS.ViewModels
                     if (item is Customer customer)
                     {
                         return string.IsNullOrEmpty(SearchText) ||
+                               customer.ID.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber1.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber2.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||

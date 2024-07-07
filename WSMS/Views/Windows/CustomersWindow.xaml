@@ -7,14 +7,14 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
         Closing="Window_Closing"
-        Title="CustomersWindow" Height="800" Width="1300">
+        Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch">
     <Window.DataContext>
         <vm:CustomersViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBox Grid.Row="0" Margin="10" HorizontalAlignment="Right" Width="200" Height="25"  
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
@@ -23,26 +23,19 @@
         <Button Grid.Row="0" Margin="220,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
         Content="Push to Excel DB" Command="{Binding PushValuesToRemoteExcel}"/>
         <Button Grid.Row="0" Margin="430,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
-Content="Add new credentials" Command="{Binding AddNewCredentials}"/>
-        <ListView Grid.Row="1" ItemsSource="{Binding CustomersView}">
+                Content="Add new credentials" Command="{Binding AddNewCredentials}"/>
+        <ListView Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" 
+                  ItemsSource="{Binding CustomersView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedCustomer}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="ID" Width="75" DisplayMemberBinding="{Binding ID}" />
-                    <GridViewColumn Header="Name" Width="320" DisplayMemberBinding="{Binding Name}" />
-                    <GridViewColumn Header="Phone 1" Width="110" DisplayMemberBinding="{Binding PhoneNumber1}" />
-                    <GridViewColumn Header="Phone 2" Width="110" DisplayMemberBinding="{Binding PhoneNumber2}" />
-                    <GridViewColumn Header="Phone 3" Width="110" DisplayMemberBinding="{Binding PhoneNumber3}" />
-                    <GridViewColumn Header="Main Category" DisplayMemberBinding="{Binding MainCategory}" />
-                    <GridViewColumn Header="Sub Category" DisplayMemberBinding="{Binding SubCategory}" />
-                    <GridViewColumn Header="Address" Width="Auto" DisplayMemberBinding="{Binding Address}" />
-                    <!-- Displaying LastDeliveryStatus as a concatenated string
-        <GridViewColumn Header="Delivery Status">
-            <GridViewColumn.CellTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding LastDeliveryStatus, Converter={StaticResource BoolArrayToStringConverter}}" />
-                </DataTemplate>
-            </GridViewColumn.CellTemplate>
-        </GridViewColumn> -->
+                    <GridViewColumn Header="ID" CellTemplate="{StaticResource ResourceKey=DTCustomer_ID}" />
+                    <GridViewColumn Header="Name" CellTemplate="{StaticResource ResourceKey=DTCustomer_Name}" />
+                    <GridViewColumn Header="Phone №1" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber1}" />
+                    <GridViewColumn Header="Phone №2" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber2}" />
+                    <GridViewColumn Header="Phone №3" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber3}" />
+                    <GridViewColumn Header="MainCategory" CellTemplate="{StaticResource ResourceKey=DTCustomer_MainCategory}" />
+                    <GridViewColumn Header="SubCategory" CellTemplate="{StaticResource ResourceKey=DTCustomer_SubCategory}" />
+                    <GridViewColumn Header="Address" CellTemplate="{StaticResource ResourceKey=DTCustomer_Address}" />
                 </GridView>
             </ListView.View>
         </ListView>

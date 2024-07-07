@@ -63,7 +63,7 @@ namespace WSMS.ViewModels
         }
         private void OnStartLoadCustomersCommandExecuted(object p)
         {
-            CustomerGroups = CustomersService.LoadCustomersGroup();
+            CustomerGroups = CustomersService.AllCustomersInGroups;
         }
 
         #endregion

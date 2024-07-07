@@ -11,13 +11,6 @@
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Infrastructure/Styles/styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Modifiers="Shift" Key="Esc" Command="{Binding CloseApplicationCommand}"/>
     </Window.InputBindings>

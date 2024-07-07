@@ -4,15 +4,11 @@ using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using Google.Apis.Util.Store;
 using Microsoft.Win32;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
-using WSMS.Models;
 
 namespace WSMS.Services
 {
@@ -66,7 +62,6 @@ namespace WSMS.Services
                 return false;
             }
         }
-
         public static void PulldbCustomers()
         {
             if (GetCredentials())
@@ -99,7 +94,6 @@ namespace WSMS.Services
                     var updateRequest = Service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);
                     updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
                     var appendResponse = updateRequest.Execute();
-
 
                 }
                  catch (Exception e)
