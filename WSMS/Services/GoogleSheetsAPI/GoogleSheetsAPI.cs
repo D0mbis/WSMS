@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using WSMS.Models;
 
 namespace WSMS.Services
 {
@@ -18,8 +19,9 @@ namespace WSMS.Services
         static SheetsService Service;
         static readonly string ApplicationName = "BorMarketCustomers";
         static readonly string SpreadsheetId = "1PjdTKdxkMQQ5kZDJnnuNrUVOhwdm2JztKUSQFsAL8Bs"; // Replace with your Google Sheets ID
-        static readonly string SheetName = "CustomersForSanding"; // Replace with your sheet name if different
+        static readonly string SheetName = "БД клиентов"; // Replace with your sheet name if different
         static UserCredential Credential;
+        static IList<IList<object>> PullValues;
         private readonly static string FolderPath = $"{Environment.CurrentDirectory}\\Services\\GoogleSheetsAPI";
 
         private static bool GetCredentials()
@@ -71,7 +73,8 @@ namespace WSMS.Services
                     string range = $"{SheetName}!A2:H"; // Adjust range as needed
                     SpreadsheetsResource.ValuesResource.GetRequest request =
                             Service.Spreadsheets.Values.Get(SpreadsheetId, range);
-                    CustomersService.SaveCustomerData(request.Execute().Values);
+                    PullValues = request.Execute().Values;
+                    CustomersService.SaveCustomerData(PullValues);
                 }
                 catch (Exception e)
                 {
@@ -79,28 +82,31 @@ namespace WSMS.Services
                     Logger.SaveReport("GoogleSheetsAPI.txt");
                 }
         }
-        public static void PushValues(string rowIndex = default, List<object> row = default)
+        public static void PushValues(string customerID = default, Customer customer = default)
         {
             if (GetCredentials())
+            {
+                if (PullValues == null) { PulldbCustomers(); }
                 try
                 {
+                    
+                    int rowIndex = CustomersService.GetRowIndex(customerID, PullValues);
                     // Define request parameters.
-                    string range = $"Chairs!A2"; // Adjust range as needed
+                    string range = $"{SheetName}!A{rowIndex}"; // Adjust range as needed
                     var valueRange = new ValueRange();
-                    //var oblist = new List<object>() { row }; // Ваши данные для строки
-                    valueRange.Values = new List<IList<object>> { row };
+                    valueRange.Values = new List<IList<object>> { CustomersService.ConvertToRow(customer) };
 
                     // Отправка данных в таблицу
                     var updateRequest = Service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);
                     updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
-                    var appendResponse = updateRequest.Execute();
-
+                    updateRequest.Execute();
                 }
-                 catch (Exception e)
+                catch (Exception e)
                 {
                     Logger.Message += $"Error from GoogleSheetsAPI.cs||PushValues: {e.Message}\n";
                     Logger.SaveReport("GoogleSheetsAPI.txt");
                 }
+            }
         }
         public static void AddNewCredentials()
         {

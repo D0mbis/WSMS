@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using WSMS.Models;
 
@@ -106,6 +107,31 @@ namespace WSMS.Services
                     Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");
                 }
             }
+        }
+
+        internal static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)
+        {
+            for (int i = 0; i < pullValues.Count; i++)
+            {
+
+                if (pullValues[i][0].ToString() == customerID)
+                {
+                    return i + 2;
+                }
+            }
+            return -1;
+        }
+
+        internal static IList<object> ConvertToRow(Customer customer)
+        {
+            IList<object> result = new List<object>();
+            PropertyInfo[] properties = typeof(Customer).GetProperties();
+            foreach (var item in properties)
+            {
+                if (item.Name != "IsSelected")
+                result.Add(item.GetValue(customer) ?? string.Empty);
+            }
+            return result;
         }
     }
 }

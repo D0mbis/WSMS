@@ -85,7 +85,7 @@ namespace WSMS.ViewModels
 
         private void OnPushValuesToRemoteExcelExecuted(object p)
         {
-            GoogleSheetsAPI.PushValues("", new List<object>() { "NEWtest" });
+            GoogleSheetsAPI.PushValues(SelectedCustomer.ID, SelectedCustomer );
         }
         #endregion
         #endregion

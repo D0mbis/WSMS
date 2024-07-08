@@ -16,7 +16,7 @@ namespace WSMS.Models
         public string MainCategory { get; set; }
         public string SubCategory { get; set; }
         public string Address { get; set; }
-        public bool[] LastDeliveryStatus { get; set; } = new bool[0];
+        //public bool[] LastDeliveryStatus { get; set; } = new bool[0];
         public bool IsSelected { get; set; } = false;
 
         public Customer() { }
