@@ -1,13 +1,12 @@
 ﻿using System;
-using WSMS.ViewModels.Base;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
-using WSMS.Models;
-using WSMS.Services;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
-using System.Collections.Generic;
+using WSMS.Models;
+using WSMS.Services;
+using WSMS.ViewModels.Base;
 namespace WSMS.ViewModels
 {
     internal class CustomersViewModel : ViewModel
@@ -49,7 +48,6 @@ namespace WSMS.ViewModels
                     {
                         selectedCustomer.IsSelected = true;
                     }
-                    Set(ref selectedCustomer, value);
                     CustomersView.Refresh();
                 }
             }
@@ -87,11 +85,18 @@ namespace WSMS.ViewModels
         #region PushValuesToRemoteExcel Command
         public ICommand PushValuesToRemoteExcel { get; }
 
-        private bool CanPushValuesToRemoteExcelExecute(object p) => true;
+        private bool CanPushValuesToRemoteExcelExecute(object p)
+        {
+            if (selectedCustomer != default)
+            {
+                if (selectedCustomer.IsSelected) return true;
+            }
+            return false;
+        }
 
         private void OnPushValuesToRemoteExcelExecuted(object p)
         {
-            GoogleSheetsAPI.PushValues(SelectedCustomer.ID, SelectedCustomer );
+            GoogleSheetsAPI.PushValues(SelectedCustomer.ID, SelectedCustomer);
         }
         #endregion
         #endregion

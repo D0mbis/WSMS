@@ -1,7 +1,10 @@
-﻿using System.Windows;
+﻿using OpenQA.Selenium;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using WSMS.Models;
+using WSMS.ViewModels;
 
 namespace WSMS.Views.Windows
 {
@@ -19,13 +22,26 @@ namespace WSMS.Views.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             IsOpen = false;
+            CuntactsListView.SelectedItem = null;
         }
 
         private void CuntactsListView_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!(e.OriginalSource is FrameworkElement element) || !(element.DataContext is Customer))
+            if (e.OriginalSource is FrameworkElement element)
             {
-                CuntactsListView.SelectedItem = null;
+                if ((element.DataContext is Customer))
+                {
+                    return;
+                }
+                while (element != null && !(element is Button))
+                {
+                    element = (FrameworkElement)VisualTreeHelper.GetParent(element);
+                }
+                if (element == null || element is Button button && button.Name != PushtoExcelDB.Name) 
+                {
+                    CuntactsListView.SelectedItem = null;
+                    return;
+                }
             }
         }
     }
