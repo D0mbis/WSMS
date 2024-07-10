@@ -10,7 +10,6 @@ using WSMS.Infrastructure.Commands.Base;
 using System.Collections.Generic;
 namespace WSMS.ViewModels
 {
-    //  TODO: add save updated values to excel
     internal class CustomersViewModel : ViewModel
     {
         private ObservableCollection<Customer> customers;
@@ -57,6 +56,13 @@ namespace WSMS.ViewModels
         }
 
         #region Commands
+        #region Import to .csv
+        public ICommand ImportToCsv { get; }
+
+        private bool CanImportToCsvExecute(object p) => true;
+
+        private void OnImportToCsvExecuted(object p) => CustomersService.ImportToCSV();
+        #endregion
         #region PullCustomersFromRemote
         public ICommand PullCustomersFromRemote { get; }
 
@@ -65,9 +71,9 @@ namespace WSMS.ViewModels
         private void OnPullCustomersFromRemoteExecuted(object p)
         {
             GoogleSheetsAPI.PulldbCustomers();
+            CustomersView.Refresh();
         }
         #endregion
-
         #region AddNewCredentials Command
         public ICommand AddNewCredentials { get; }
 
@@ -95,6 +101,7 @@ namespace WSMS.ViewModels
             PullCustomersFromRemote = new ActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
             AddNewCredentials = new ActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
             PushValuesToRemoteExcel = new ActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
+            ImportToCsv = new ActionCommand(OnImportToCsvExecuted, CanImportToCsvExecute);
         }
 
         private void ApplyFilter()

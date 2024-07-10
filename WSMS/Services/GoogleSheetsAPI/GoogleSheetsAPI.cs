@@ -36,7 +36,7 @@ namespace WSMS.Services
                     using (var stream = new FileStream($"{FolderPath}\\credentials.json", FileMode.Open, FileAccess.Read))
                     {
                         Credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                            GoogleClientSecrets.Load(stream).Secrets,
+                            GoogleClientSecrets.FromStream(stream).Secrets,
                             Scopes,
                             "user",
                             CancellationToken.None,
@@ -94,7 +94,7 @@ namespace WSMS.Services
                     // Define request parameters.
                     string range = $"{SheetName}!A{rowIndex}"; // Adjust range as needed
                     var valueRange = new ValueRange();
-                    valueRange.Values = new List<IList<object>> { CustomersService.ConvertToRow(customer) };
+                    valueRange.Values = new List<IList<object>> { CustomersService.ConvertToList(customer) };
 
                     // Отправка данных в таблицу
                     var updateRequest = Service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);

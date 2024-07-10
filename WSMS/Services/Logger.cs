@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
@@ -82,6 +83,24 @@ namespace WSMS.Services
             catch
             {
                 MessageBox.Show("Not saved report!");
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exMessage">Exaption message</param>
+        /// <param name="filename">File name to save logs</param>
+        /// <param name="myMessage">Message from user</param>
+        public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage)
+        {
+            Message += $"\nError from CustomersService.cs: {exMessage}\n";
+            SaveReport($"{filename}.txt");
+            var result = MessageBox.Show($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question, MessageBoxResult.Yes);
+            if (result == MessageBoxResult.Yes)
+            {
+                Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");
             }
         }
     }

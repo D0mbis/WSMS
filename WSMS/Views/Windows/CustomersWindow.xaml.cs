@@ -1,4 +1,7 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using WSMS.Models;
 
 namespace WSMS.Views.Windows
 {
@@ -16,6 +19,14 @@ namespace WSMS.Views.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             IsOpen = false;
+        }
+
+        private void CuntactsListView_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!(e.OriginalSource is FrameworkElement element) || !(element.DataContext is Customer))
+            {
+                CuntactsListView.SelectedItem = null;
+            }
         }
     }
 }

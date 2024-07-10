@@ -14,6 +14,7 @@ namespace WSMS.Services
     {
         public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
+        private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
         public static void LoadAllCustomersInGroups()
         {
             try
@@ -90,22 +91,13 @@ namespace WSMS.Services
                         }
                     }
                     string json = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
-                    string folderPath = $"{Environment.CurrentDirectory}\\data";
-                    if (!Directory.Exists(folderPath)) { Directory.CreateDirectory(folderPath); }
-                    File.WriteAllText($"{folderPath}\\dbCustomers.json", json);
+                    if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+                    File.WriteAllText($"{FolderPath}\\dbCustomers.json", json);
                 }
             }
             catch (Exception e)
             {
-                Logger.Message += $"\nError from CustomersService.cs: {e.Message}\n";
-                Logger.SaveReport("CustomersService.txt");
-                var result = MessageBox.Show("Seve customers data error\nDetails in CustomersService.txt.\nOpen Reports folder?", "Update error",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question, MessageBoxResult.Yes);
-                if (result == MessageBoxResult.Yes)
-                {
-                    Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");
-                }
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Seve customers data error");
             }
         }
 
@@ -122,16 +114,41 @@ namespace WSMS.Services
             return -1;
         }
 
-        internal static IList<object> ConvertToRow(Customer customer)
+        internal static IList<object> ConvertToList(Customer customer)
         {
             IList<object> result = new List<object>();
             PropertyInfo[] properties = typeof(Customer).GetProperties();
             foreach (var item in properties)
             {
                 if (item.Name != "IsSelected")
-                result.Add(item.GetValue(customer) ?? string.Empty);
+                    result.Add(item.GetValue(customer) ?? string.Empty);
             }
             return result;
+        }
+        public static void ImportToCSV()
+        {
+            try
+            {
+                if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+                if (AllCustomers.Count == 0) { GetCustomersWithoutGroups(); }
+                using StreamWriter writer = new StreamWriter($"{FolderPath}\\dbCustomers.csv");
+                // header
+                writer.WriteLine("Notes\tName\tPhone 1 - Value\tPhone 2 - Value\tPhone 3 - Value\tGroup Membership\t " +
+                    "Address 1 - Region\tOrganization 1 - Name");
+                foreach (var customer in AllCustomers)
+                {
+                    var list = ConvertToList(customer);
+                    foreach (string item in list)
+                    {
+                        writer.Write(item.ToString() + "\t");
+                    }
+                    writer.WriteLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.ShowMyReportMessageBox(ex.Message, "CustomerService", "ImportToCSV Error");
+            }
         }
     }
 }

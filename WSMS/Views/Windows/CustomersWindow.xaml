@@ -7,11 +7,12 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
         Closing="Window_Closing"
-        Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch">
+        Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch"
+        PreviewMouseDown="CuntactsListView_PreviewMouseDown">
     <Window.DataContext>
         <vm:CustomersViewModel/>
     </Window.DataContext>
-    <Grid>
+    <Grid  >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
@@ -21,11 +22,14 @@
         <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" Width="200" Height="30"
                 Content="Pull from Excel DB" Command="{Binding PullCustomersFromRemote}"/>
         <Button Grid.Row="0" Margin="220,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
-        Content="Push to Excel DB" Command="{Binding PushValuesToRemoteExcel}"/>
+                Content="Push to Excel DB" Command="{Binding PushValuesToRemoteExcel}"/>
         <Button Grid.Row="0" Margin="430,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
                 Content="Add new credentials" Command="{Binding AddNewCredentials}"/>
-        <ListView Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" 
-                  ItemsSource="{Binding CustomersView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedCustomer}">
+        <Button Grid.Row="0" Margin="640,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
+                Content="Import contacts to .csv" Command="{Binding ImportToCsv}"/>
+        <ListView x:Name="CuntactsListView" Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" 
+                  ItemsSource="{Binding CustomersView, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedCustomer,  UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" CellTemplate="{StaticResource ResourceKey=DTCustomer_ID}" />
