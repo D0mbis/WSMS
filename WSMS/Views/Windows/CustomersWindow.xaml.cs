@@ -44,5 +44,14 @@ namespace WSMS.Views.Windows
                 }
             }
         }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                CuntactsListView.SelectedItem = null;
+                return;
+            }
+        }
     }
 }

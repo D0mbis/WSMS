@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:WSMS.Views.Windows"
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
+        KeyUp="Window_KeyUp"
         Closing="Window_Closing"
         Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch"
         PreviewMouseDown="CuntactsListView_PreviewMouseDown">

@@ -20,7 +20,8 @@ namespace WSMS.Services
             try
             {
                 string dbPath = $"{Environment.CurrentDirectory}\\data\\dbCustomers.json";
-                if (File.Exists(dbPath) && AllCustomersInGroups == default)
+                if (!File.Exists(dbPath)) { GoogleSheetsAPI.PulldbCustomers(); }
+                if (AllCustomersInGroups == default)
                 {
                     AllCustomersInGroups = new();
                     var jsonData = File.ReadAllText(dbPath);
@@ -34,26 +35,35 @@ namespace WSMS.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show("CustomersService.cs -> LoadAllCustomersInGroups ERROR!\n" + ex.Message);
+                Logger.Message += $"\nError from CustomerService.cs||LoadCustomersInGroups: {ex.Message}\n";
+                Logger.SaveReport("CustomersService.txt");
             }
         }
         public static ObservableCollection<Customer> GetCustomersWithoutGroups()
         {
-            if (AllCustomers == null)
+            try
             {
-                LoadAllCustomersInGroups();
-                AllCustomers = new ObservableCollection<Customer>();
-                foreach (var entry in AllCustomersInGroups)
+                if (AllCustomers == null)
                 {
-                    foreach (Customer customer in entry.Customers)
+                    LoadAllCustomersInGroups();
+                    AllCustomers = new ObservableCollection<Customer>();
+                    foreach (var entry in AllCustomersInGroups)
                     {
-                        AllCustomers.Add(customer);
+                        foreach (Customer customer in entry.Customers)
+                        {
+                            AllCustomers.Add(customer);
+                        }
                     }
+                    return AllCustomers;
                 }
-
+                else { return AllCustomers; }
+            }
+            catch (Exception ex)
+            {
+                Logger.Message += $"\nError from CustomerService.cs||GetCustomersWithoutGroups: {ex.Message}\n";
+                Logger.SaveReport("CustomersService.txt");
                 return AllCustomers;
             }
-            else { return AllCustomers; }
         }
         public static void SaveCustomerData(IList<IList<object>> values)
         {

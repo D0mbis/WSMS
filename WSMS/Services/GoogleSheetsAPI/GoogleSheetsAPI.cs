@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using WSMS.Models;
 
@@ -20,76 +22,18 @@ namespace WSMS.Services
         static readonly string ApplicationName = "BorMarketCustomers";
         static readonly string SpreadsheetId = "1PjdTKdxkMQQ5kZDJnnuNrUVOhwdm2JztKUSQFsAL8Bs"; // Replace with your Google Sheets ID
         static readonly string SheetName = "БД клиентов"; // Replace with your sheet name if different
-        static UserCredential Credential;
+        static UserCredential AutorizeToken;
         static IList<IList<object>> PullValues;
         private readonly static string FolderPath = $"{Environment.CurrentDirectory}\\Services\\GoogleSheetsAPI";
 
-        private static bool GetCredentials()
-        {
-            string credentialsPath = $"{FolderPath}\\credentials.json";
-            try
-            {
-                if (Credential == default)
-                {
-                    if (!File.Exists(credentialsPath)) { using FileStream fileStream = new(credentialsPath, FileMode.Create); }
-                    //string folderPath = $"{Environment.CurrentDirectory}\\Services\\GoogleSheetsAPI";
-                    using (var stream = new FileStream($"{FolderPath}\\credentials.json", FileMode.Open, FileAccess.Read))
-                    {
-                        Credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                            GoogleClientSecrets.FromStream(stream).Secrets,
-                            Scopes,
-                            "user",
-                            CancellationToken.None,
-                            new FileDataStore(FolderPath, true)).Result;
-                    }
-                }
-                Service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = Credential,
-                    ApplicationName = ApplicationName,
-                });
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetCredential: {e.Message}\n";
-                Logger.SaveReport("GoogleSheetsAPI.txt");
-                var resault = MessageBox.Show("Credentials was revoked\n Do you want to update them?", "Credentials error",
-                MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                if (resault == MessageBoxResult.Yes)
-                {
-                    Clipboard.SetText("https://console.cloud.google.com/apis/credentials?orgonly=true&project=bormarketcustomers&supportedpurview=organizationId");
-                    MessageBox.Show("Link was copied to clipboard, please insert to your browser search.");
-                }
-                return false;
-            }
-        }
-        public static void PulldbCustomers()
-        {
-            if (GetCredentials())
-                try
-                {
-                    // Define request parameters.
-                    string range = $"{SheetName}!A2:H"; // Adjust range as needed
-                    SpreadsheetsResource.ValuesResource.GetRequest request =
-                            Service.Spreadsheets.Values.Get(SpreadsheetId, range);
-                    PullValues = request.Execute().Values;
-                    CustomersService.SaveCustomerData(PullValues);
-                }
-                catch (Exception e)
-                {
-                    Logger.Message += $"Error from GoogleSheetsAPI.cs||PulldbCustomers: {e.Message}\n";
-                    Logger.SaveReport("GoogleSheetsAPI.txt");
-                }
-        }
         public static void PushValues(string customerID = default, Customer customer = default)
         {
-            if (GetCredentials())
+            if (GetAccess())
             {
                 if (PullValues == null) { PulldbCustomers(); }
                 try
                 {
-                    
+
                     int rowIndex = CustomersService.GetRowIndex(customerID, PullValues);
                     // Define request parameters.
                     string range = $"{SheetName}!A{rowIndex}"; // Adjust range as needed
@@ -107,6 +51,132 @@ namespace WSMS.Services
                     Logger.SaveReport("GoogleSheetsAPI.txt");
                 }
             }
+        }
+        public static void PulldbCustomers()
+        {
+            if (GetAccess())
+                try
+                {
+                    // Define request parameters.
+                    string range = $"{SheetName}!A2:H"; // Adjust range as needed
+                    SpreadsheetsResource.ValuesResource.GetRequest request =
+                            Service.Spreadsheets.Values.Get(SpreadsheetId, range);
+                    PullValues = request.Execute().Values;
+                    CustomersService.SaveCustomerData(PullValues);
+                }
+                catch (Exception e)
+                {
+                    Logger.Message += $"Error from GoogleSheetsAPI.cs||PulldbCustomers: {e.Message}\n";
+                    Logger.SaveReport("GoogleSheetsAPI.txt");
+                }
+        }
+        private static bool GetAccess()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            GetToken(cts);
+            string credentialsPath = $"{FolderPath}\\credentials.json";
+            string tokenPath = $"{FolderPath}\\Google.Apis.Auth.OAuth2.Responses.TokenResponse-user";
+            try
+            {
+                if (!File.Exists(tokenPath))
+                {
+                    var result = MessageBox.Show("Please log in in the browser window that opens. " +
+                        "Click \"Ok\" when you complete authorization or \"Cancel\" to cancel", "Authorization"
+                        , MessageBoxButton.OKCancel);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        if (File.Exists(tokenPath))
+                        {
+                            if (AutorizeToken.Token.IsExpired(AutorizeToken.Flow.Clock))
+                            {
+                                var resault = MessageBox.Show("Credentials was revoked\n Do you want to update them?", "Credentials error",
+                                              MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                                if (resault == MessageBoxResult.Yes)
+                                {
+                                    Clipboard.SetText("https://console.cloud.google.com/apis/credentials?orgonly=true&project=bormarketcustomers&supportedpurview=organizationId");
+                                    MessageBox.Show("Link was copied to clipboard, please insert to your browser search.");
+                                    cts.Cancel();
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Authorization token was created.");
+                                cts.Cancel();
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Authorization token was not created, try again.");
+                            cts.Cancel();
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Authorization token was not created, try again.");
+                        cts.Cancel();
+                        return false;
+                    }
+                }
+                Service = new SheetsService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = AutorizeToken,
+                    ApplicationName = ApplicationName,
+                });
+                cts.Dispose();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetCredential: {e.Message}\n";
+                Logger.SaveReport("GoogleSheetsAPI.txt");
+                cts.Dispose();
+                return false;
+            }
+        }
+        private static async Task GetToken(CancellationTokenSource cts)
+        {
+            try
+            {
+                // Загружаем секреты клиента
+                using (var stream = new FileStream($"{FolderPath}\\credentials.json", FileMode.Open, FileAccess.Read))
+                {
+                    AutorizeToken = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                         GoogleClientSecrets.FromStream(stream).Secrets,
+                         Scopes,
+                         "user",
+                         cts.Token,
+                         new FileDataStore(FolderPath, true));
+                }
+            }
+            catch (AggregateException ex)
+            {
+                // Обработка ошибок, связанных с отменой авторизации или закрытием браузера
+                if (ex.InnerException is TokenResponseException tokenEx)
+                {
+                    // Обработка конкретной ошибки, связанной с токеном
+                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {tokenEx.Message}\n";
+                }
+                else if (ex.InnerException is TaskCanceledException)
+                {
+                    // Пользователь закрыл браузер или прервал процесс
+                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: Autorization was canceled.\n";
+                }
+                else
+                {
+                    // Общая обработка других исключений
+                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {ex.Message}\n";
+                }
+                Logger.SaveReport("GoogleSheetsAPI.txt");
+            }
+            catch (Exception ex)
+            {
+                // Общая обработка любых других непредвиденных ошибок
+                Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {ex.Message}\n";
+                Logger.SaveReport("GoogleSheetsAPI.txt");
+            }
+
         }
         public static void AddNewCredentials()
         {
