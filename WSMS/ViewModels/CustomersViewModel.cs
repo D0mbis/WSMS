@@ -14,7 +14,7 @@ namespace WSMS.ViewModels
         private ObservableCollection<Customer> customers;
         private string searchText;
         private Customer selectedCustomer;
-        public ICollectionView CustomersView { get; set; }
+        public ICollectionView customersView;
         public ObservableCollection<Customer> Customers
         {
             get => customers;
@@ -52,6 +52,7 @@ namespace WSMS.ViewModels
                 }
             }
         }
+        public ICollectionView CustomersView { get => customersView; set { Set(ref customersView, value); } }
 
         #region Commands
         #region Import to .csv
@@ -61,17 +62,6 @@ namespace WSMS.ViewModels
 
         private void OnImportToCsvExecuted(object p) => CustomersService.ImportToCSV();
         #endregion
-        #region PullCustomersFromRemote
-        public ICommand PullCustomersFromRemote { get; }
-
-        private bool CanPullCustomersFromRemoteExecute(object p) => true;
-
-        private void OnPullCustomersFromRemoteExecuted(object p)
-        {
-            GoogleSheetsAPI.PulldbCustomers();
-            CustomersView.Refresh();
-        }
-        #endregion
         #region AddNewCredentials Command
         public ICommand AddNewCredentials { get; }
 
@@ -80,6 +70,17 @@ namespace WSMS.ViewModels
         private void OnAddNewCredentialsExecuted(object p)
         {
             GoogleSheetsAPI.AddNewCredentials();
+        }
+        #endregion
+        #region PullCustomersFromRemote Command
+        public ICommand PullCustomersFromRemote { get; }
+
+        private bool CanPullCustomersFromRemoteExecute(object p) => true;
+
+        private void OnPullCustomersFromRemoteExecuted(object p)
+        {
+            GoogleSheetsAPI.PulldbCustomers();
+            CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
         }
         #endregion
         #region PushValuesToRemoteExcel Command

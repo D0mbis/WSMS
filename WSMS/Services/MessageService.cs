@@ -14,8 +14,10 @@ namespace WSMS.Services
         /* TODO:
             1. Interactive progress sending
             2. upgrade Errors message (like hide "time out waitings")
-            3. Test start button wich checking all selectors paths*
+            3. Test previous start button wich checking all selectors paths*
         */
+
+
 
         public static BitmapSource GetImage(string url)
         {
@@ -23,7 +25,7 @@ namespace WSMS.Services
             bi.BeginInit();
             bi.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
             bi.EndInit();
-            Message.Image = bi;
+            //Message.Image = bi;
             return bi;
         }
 
@@ -65,7 +67,7 @@ namespace WSMS.Services
             for (int i = 0; i < message.Contacts.Length; i++)
             {
                 string contact = message.Contacts[i];
-                if (WebService.ToSend(contact, message.Text, Message.Image))
+                if (WebService.ToSend(contact, message.Text, GetImage("D:/Notes/Работа Вова/Discount/39.png")))
                 {
                         outputD["Successful sent"].Add(contact);
                 }

@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         xmlns:models="clr-namespace:WSMS.Models"
         mc:Ignorable="d"
-        Title="{Binding Title}" Height="800" Width="700">
+        Title="{Binding Title}" MinHeight="800" MinWidth="700" MaxWidth="700">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
@@ -20,7 +20,7 @@
                 <MenuItem Header="Exit" Command="{Binding CloseApplicationCommand}"/>
             </MenuItem>
             <MenuItem Header="Settings">
-            </MenuItem>s
+            </MenuItem> s
         </Menu>
         <TabControl Margin="5">
             <TabItem Width="100" Header="Home">
@@ -60,7 +60,6 @@
                 </Grid>
             </TabItem>
             <TabItem Width="Auto" Header="Create sanding">
-                <!-- realy name is "Create sanding"-->
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="232.545"/>
@@ -100,21 +99,45 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="420"/>
+                        <!-- 700 - 420 = 280-->
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="400"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="360"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <StackPanel AllowDrop="True" Drop="Image_Drop" VerticalAlignment="Center"  Height="400" Width="420" IsEnabled="True" 
-                                Background="Aqua" Grid.Column="0" Margin="3">
-                        <Image x:Name="ImageBlock" Height="400" Width="350" Grid.Column="0" 
+                    <StackPanel AllowDrop="True" Drop="Image_Drop" VerticalAlignment="Top"  Height="400" Width="420" Margin="3" 
+                                IsEnabled="True" Background="Aqua" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+                        <Image x:Name="ImageBlock" Height="400" Width="350"  
                                Source="{Binding Image, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
-                    <Label x:Name="DropLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0">Drop images here</Label>
+                    <Label x:Name="DropLabel" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1">Drop images here</Label>
                     <TextBox Grid.Column="0" Grid.Row="2" Height="Auto" Width="Auto"
                                TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
                                Text="{Binding MessageText}" Margin="3" />
+                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2" Content="Save"/>
+                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="2" Content="Delete"/>
+                    <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
+                                 BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
+                                 ItemsSource="{Binding Messages}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image Source="{Binding Image}" Height="120" Width="90" HorizontalAlignment="Center" Margin="3"/>
+                                        <TextBlock Text="{Binding Text}" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
+                                                   FontSize="18"/>
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
                 </Grid>
             </TabItem>
         </TabControl>

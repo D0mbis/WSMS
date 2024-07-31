@@ -15,13 +15,18 @@ namespace WSMS.Services
         public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
-        public static void LoadAllCustomersInGroups()
+        public static bool LoadAllCustomersInGroups()
         {
             try
             {
                 string dbPath = $"{Environment.CurrentDirectory}\\data\\dbCustomers.json";
-                if (!File.Exists(dbPath)) { GoogleSheetsAPI.PulldbCustomers(); }
-                if (AllCustomersInGroups == default)
+                if (!File.Exists(dbPath))
+                {
+                    //GoogleSheetsAPI.PulldbCustomers();
+                    MessageBox.Show("File \"dbCustomers.json\" not found, please pull from Excel db.");
+                    return false;
+                }
+                else if (AllCustomersInGroups == default)
                 {
                     AllCustomersInGroups = new();
                     var jsonData = File.ReadAllText(dbPath);
@@ -32,20 +37,22 @@ namespace WSMS.Services
                         AllCustomersInGroups.Add(new CustomersGroup(item, items[item]));
                     }
                 }
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.Message += $"\nError from CustomerService.cs||LoadCustomersInGroups: {ex.Message}\n";
                 Logger.SaveReport("CustomersService.txt");
+                return false;
             }
         }
         public static ObservableCollection<Customer> GetCustomersWithoutGroups()
         {
             try
             {
-                if (AllCustomers == null)
+
+                if (LoadAllCustomersInGroups())
                 {
-                    LoadAllCustomersInGroups();
                     AllCustomers = new ObservableCollection<Customer>();
                     foreach (var entry in AllCustomersInGroups)
                     {
@@ -56,12 +63,16 @@ namespace WSMS.Services
                     }
                     return AllCustomers;
                 }
-                else { return AllCustomers; }
+                else
+                {
+                    return AllCustomers;
+                }
             }
             catch (Exception ex)
             {
                 Logger.Message += $"\nError from CustomerService.cs||GetCustomersWithoutGroups: {ex.Message}\n";
                 Logger.SaveReport("CustomersService.txt");
+                AllCustomers = null;
                 return AllCustomers;
             }
         }
@@ -102,7 +113,10 @@ namespace WSMS.Services
                     }
                     string json = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
                     if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
-                    File.WriteAllText($"{FolderPath}\\dbCustomers.json", json);
+                    using (StreamWriter stream = new StreamWriter($"{FolderPath}\\dbCustomers.json"))
+                    {
+                        stream.Write(json);
+                    }
                 }
             }
             catch (Exception e)

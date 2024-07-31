@@ -26,6 +26,8 @@ namespace WSMS.ViewModels
         private string driverBtnContent = "Start browser";
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
         #endregion
+        public ObservableCollection<Message> Messages { get; set; }
+
         private List<CustomersGroup> customerGroups;
         public List<CustomersGroup> CustomerGroups
         {
@@ -34,7 +36,7 @@ namespace WSMS.ViewModels
         #region Message
         private string messageText;
         public string MessageText { get => messageText; set => Set(ref messageText, value); }
-        public BitmapSource Image { get; } = Message.Image;
+        public BitmapSource Image { get; } = default;
         #endregion
         #region Comands
         #region OpenContactsCommand
@@ -118,6 +120,11 @@ namespace WSMS.ViewModels
         #endregion
         public MainWindowViewModel()
         {
+            Messages = new ObservableCollection<Message>
+            {
+                new() { Text = "First message", Image = MessageService.GetImage("D:/Notes/Работа Вова/Discount/39.png") },
+                new () { Text = "Second messageSecond messageSecond messageSecond messageSecond messageSecond message", Image = MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png") }
+            };
             StartBrowserCommand = new ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
             StartSendingCommand = new ActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
             CheckDeliveryCommand = new ActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);

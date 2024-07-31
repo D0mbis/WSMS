@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using WSMS.Models;
 using WSMS.Services;
 
 namespace WSMS
@@ -13,14 +17,14 @@ namespace WSMS
         {
             InitializeComponent();
             //GoogleSheetsAPI.PulldbCustomers();
-           //CustomersService.AllCustomers;
-        }
+            //CustomersService.AllCustomers;
 
+        }
         private void Image_Drop(object sender, DragEventArgs e)
         {
-            string [] file =(string[]) e.Data.GetData(DataFormats.FileDrop);
-            DropLabel.Visibility = Visibility.Collapsed;
-            ImageBlock.Source = MessageService.GetImage(file[0]);
+            string[] file = (string[])e.Data.GetData(DataFormats.FileDrop);
+            //DropLabel.Visibility = Visibility.Collapsed;
+            // ImageBlock.Source = MessageService.GetImage(file[0]);
         }
     }
 }

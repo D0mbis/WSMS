@@ -8,14 +8,14 @@ namespace WSMS.Models
 {
     public class Customer
     {
-        public string ID { get; set; }
-        public string Name { get; set; }
-        public string PhoneNumber1 { get; set; }
-        public string PhoneNumber2 { get; set; }
-        public string PhoneNumber3 { get; set; }
-        public string MainCategory { get; set; }
-        public string SubCategory { get; set; }
-        public string Address { get; set; }
+        public string? ID { get; set; }
+        public string? Name { get; set; }
+        public string? PhoneNumber1 { get; set; }
+        public string? PhoneNumber2 { get; set; }
+        public string? PhoneNumber3 { get; set; }
+        public string? MainCategory { get; set; }
+        public string? SubCategory { get; set; }
+        public string? Address { get; set; }
         //public bool[] LastDeliveryStatus { get; set; } = new bool[0];
         public bool IsSelected { get; set; } = false;
 
