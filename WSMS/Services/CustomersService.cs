@@ -41,8 +41,7 @@ namespace WSMS.Services
             }
             catch (Exception ex)
             {
-                Logger.Message += $"\nError from CustomerService.cs||LoadCustomersInGroups: {ex.Message}\n";
-                Logger.SaveReport("CustomersService.txt");
+                Logger.ShowMyReportMessageBox(ex.Message, "CustomersService", "LoadCustomersInGroups method");
                 return false;
             }
         }
@@ -70,8 +69,7 @@ namespace WSMS.Services
             }
             catch (Exception ex)
             {
-                Logger.Message += $"\nError from CustomerService.cs||GetCustomersWithoutGroups: {ex.Message}\n";
-                Logger.SaveReport("CustomersService.txt");
+                Logger.ShowMyReportMessageBox(ex.Message, "CustomersService", "GetCustomersWithoutGroups");
                 AllCustomers = null;
                 return AllCustomers;
             }
@@ -80,7 +78,8 @@ namespace WSMS.Services
         {
             try
             {
-                var dbCustomers = new Dictionary<string, List<Customer>>();
+                Dictionary<string, List<string>> allCategories = new();
+                Dictionary<string, List<Customer>> dbCustomers = new();
                 // Fetch the data.
                 if (values != default && values.Count > 0)
                 {
@@ -102,7 +101,12 @@ namespace WSMS.Services
                         };
                         row.Add("");
                         customer.Address = row[7]?.ToString() ?? "";
-
+                        if (allCategories.ContainsKey(customer.MainCategory))
+                        {
+                            if (!allCategories[customer.MainCategory].Contains(customer.SubCategory))
+                                allCategories[customer.MainCategory].Add(customer.SubCategory);
+                        }
+                        else allCategories.Add(customer.MainCategory, new List<string>() { customer.SubCategory });
                         if (dbCustomers.ContainsKey(customer.MainCategory))
                             dbCustomers[customer.MainCategory].Add(customer);
                         else dbCustomers.Add(customer.MainCategory, new List<Customer>() { customer });
@@ -111,17 +115,20 @@ namespace WSMS.Services
                             dbCustomers[regionCategory].Sort((c1, c2) => c1.SubCategory.CompareTo(c2.SubCategory));
                         }
                     }
-                    string json = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
+                    string allCategoriesJson = JsonConvert.SerializeObject(allCategories, Formatting.Indented);
+                    string allCustomersInCategoriesJson = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
                     if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
-                    using (StreamWriter stream = new StreamWriter($"{FolderPath}\\dbCustomers.json"))
+                    using (StreamWriter stream = new(FolderPath + "\\all categories.json"))
                     {
-                        stream.Write(json);
+                        stream.Write(allCategoriesJson);
                     }
+                    using StreamWriter str = new($"{FolderPath}\\dbCustomers.json");
+                    str.Write(allCustomersInCategoriesJson);
                 }
             }
             catch (Exception e)
             {
-                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Seve customers data error");
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService.txt", "Seve customers data error");
             }
         }
 

@@ -47,8 +47,7 @@ namespace WSMS.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.Message += $"Error from GoogleSheetsAPI.cs||PushValues: {e.Message}\n";
-                    Logger.SaveReport("GoogleSheetsAPI.txt");
+                    Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "PushValues");
                 }
             }
         }
@@ -66,8 +65,7 @@ namespace WSMS.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.Message += $"Error from GoogleSheetsAPI.cs||PulldbCustomers: {e.Message}\n";
-                    Logger.SaveReport("GoogleSheetsAPI.txt");
+                    Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "PulldbCustomers");
                 }
         }
         private static bool GetAccess()
@@ -129,8 +127,7 @@ namespace WSMS.Services
             }
             catch (Exception e)
             {
-                Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetCredential: {e.Message}\n";
-                Logger.SaveReport("GoogleSheetsAPI.txt");
+                Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "GetCredential");
                 cts.Dispose();
                 return false;
             }
@@ -153,28 +150,26 @@ namespace WSMS.Services
             catch (AggregateException ex)
             {
                 // Обработка ошибок, связанных с отменой авторизации или закрытием браузера
-                if (ex.InnerException is TokenResponseException tokenEx)
+                if (ex.InnerException is TokenResponseException e)
                 {
                     // Обработка конкретной ошибки, связанной с токеном
-                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {tokenEx.Message}\n";
+                    Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "GetToken");
                 }
                 else if (ex.InnerException is TaskCanceledException)
                 {
                     // Пользователь закрыл браузер или прервал процесс
-                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: Autorization was canceled.\n";
+                    Logger.ShowMyReportMessageBox("TaskCanceledException", "GoogleSheetsAPI", "GetToken: Autorization was canceled.");
                 }
                 else
                 {
                     // Общая обработка других исключений
-                    Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {ex.Message}\n";
+                    Logger.ShowMyReportMessageBox(ex.Message, "GoogleSheetsAPI", "catch (AggregateException ex)");
                 }
-                Logger.SaveReport("GoogleSheetsAPI.txt");
             }
             catch (Exception ex)
             {
                 // Общая обработка любых других непредвиденных ошибок
-                Logger.Message += $"\nError from GoogleSheetsAPI.cs||GetToken: {ex.Message}\n";
-                Logger.SaveReport("GoogleSheetsAPI.txt");
+                Logger.ShowMyReportMessageBox(ex.Message, "GoogleSheetsAPI", "GetToken");
             }
 
         }

@@ -65,7 +65,7 @@ namespace WSMS.Services
         /// Save text from Message to Reports folder
         /// </summary>
         /// <param name="fileName"></param>
-        public static void SaveReport(string fileName)
+        private static void SaveReport(string fileName)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace WSMS.Services
                 {
                     if (!string.IsNullOrEmpty(Message))
                     {
-                        stream.Write(dateNow + Message);
+                        stream.WriteLine(dateNow + Message);
                     }
                 }
                 Message = string.Empty;
@@ -89,7 +89,7 @@ namespace WSMS.Services
         /// 
         /// </summary>
         /// <param name="exMessage">Exaption message</param>
-        /// <param name="filename">File name to save logs</param>
+        /// <param name="filename">File name to save logs (without extansion)</param>
         /// <param name="myMessage">Message from user</param>
         public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage)
         {
