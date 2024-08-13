@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WSMS.Models;
+using WSMS.Models.Base;
 
 namespace WSMS.Services
 {
@@ -25,17 +26,17 @@ namespace WSMS.Services
             using StreamReader reader = new(messagesFilePath);
             var jsonData = reader.ReadToEnd();
         }
-        public static bool SaveMesage(ExpandMessage message)
+        public static bool SaveMesage(MessageWrapper message)
         {
             try
             {
                 string json = JsonConvert.SerializeObject(message, Formatting.Indented);
-                if (json != null && message.Image != null)
+                if (json != null && message.Message.Image != null)
                 {
                     if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); } // если ошибка из-за фото, убрать фото из класса Message
                     using StreamWriter stream = new($"{FolderPath}\\all messages.json", true);
                     stream.WriteLine(json);
-                    SaveImage(message.Image, message.ImagePath);
+                    SaveImage(message.Message.Image, message.Message.ImagePath);
                     return true;
                 }
                 else { return false; }
@@ -127,7 +128,17 @@ namespace WSMS.Services
                 MessageBox.Show("Please, start the browser first.");
             }
         }
-
+        public static ObservableCollection<CustomersCategoryFull> ChangeIsCheck(ObservableCollection<CustomersCategoryFull> customersCategories, bool flag)
+        {
+            foreach (var mainCategory in customersCategories)
+            {
+                foreach(var category in mainCategory.SubCategories)
+                {
+                    category.IsChecked = flag;
+                }
+            }
+            return customersCategories; 
+        }
         private static Dictionary<string, List<string>> SendMessage(Message message)
         {
             int contactsCount = 0;

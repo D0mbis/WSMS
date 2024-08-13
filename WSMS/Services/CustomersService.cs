@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows;
 using WSMS.Models;
+using WSMS.Models.Base;
 
 namespace WSMS.Services
 {
@@ -15,7 +16,8 @@ namespace WSMS.Services
         public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
-        public static bool LoadAllCustomersInGroups()
+
+        private static bool LoadAllCustomersInGroups()
         {
             try
             {
@@ -131,8 +133,7 @@ namespace WSMS.Services
                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService.txt", "Seve customers data error");
             }
         }
-
-        internal static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)
+        public static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)
         {
             for (int i = 0; i < pullValues.Count; i++)
             {
@@ -144,8 +145,7 @@ namespace WSMS.Services
             }
             return -1;
         }
-
-        internal static IList<object> ConvertToList(Customer customer)
+        public static IList<object> ConvertToList(Customer customer)
         {
             IList<object> result = new List<object>();
             PropertyInfo[] properties = typeof(Customer).GetProperties();
@@ -181,5 +181,83 @@ namespace WSMS.Services
                 Logger.ShowMyReportMessageBox(ex.Message, "CustomerService", "ImportToCSV Error");
             }
         }
+        public static ObservableCollection<CustomersCategoryFull> LoadAllCategories()
+        {
+            ObservableCollection<CustomersCategoryFull> categoriesFullCollection = new();
+            try
+            {
+                string filePath = FolderPath + "\\all categories.json";
+                if (!File.Exists(filePath)) { GoogleSheetsAPI.PulldbCustomers(); }
+                string data;
+                using (StreamReader reader = new(filePath))
+                {
+                    data = reader.ReadToEnd();
+                }
+                if (data != string.Empty)
+                {
+                    var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
+                    foreach (var key in s.Keys)
+                    {
+                        categoriesFullCollection.Add(new CustomersCategoryFull(key, new ObservableCollection<SubCategory>()));
+
+                        foreach (var item in s[key])
+                        {
+                            foreach (var item2 in categoriesFullCollection)
+                            {
+                                if (item2.MainCategory == key)
+                                {
+                                    item2.SubCategories.Add(new SubCategory(item));
+                                }
+                            }
+                        }
+                    }
+                }
+                return categoriesFullCollection;
+            }
+            catch (Exception e)
+            {
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllCategories");
+                return categoriesFullCollection;
+            }
+        }
+        /* public static Dictionary<CustomersCategories, ObservableCollection<CustomersCategories>> LoadAllCategories()
+         {
+             Dictionary<CustomersCategories, ObservableCollection<CustomersCategories>> categories = new();
+             try
+             {
+                 string filePath = FolderPath + "\\all categories.json";
+                 if (!File.Exists(filePath)) { GoogleSheetsAPI.PulldbCustomers(); }
+                 string data;
+                 using (StreamReader reader = new(filePath))
+                 {
+                     data = reader.ReadToEnd();
+                 }
+                 if (data != string.Empty)
+                 {
+                     var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
+                     foreach (var key in s.Keys)
+                     {
+                         categories.Add(new CustomersCategories(key), new ObservableCollection<CustomersCategories>());
+
+                         foreach (var item in s[key])
+                         {
+                             foreach (var item2 in categories.Keys)
+                             {
+                                 if (item2.Name == key)
+                                 {
+                                     categories[item2].Add(new CustomersCategories(item));
+                                 }
+                             }
+                         }
+                     }
+                 }
+                 return categories;
+             }
+             catch (Exception e)
+             {
+                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllCategories");
+                 return categories;
+             }
+         }*/
     }
 }

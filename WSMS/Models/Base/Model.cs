@@ -1,12 +1,17 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WSMS.ViewModels.Base
+namespace WSMS.Models.Base
 {
-    internal abstract class ViewModel : INotifyPropertyChanged
+    public abstract class Model : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -14,7 +19,7 @@ namespace WSMS.ViewModels.Base
 
         protected virtual bool Set<T>(ref T field, T value, [CallerMemberName] string PropertyName = "")
         {
-            if(Equals(field, value)) return false;
+            if (Equals(field, value)) return false;
             field = value;
             OnPropertyChanged(PropertyName);
             return true;

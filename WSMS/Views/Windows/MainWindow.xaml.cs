@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
 using WSMS.Services;
 using WSMS.ViewModels;

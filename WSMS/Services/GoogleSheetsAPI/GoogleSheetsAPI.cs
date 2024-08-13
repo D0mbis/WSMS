@@ -51,6 +51,9 @@ namespace WSMS.Services
                 }
             }
         }
+        /// <summary>
+        /// Pull all customers db from remote Excel and save in "data" folder.
+        /// </summary>
         public static void PulldbCustomers()
         {
             if (GetAccess())

@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
 using WSMS.Services;
-using WSMS.ViewModels.Base;
 using WSMS.Views.Windows;
-using Microsoft.Xaml.Behaviors.Core;
-using System.Windows.Controls;
 using System;
+using WSMS.Models.Base;
+using System.ComponentModel;
+using System.Windows.Data;
+using Microsoft.Xaml.Behaviors.Core;
+using WSMS.Infrastructure.Commands.Base;
 
 namespace WSMS.ViewModels
 {
-    internal class MainWindowViewModel : ViewModel
+    internal class MainWindowViewModel : Model
     {
         #region Title Window
         private string _Title = "WSMS";
@@ -29,29 +29,44 @@ namespace WSMS.ViewModels
         private string driverBtnContent = "Start browser";
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
         #endregion
-        private ExpandMessage message;
-        private string messageText;
-        private BitmapSource image;
-        private List<CustomersGroup> customerGroups;
-        public List<CustomersGroup> CustomerGroups
+        private ObservableCollection<CustomersCategoryFull> customersCategories;
+        public ObservableCollection<CustomersCategoryFull> CustomersCategories
         {
-            get => customerGroups; set => Set(ref customerGroups, value);
-        }
-        public BitmapSource Image
-        {
-            get => image;
-            set => Set(ref image, value);
-        }
-        public ObservableCollection<Message> MessagesCollection { get; set; }
-        public ExpandMessage Message
-        {
-            get => message;
+            get => customersCategories;
             set
             {
-                Set(ref message, value);
+                if (customersCategories != value)
+                {
+
+                    Set(ref customersCategories, value); // (OnPropertyChanged)
+                }
             }
         }
-        public string MessageText
+        private ObservableCollection<MessageWrapper> messages;
+        private MessageWrapper selectedMessage;
+        public MessageWrapper SelectedMessage
+        {
+            get => selectedMessage;
+            set
+            {
+                Set(ref selectedMessage, value);
+            }
+        }
+        private string selectAllButtonContent = "Select all";
+        public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
+
+        ICollectionView messagesView;
+        public ICollectionView MessagesView { get => messagesView; set { Set(ref messagesView, value); } }
+
+        public ObservableCollection<MessageWrapper> Messages
+        {
+            get => messages;
+            set
+            {
+                Set(ref messages, value);
+            }
+        }
+        /*public string MessageText
         {
             get => messageText;
             set
@@ -79,7 +94,7 @@ namespace WSMS.ViewModels
                 }
                 Set(ref messageText, value);
             }
-        }
+        }*/
 
         #region Comands
         #region OpenContactsCommand
@@ -103,12 +118,13 @@ namespace WSMS.ViewModels
 
         private bool CanLoadCustomersCommandExecute(object p)
         {
-            if (CustomerGroups == null) { return true; }
+            if (CustomersCategories == null) { return true; }
             return false;
         }
         private void OnStartLoadCustomersCommandExecuted(object p)
         {
-            CustomerGroups = CustomersService.AllCustomersInGroups;
+            /// Load customers categories in SaveMessageWindow
+           // CustomerGroups = CustomersService.LoadAllCategories();
         }
 
         #endregion
@@ -159,18 +175,40 @@ namespace WSMS.ViewModels
         public ICommand SaveMessageCommand { get; }
         private bool CanSaveMessageCommandExecute(object p)
         {
-            if (message.IsChanged && message.Image != null)
-            {
-                return true;
-            }
+            if (SelectedMessage.IsChanged) return true;
             return false;
         }
         private void OnSaveMessageCommandExecuted(object p)
         {
-            SaveMessageWindow saveMessageWindow = new();
-            saveMessageWindow.Show();
+            if (!SaveMessageWindow.IsOpen)
+            {
+                SaveMessageWindow saveMessageWindow = new();
+                saveMessageWindow.Show();
+            }
+
             /*if (MessageService.SaveMesage(Message))
                 message.IsChanged = false;*/
+        }
+        #endregion
+        #region Select all Command
+
+        public ICommand SelectAllCommand { get; }
+
+        private bool CanSelectAllCommandExecute(object p) => true;
+        private void OnSelectAllCommandExecuted(object p)
+        {
+            bool flag;
+            if (SelectAllButtonContent == "Select all")
+            {
+                flag = true;
+                SelectAllButtonContent = "Unselect all";
+            }
+            else
+            {
+                SelectAllButtonContent = "Select all";
+                flag = false;
+            }
+            CustomersCategories = MessageService.ChangeIsCheck(CustomersCategories, flag);
         }
         #endregion
         #region ImageDrop Command
@@ -185,9 +223,10 @@ namespace WSMS.ViewModels
                     var filePath = files[0];
                     try
                     {
-                        Image = MessageService.GetImage(filePath);
-                        message.Image = Image;
-                        message.ImagePath = filePath;
+                        SelectedMessage.Message.Image = MessageService.GetImage(filePath);
+                        SelectedMessage.Message.ImagePath = filePath;
+                        //CommandManager.InvalidateRequerySuggested();
+                        (SaveMessageCommand as MyActionCommand).RaiseCanExecuteChanged();
                     }
                     catch (Exception ex)
                     {
@@ -200,21 +239,25 @@ namespace WSMS.ViewModels
         #endregion
         public MainWindowViewModel()
         {
-            MessagesCollection = new ObservableCollection<Message>
+            SelectedMessage = new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png")));
+            CustomersCategories = CustomersService.LoadAllCategories();
+            Messages = new ObservableCollection<MessageWrapper>
             {
-                new() { Text = "First message", Image = MessageService.GetImage("D:/Notes/Работа Вова/Discount/39.png") },
-                new () { Text = "Second messageSecond messageSecond messageSecond messageSecond messageSecond message", Image = MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png") }
+                new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png"))),
+                new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/39.png")))
             };
-            Image = MessageService.GetImage("D:/Notes/Работа Вова/Discount/39.png");
-            message = new ExpandMessage();
-            message.OldTextMessage = messageText = message.Text;
-            StartBrowserCommand = new Infrastructure.Commands.Base.ActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
-            StartSendingCommand = new Infrastructure.Commands.Base.ActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
-            CheckDeliveryCommand = new Infrastructure.Commands.Base.ActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
-            LoadCustomersCommand = new Infrastructure.Commands.Base.ActionCommand(OnStartLoadCustomersCommandExecuted, CanLoadCustomersCommandExecute);
-            OpenContactsCommand = new Infrastructure.Commands.Base.ActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
-            SaveMessageCommand = new Infrastructure.Commands.Base.ActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
-            ImageDropCommand = new Infrastructure.Commands.Base.ActionCommand(OnImageDropCommandExecuted);
+            MessagesView = CollectionViewSource.GetDefaultView(Messages); // paste GetMessages()
+                                                                          // messages.OldTextMessage = messageText = messages.Text;
+            StartBrowserCommand = new MyActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
+            StartSendingCommand = new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
+            CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
+            LoadCustomersCommand = new MyActionCommand(OnStartLoadCustomersCommandExecuted, CanLoadCustomersCommandExecute);
+            OpenContactsCommand = new MyActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
+            SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
+            ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);
+            SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted, CanSelectAllCommandExecute);
         }
+
+
     }
 }

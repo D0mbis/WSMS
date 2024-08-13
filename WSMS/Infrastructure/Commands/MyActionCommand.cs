@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Windows.Input;
 
 namespace WSMS.Infrastructure.Commands.Base
 {
-    internal class ActionCommand : Command
+    internal class MyActionCommand : Command
     {
         private readonly Action<object> _Execute;
         private readonly Func<object, bool> _CanExecute;
-
-        public ActionCommand(Action<object> Execute, Func<object, bool> CanExecute = default)
+        public MyActionCommand(Action<object> Execute, Func<object, bool> CanExecute = default)
         {
             _Execute = Execute ?? throw new ArgumentNullException(nameof(Execute));
             _CanExecute = CanExecute;

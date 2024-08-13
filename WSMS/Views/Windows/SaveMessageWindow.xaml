@@ -1,35 +1,70 @@
 ﻿<Window x:Class="WSMS.Views.Windows.SaveMessageWindow"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WSMS.Views.Windows"
-        xmlns:vm="clr-namespace:WSMS.ViewModels"
+        xmlns:s="clr-namespace:WSMS.Services"
+        xmlns:vm="clr-namespace:WSMS.ViewModels" 
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-    Title="New Message" Height="200" Width="400">
+        Closing="Window_Closing"
+    Title="New Message" Height="600" Width="330">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
         <TextBlock Text="Enter the name for the new message:" 
-                   VerticalAlignment="Top" HorizontalAlignment="Center" 
-                   Margin="10" FontSize="16"/>
+                   Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14 "/>
 
-        <TextBox Name="MessageNameTextBox" Text="{Binding Message.Name, UpdateSourceTrigger=PropertyChanged}"
-                 VerticalAlignment="Center" HorizontalAlignment="Center" 
-                 Width="300" Height="30" FontSize="25" Margin="2" Grid.Row="0"/>
+        <TextBox Name="MessageNameTextBox" Text="{Binding Message.Name}"
+                 Grid.Row="0"  HorizontalAlignment="Stretch" Margin="5,15,5,0"
+                 Height="30" FontSize="25" TextAlignment="Center" VerticalContentAlignment="Center"/>
 
-        <Button Content="OK" 
-                Width="100" Height="30" 
-                VerticalAlignment="Center" HorizontalAlignment="Center" 
-                Margin="10" Grid.Row="2" />
+        <Button Content="OK" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                Grid.Row="1" Grid.Column="0" Margin="5,0,5,1"
+                Command="{Binding SelectAllCommand}" />
+
+        <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5,1,5,1" Height="450">
+            <Button Content="{Binding SelectAllButtonContent}" Command="{Binding SelectAllCommand}" CommandParameter="{Binding}"
+                    Style="{StaticResource ResourceKey=LinkButtonStyle}" FontSize="16" VerticalAlignment="Top" />
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
+                <ItemsControl ItemsSource="{Binding CustomersCategories}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate >
+                            <Expander IsExpanded="False">
+                                <Expander.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Width="Auto">
+                                            <CheckBox Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Name="chk"
+                                                      IsChecked="{Binding Path=DataContext.IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}},Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      Content="{Binding Path=DataContext.MainCategory, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}}">
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </Expander.HeaderTemplate>
+                                <ItemsControl ItemsSource="{Binding SubCategories}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
+                                                <CheckBox Content="{Binding Name}" 
+                                                          IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Margin="5"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

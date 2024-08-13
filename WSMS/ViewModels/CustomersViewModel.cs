@@ -5,11 +5,11 @@ using System.Windows.Data;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
+using WSMS.Models.Base;
 using WSMS.Services;
-using WSMS.ViewModels.Base;
 namespace WSMS.ViewModels
 {
-    internal class CustomersViewModel : ViewModel
+    internal class CustomersViewModel : Model
     {
         private ObservableCollection<Customer> customers;
         private string searchText;
@@ -104,10 +104,10 @@ namespace WSMS.ViewModels
         public CustomersViewModel()
         {
             CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
-            PullCustomersFromRemote = new ActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
-            AddNewCredentials = new ActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
-            PushValuesToRemoteExcel = new ActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
-            ImportToCsv = new ActionCommand(OnImportToCsvExecuted, CanImportToCsvExecute);
+            PullCustomersFromRemote = new MyActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
+            AddNewCredentials = new MyActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
+            PushValuesToRemoteExcel = new MyActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
+            ImportToCsv = new MyActionCommand(OnImportToCsvExecuted, CanImportToCsvExecute);
         }
 
         private void ApplyFilter()
