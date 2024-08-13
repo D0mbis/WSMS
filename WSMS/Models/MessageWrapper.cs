@@ -67,12 +67,12 @@ namespace WSMS.Models
             }
         }
 
-        public MessageWrapper(Message message, string oldTextMessage = default, string newTextMessage = default, bool isChanged = false)
+        public MessageWrapper(Message message)
         {
             Message = message;
-            OldTextMessage = Message.Text;
-            OldImagePath = "D:\\Notes\\Работа Вова\\Discount\\35.png";//Message.ImagePath;
-            IsChanged = isChanged;
+            OldTextMessage = message.Text;
+            OldImagePath = message.ImagePath;
+            IsChanged = false;
         }
 
         private void Message_PropertyChanged(object sender, PropertyChangedEventArgs e)

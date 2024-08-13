@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Globalization;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using WSMS.Models.Base;
 using WSMS.Services;
@@ -7,8 +10,8 @@ namespace WSMS.Models
 {
     public class Message : Model
     {
-        public string? Name { get; set; }
-        private string? text = "Start test value";
+        public string? Name { get; set; } = string.Empty;
+        private string? text = string.Empty;
         public string? Text
         {
             get => text;
@@ -17,16 +20,16 @@ namespace WSMS.Models
                 Set(ref text, value);
             }
         }
-        private string? imagePath;
+        private string? imagePath = string.Empty;
         public string? ImagePath
         {
             get => imagePath;
             set => Set(ref imagePath, value);
         }
-        private BitmapSource? image;
+        private BitmapSource? image = default;
         public BitmapSource? Image
         {
-            get => image;
+            get => image ?? new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
             set
             {
                 Set(ref image, value);
@@ -34,15 +37,5 @@ namespace WSMS.Models
         }
         [JsonIgnore]
         public string[]? Categories { get; set; }
-
-        public Message() { }
-        public Message(BitmapSource image, string name = default, string messageText = default, string imagePath = default, string[] categories = default)
-        {
-            Image = image;
-            Name = name;
-            Text = messageText ?? string.Empty;
-            ImagePath = imagePath ?? string.Empty;
-            Categories = categories;
-        }
     }
 }

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+    <Page Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="data\messages\placeholder.png" />
     <None Remove="Services\GoogleSheetsAPI\credentials.json" />
   </ItemGroup>
 
@@ -22,6 +30,10 @@
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.68.0.3421" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
     <PackageReference Include="Selenium.Support" Version="4.14.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="data\messages\placeholder.png" />
   </ItemGroup>
 
   <ItemGroup>

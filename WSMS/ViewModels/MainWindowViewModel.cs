@@ -239,12 +239,12 @@ namespace WSMS.ViewModels
         #endregion
         public MainWindowViewModel()
         {
-            SelectedMessage = new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png")));
+            SelectedMessage = new MessageWrapper(new Message());
             CustomersCategories = CustomersService.LoadAllCategories();
             Messages = new ObservableCollection<MessageWrapper>
             {
-                new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/35.png"))),
-                new MessageWrapper(new Message(MessageService.GetImage("D:/Notes/Работа Вова/Discount/39.png")))
+                new MessageWrapper(new Message()),
+                new MessageWrapper(new Message())
             };
             MessagesView = CollectionViewSource.GetDefaultView(Messages); // paste GetMessages()
                                                                           // messages.OldTextMessage = messageText = messages.Text;

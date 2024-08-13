@@ -59,5 +59,12 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style TargetType="Image" x:Key="ImageDefaultStyle">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding SelectedMessage.Message.Image}" Value="{x:Null}">
+                <Setter Property="Source" Value="{StaticResource PlaceholderImage}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
 
 </ResourceDictionary>
