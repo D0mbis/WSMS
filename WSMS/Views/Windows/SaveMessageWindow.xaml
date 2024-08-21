@@ -9,11 +9,7 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels" 
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Closing="Window_Closing"
     Title="New Message" Height="600" Width="330">
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />
@@ -24,13 +20,13 @@
         <TextBlock Text="Enter the name for the new message:" 
                    Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14 "/>
 
-        <TextBox Name="MessageNameTextBox" Text="{Binding Message.Name}"
+        <TextBox Name="MessageNameTextBox" Text="{Binding Message.Message.Name, UpdateSourceTrigger=PropertyChanged}"
                  Grid.Row="0"  HorizontalAlignment="Stretch" Margin="5,15,5,0"
                  Height="30" FontSize="25" TextAlignment="Center" VerticalContentAlignment="Center"/>
 
         <Button Content="OK" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
                 Grid.Row="1" Grid.Column="0" Margin="5,0,5,1"
-                Command="{Binding SelectAllCommand}" />
+                Command="{Binding SaveMessageCommand}" />
 
         <Grid Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5,1,5,1" Height="450">
             <Button Content="{Binding SelectAllButtonContent}" Command="{Binding SelectAllCommand}" CommandParameter="{Binding}"

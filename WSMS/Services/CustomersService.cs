@@ -130,7 +130,7 @@ namespace WSMS.Services
             }
             catch (Exception e)
             {
-                Logger.ShowMyReportMessageBox(e.Message, "CustomersService.txt", "Seve customers data error");
+                Logger.ShowMyReportMessageBox(e.Message,"CustomersService", "Seve customers data error");
             }
         }
         public static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)

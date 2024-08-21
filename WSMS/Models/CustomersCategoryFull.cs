@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using WSMS.Models.Base;
@@ -7,9 +8,11 @@ namespace WSMS.Models
 {
     public class CustomersCategoryFull : Model
     {
+        [JsonProperty(Order = 1)]
+        public string MainCategory { get; set; }
         private ObservableCollection<SubCategory> subCategories;
         private bool isChecked;
-        public string MainCategory { get; set; }
+        [JsonProperty(Order = 2)]
         public ObservableCollection<SubCategory> SubCategories
         {
             get => subCategories;
@@ -32,6 +35,7 @@ namespace WSMS.Models
                 }
             }
         }
+        [JsonIgnore]
         public bool IsChecked
         {
             get => isChecked;

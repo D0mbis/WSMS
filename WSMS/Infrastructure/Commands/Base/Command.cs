@@ -18,7 +18,7 @@ namespace WSMS.Infrastructure.Commands.Base
         public abstract bool CanExecute(object? parameter);
 
         public abstract void Execute(object? parameter);
-        public void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
+        public virtual void RaiseCanExecuteChanged() => CommandManager.InvalidateRequerySuggested();
         
     }
 }

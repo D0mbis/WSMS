@@ -9,7 +9,7 @@ using WSMS.Models.Base;
 using WSMS.Services;
 namespace WSMS.ViewModels
 {
-    internal class CustomersViewModel : Model
+    public class CustomersViewModel : Model
     {
         private ObservableCollection<Customer> customers;
         private string searchText;

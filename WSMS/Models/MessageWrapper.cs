@@ -11,38 +11,6 @@ namespace WSMS.Models
         [JsonIgnore]
         public string? OldImagePath { get; set; } = string.Empty;
         [JsonIgnore]
-        /* private string? newTextMessage;*/
-        /* public string? NewTextMessage
-         {
-
-             get => newTextMessage;
-             set
-             {
-                 if (value == string.Empty)
-                 {
-                     IsChanged = false;
-                 }
-                 else if (newTextMessage == string.Empty)
-                 {
-                     newTextMessage = value;
-                     if (newTextMessage != value)
-                     {
-                         IsChanged = true;
-                     }
-                 }
-                 else if (OldTextMessage != value)
-                 {
-                     IsChanged = true;
-                     newTextMessage = value;
-                 }
-                 else
-                 {
-                     IsChanged = false;
-                 }
-                 Set(ref newTextMessage, value);
-             }
-         }*/
-
         public bool IsChanged { get; set; }
         private Message message;
         public Message Message
@@ -61,8 +29,10 @@ namespace WSMS.Models
                 {
                     message.PropertyChanged += Message_PropertyChanged;
                 }
-
-                OldTextMessage = message.Text; // Инициализация OldTextMessage при установке Message
+                if (OldTextMessage == null)
+                {
+                    OldTextMessage = message?.Text;
+                }
                 Set(ref message, value);
             }
         }

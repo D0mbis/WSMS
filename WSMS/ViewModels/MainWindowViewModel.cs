@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using WSMS.Models;
 using WSMS.Services;
 using WSMS.Views.Windows;
@@ -9,13 +8,14 @@ using System;
 using WSMS.Models.Base;
 using System.ComponentModel;
 using System.Windows.Data;
-using Microsoft.Xaml.Behaviors.Core;
 using WSMS.Infrastructure.Commands.Base;
+using System.Linq;
 
 namespace WSMS.ViewModels
 {
     internal class MainWindowViewModel : Model
     {
+        private readonly VMUpdateService vmUpdateService;
         #region Title Window
         private string _Title = "WSMS";
         /// <summary Header MainWindow </summary>
@@ -38,7 +38,7 @@ namespace WSMS.ViewModels
                 if (customersCategories != value)
                 {
 
-                    Set(ref customersCategories, value); // (OnPropertyChanged)
+                    Set(ref customersCategories, value);
                 }
             }
         }
@@ -52,11 +52,15 @@ namespace WSMS.ViewModels
                 Set(ref selectedMessage, value);
             }
         }
-        private string selectAllButtonContent = "Select all";
-        public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
 
         ICollectionView messagesView;
-        public ICollectionView MessagesView { get => messagesView; set { Set(ref messagesView, value); } }
+        public ICollectionView MessagesView
+        {
+            get => messagesView; set
+            {
+                Set(ref messagesView, value);
+            }
+        }
 
         public ObservableCollection<MessageWrapper> Messages
         {
@@ -66,35 +70,6 @@ namespace WSMS.ViewModels
                 Set(ref messages, value);
             }
         }
-        /*public string MessageText
-        {
-            get => messageText;
-            set
-            {
-                if (value == string.Empty)
-                {
-                    message.IsChanged = false;
-                }
-                else if (messageText == string.Empty)
-                {
-                    message.Text = value;
-                    if (message.OldTextMessage != value)
-                    {
-                        message.IsChanged = true;
-                    }
-                }
-                else if (message.OldTextMessage != value)
-                {
-                    message.IsChanged = true;
-                    message.Text = value;
-                }
-                else
-                {
-                    message.IsChanged = false;
-                }
-                Set(ref messageText, value);
-            }
-        }*/
 
         #region Comands
         #region OpenContactsCommand
@@ -171,46 +146,41 @@ namespace WSMS.ViewModels
             // Contacts = string.Join("\n", WebService.GetNotDeliveredContacts(contacts, IdentifierText));
         }
         #endregion
-        #region SaveMessage Command
-        public ICommand SaveMessageCommand { get; }
-        private bool CanSaveMessageCommandExecute(object p)
+        #region OpenSaveMessageWindow Command
+        public ICommand OpenSaveMessageWindowCommand { get; }
+        private bool CanOpenSaveMessageWindowExecute(object p)
         {
-            if (SelectedMessage.IsChanged) return true;
+            var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
+            if (SelectedMessage != null)
+            {
+                if (SelectedMessage.IsChanged || window == null) { return true; }
+            }
             return false;
         }
-        private void OnSaveMessageCommandExecuted(object p)
+        private void OnOpenSaveMessageWindowExecuted(object p)
         {
-            if (!SaveMessageWindow.IsOpen)
-            {
-                SaveMessageWindow saveMessageWindow = new();
-                saveMessageWindow.Show();
-            }
-
-            /*if (MessageService.SaveMesage(Message))
-                message.IsChanged = false;*/
+            var saveMessageWindow = new SaveMessageWindow(SelectedMessage, vmUpdateService);
+            saveMessageWindow.Show();
+            //  SelectedMessage = new MessageWrapper(new Message()); // unnecessary?
         }
         #endregion
-        #region Select all Command
-
-        public ICommand SelectAllCommand { get; }
-
-        private bool CanSelectAllCommandExecute(object p) => true;
-        private void OnSelectAllCommandExecuted(object p)
+        #region DeleteMessage Command
+        public ICommand DeleteMessageCommand { get; }
+        private bool CanDeleteMessageCommandExecute(object p)
         {
-            bool flag;
-            if (SelectAllButtonContent == "Select all")
+            if (SelectedMessage != null)
             {
-                flag = true;
-                SelectAllButtonContent = "Unselect all";
+                if (SelectedMessage.Message.Name != string.Empty) return true;
             }
-            else
-            {
-                SelectAllButtonContent = "Select all";
-                flag = false;
-            }
-            CustomersCategories = MessageService.ChangeIsCheck(CustomersCategories, flag);
+            return false;
+        }
+        private void OnDeleteMessageCommandExecuted(object p)
+        {
+            MessageService.UpdateMessages(SelectedMessage, true);
+            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
         }
         #endregion
+
         #region ImageDrop Command
         public ICommand ImageDropCommand { get; }
         private void OnImageDropCommandExecuted(object p)
@@ -226,7 +196,7 @@ namespace WSMS.ViewModels
                         SelectedMessage.Message.Image = MessageService.GetImage(filePath);
                         SelectedMessage.Message.ImagePath = filePath;
                         //CommandManager.InvalidateRequerySuggested();
-                        (SaveMessageCommand as MyActionCommand).RaiseCanExecuteChanged();
+                        (OpenSaveMessageWindowCommand as MyActionCommand).RaiseCanExecuteChanged();
                     }
                     catch (Exception ex)
                     {
@@ -237,27 +207,26 @@ namespace WSMS.ViewModels
         }
         #endregion
         #endregion
+
         public MainWindowViewModel()
         {
+            vmUpdateService = new VMUpdateService();
+            vmUpdateService.DataUpdated += OnUpdateData;
             SelectedMessage = new MessageWrapper(new Message());
-            CustomersCategories = CustomersService.LoadAllCategories();
-            Messages = new ObservableCollection<MessageWrapper>
-            {
-                new MessageWrapper(new Message()),
-                new MessageWrapper(new Message())
-            };
-            MessagesView = CollectionViewSource.GetDefaultView(Messages); // paste GetMessages()
-                                                                          // messages.OldTextMessage = messageText = messages.Text;
+            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
             StartBrowserCommand = new MyActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
             StartSendingCommand = new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
-            LoadCustomersCommand = new MyActionCommand(OnStartLoadCustomersCommandExecuted, CanLoadCustomersCommandExecute);
             OpenContactsCommand = new MyActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
-            SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
+            OpenSaveMessageWindowCommand = new MyActionCommand(OnOpenSaveMessageWindowExecuted, CanOpenSaveMessageWindowExecute);
+            DeleteMessageCommand = new MyActionCommand(OnDeleteMessageCommandExecuted, CanDeleteMessageCommandExecute);
             ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);
-            SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted, CanSelectAllCommandExecute);
         }
 
-
+        private void OnUpdateData()
+        {
+            SelectedMessage = new MessageWrapper(new Message());
+            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+        }
     }
 }

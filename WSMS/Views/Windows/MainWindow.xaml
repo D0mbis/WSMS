@@ -117,11 +117,11 @@
                     <TextBox Grid.Column="0" Grid.Row="2" Height="Auto" Width="Auto"
                                TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
                                Text="{Binding SelectedMessage.Message.Text, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
-                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2" Content="Save" Command="{Binding SaveMessageCommand}"/>
-                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="2" Content="Delete"/>
+                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2" Content="Save" Command="{Binding OpenSaveMessageWindowCommand}"/>
+                    <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="2" Content="Delete" Command="{Binding DeleteMessageCommand}"/>
                     <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
                                  BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
-                                 ItemsSource="{Binding MessagesView}" SelectedItem="{Binding SelectedMessage}">
+                                 ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
@@ -131,7 +131,7 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <Image Source="{ Binding Message.Image}" Height="120" Width="90" HorizontalAlignment="Center" Margin="3"/>
-                                        <TextBlock Text="{Binding Message.Text}" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
+                                        <TextBlock Text="{Binding Message.Name}" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
                                                    FontSize="18"/>
                                     </Grid>
                                 </StackPanel>

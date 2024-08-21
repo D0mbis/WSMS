@@ -3,6 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using WSMS.Models;
+using WSMS.Services;
+using WSMS.ViewModels;
 
 namespace WSMS.Views.Windows
 {
@@ -11,16 +13,16 @@ namespace WSMS.Views.Windows
     /// </summary>
     public partial class SaveMessageWindow : Window
     {
-        public static bool IsOpen = false;
-        public SaveMessageWindow()
+        public static bool IsOpened;
+        public SaveMessageWindow(MessageWrapper message, VMUpdateService vMUpdateService)
         {
             InitializeComponent();
-            IsOpen = true;
+            
+            var saveMessageViewModel = new SaveMessageViewModel(message, vMUpdateService);
+            this.DataContext = saveMessageViewModel;
         }
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            IsOpen = false;
-        }
+
+        
 
         /// If need to add unselected Message
         /*private void MainWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)

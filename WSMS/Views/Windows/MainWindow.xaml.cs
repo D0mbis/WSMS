@@ -6,6 +6,7 @@ using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
 using WSMS.Services;
 using WSMS.ViewModels;
+using WSMS.Views.Windows;
 
 namespace WSMS
 {
@@ -18,7 +19,6 @@ namespace WSMS
         public MainWindow()
         {
             InitializeComponent();
-            MessageService.LoadMessages();
             //GoogleSheetsAPI.PulldbCustomers();
             //CustomersService.AllCustomers;
 

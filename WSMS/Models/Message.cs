@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
@@ -27,15 +28,16 @@ namespace WSMS.Models
             set => Set(ref imagePath, value);
         }
         private BitmapSource? image = default;
+        [JsonIgnore]
         public BitmapSource? Image
         {
             get => image ?? new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
             set
             {
+                ImagePath = value?.ToString();
                 Set(ref image, value);
             }
         }
-        [JsonIgnore]
-        public string[]? Categories { get; set; }
+        public ObservableCollection<CustomersCategoryFull>? Categories { get; set; }
     }
 }

@@ -93,7 +93,7 @@ namespace WSMS.Services
         /// <param name="myMessage">Message from user</param>
         public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage)
         {
-            Message += $"\nError from CustomersService.cs: {exMessage}\n";
+            Message += $"\nError message: {exMessage}\n";
             SaveReport($"{filename}.txt");
             var result = MessageBox.Show($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
                 MessageBoxButton.YesNo,

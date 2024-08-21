@@ -19,27 +19,88 @@ namespace WSMS.Services
             3. Test previous start button wich checking all selectors paths*
         */
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data\\messages";
-        public static void LoadMessages()
-        {
-            string messagesFilePath = FolderPath + "\\all messages.json";
-            if (!File.Exists(messagesFilePath)) { using FileStream stream = new(messagesFilePath, FileMode.Create); }
-            using StreamReader reader = new(messagesFilePath);
-            var jsonData = reader.ReadToEnd();
-        }
-        public static bool SaveMesage(MessageWrapper message)
+        public static ObservableCollection<MessageWrapper> LoadMessages()
         {
             try
             {
-                string json = JsonConvert.SerializeObject(message, Formatting.Indented);
-                if (json != null && message.Message.Image != null)
+                if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+                string messagesFilePath = FolderPath + "\\all messages.json";
+                if (!File.Exists(messagesFilePath))
                 {
-                    if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); } // если ошибка из-за фото, убрать фото из класса Message
-                    using StreamWriter stream = new($"{FolderPath}\\all messages.json", true);
-                    stream.WriteLine(json);
-                    SaveImage(message.Message.Image, message.Message.ImagePath);
-                    return true;
+                    using FileStream stream = new(messagesFilePath, FileMode.Create);
+                    return new ObservableCollection<MessageWrapper>() { new MessageWrapper(new Message()) };
                 }
-                else { return false; }
+                else
+                {
+                    string jsonData = string.Empty;
+                    using (StreamReader reader = new(messagesFilePath))
+                    {
+                        jsonData = reader.ReadToEnd();
+                    }
+                    // ObservableCollection<MessageWrapper>[] temp = Array.Empty<ObservableCollection<MessageWrapper>>();
+                    var temp = JsonConvert.DeserializeObject<ObservableCollection<MessageWrapper>>(jsonData);
+                    foreach (var item in temp)
+                    {
+                        item.Message.Image = GetImage(item.Message.ImagePath.ToString());
+                    }
+                    return temp;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "LoadMessages error.");
+                return new ObservableCollection<MessageWrapper>() { new MessageWrapper(new Message()) };
+            }
+        }
+        public static ObservableCollection<CustomersCategoryFull> RemoveUnselectedCategories(ObservableCollection<CustomersCategoryFull> categories)
+        {
+            var sortedCategories = categories
+                        .OrderBy(c => c.MainCategory).Where(c => c.IsChecked);
+            var finaly = new ObservableCollection<CustomersCategoryFull>();
+            foreach (var fullCategory in sortedCategories)
+            {
+                var temp = fullCategory.SubCategories.OrderBy(c => c.Name).Where(c => c.IsChecked);
+                finaly.Add(new CustomersCategoryFull(fullCategory.MainCategory, new ObservableCollection<SubCategory>(temp)));
+            }
+            return finaly;
+        }
+        /// <summary>
+        /// True = delete selected message
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="delete"></param>
+        /// <returns></returns>
+        public static bool UpdateMessages(MessageWrapper message, bool delete = false)
+        {
+            try
+            {
+                var allMessages = LoadMessages();
+                for (int i = 0; i < allMessages.Count; i++)
+                {
+                    if (allMessages[i].Message.Name == message.Message.Name)
+                    {
+                        if (delete)
+                        {
+                            allMessages.Remove(allMessages[i]);
+                        }
+                        else
+                        {
+                            allMessages[i] = message;
+                        }
+                        break;
+                    }
+                    else if (i == allMessages.Count - 1)
+                    {
+                        allMessages.Add(message);
+                    }
+                }
+                message.Message.ImagePath = SaveImage(message.Message.Image);
+                string json = JsonConvert.SerializeObject(allMessages, Formatting.Indented);
+
+                if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+                using StreamWriter stream = new($"{FolderPath}\\all messages.json", false);
+                stream.Write(json);
+                return true;
             }
             catch (Exception ex)
             {
@@ -48,11 +109,12 @@ namespace WSMS.Services
             }
         }
 
-        private static void SaveImage(BitmapSource bitmap, string filePath)
+        private static string SaveImage(BitmapSource bitmap)
         {
             BitmapEncoder encoder;
+            string filePath = bitmap.ToString();
             // Select encoder based on file extension
-            string extension = Path.GetExtension(filePath).ToLower();
+            string extension = Path.GetExtension(filePath.ToLower());
             switch (extension)
             {
                 case ".png":
@@ -67,7 +129,7 @@ namespace WSMS.Services
                     break;
                 default:
                     MessageBox.Show("Unsupported file format");
-                    return;
+                    return string.Empty;
             }
 
             encoder.Frames.Add(BitmapFrame.Create(bitmap));
@@ -77,27 +139,35 @@ namespace WSMS.Services
             {
                 string imageFolderPath = FolderPath + "\\images";
                 if (!Directory.Exists(imageFolderPath)) { Directory.CreateDirectory(imageFolderPath); }
-                string fileName = filePath.Substring(filePath.LastIndexOf("\\"));
-                using (var fileStream = new FileStream(imageFolderPath + fileName, FileMode.Create))
-                {
-                    encoder.Save(fileStream);
-                }
+                string fileName = filePath.Substring(filePath.LastIndexOf("/"));
+                string newImagePath = imageFolderPath + fileName;
+                if (!File.Exists(newImagePath))
+                    using (var fileStream = new FileStream(newImagePath, FileMode.Create))
+                    {
+                        encoder.Save(fileStream);
+                    }
                 MessageBox.Show($"Message saved to {FolderPath}");
+                return newImagePath;
             }
             catch (Exception ex)
             {
                 Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "SaveImage");
+                return string.Empty;
             }
         }
 
         public static BitmapSource GetImage(string url)
         {
-            BitmapImage bi = new();
-            bi.BeginInit();
-            bi.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
-            bi.EndInit();
-            //Message.Image = bi;
-            return bi;
+            if (url != string.Empty)
+            {
+                BitmapImage bi = new();
+                bi.BeginInit();
+                bi.UriSource = new Uri(url, UriKind.RelativeOrAbsolute);
+                bi.EndInit();
+                //Message.Image = bi;
+                return bi;
+            }
+            return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
 
         public static void StartSending(Message message)
@@ -132,12 +202,12 @@ namespace WSMS.Services
         {
             foreach (var mainCategory in customersCategories)
             {
-                foreach(var category in mainCategory.SubCategories)
+                foreach (var category in mainCategory.SubCategories)
                 {
                     category.IsChecked = flag;
                 }
             }
-            return customersCategories; 
+            return customersCategories;
         }
         private static Dictionary<string, List<string>> SendMessage(Message message)
         {
@@ -160,8 +230,6 @@ namespace WSMS.Services
             }
             return outputD;
         }
-
-
     }
 }
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
 using System.Xml.Linq;
 using WSMS.Models.Base;
 
@@ -14,7 +14,7 @@ namespace WSMS.Models
     public class SubCategory : Model
     {
         public string Name { get; set; }
-        [JsonIgnore]
+        
         private bool isChecked;
         //private string name;
 
