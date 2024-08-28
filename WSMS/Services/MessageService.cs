@@ -15,7 +15,6 @@ namespace WSMS.Services
     {
         /* TODO:
             1. Interactive progress sending
-            2. upgrade Errors message (like hide "time out waitings")
             3. Test previous start button wich checking all selectors paths*
         */
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data\\messages";
@@ -39,17 +38,18 @@ namespace WSMS.Services
                     }
                     // ObservableCollection<MessageWrapper>[] temp = Array.Empty<ObservableCollection<MessageWrapper>>();
                     var temp = JsonConvert.DeserializeObject<ObservableCollection<MessageWrapper>>(jsonData);
-                    foreach (var item in temp)
-                    {
-                        item.Message.Image = GetImage(item.Message.ImagePath.ToString());
-                    }
-                    return temp;
+                    if (temp != null)
+                        foreach (var item in temp)
+                        {
+                            item.Message.Image = GetImage(item.Message.ImagePath);
+                        }
+                    return temp ?? new ObservableCollection<MessageWrapper>() { new(new Message()) };
                 }
             }
             catch (Exception ex)
             {
                 Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "LoadMessages error.");
-                return new ObservableCollection<MessageWrapper>() { new MessageWrapper(new Message()) };
+                return new ObservableCollection<MessageWrapper>() { new(new Message()) };
             }
         }
         public static ObservableCollection<CustomersCategoryFull> RemoveUnselectedCategories(ObservableCollection<CustomersCategoryFull> categories)
@@ -75,26 +75,40 @@ namespace WSMS.Services
             try
             {
                 var allMessages = LoadMessages();
-                for (int i = 0; i < allMessages.Count; i++)
+                if (allMessages.Count == 1 && allMessages[0].Message.Name == string.Empty)
                 {
-                    if (allMessages[i].Message.Name == message.Message.Name)
+                    allMessages[0] = message;
+                }
+                else
+                {
+                    for (int i = 0; i < allMessages.Count; i++)
                     {
-                        if (delete)
+                        if (allMessages[i].Message.Name == message.Message.Name)
                         {
-                            allMessages.Remove(allMessages[i]);
+                            if (delete)
+                            {
+                                allMessages.Remove(allMessages[i]);
+                                if (allMessages.Count == 0)
+                                {
+                                    allMessages.Add(new MessageWrapper(new Message()));
+                                }
+                            }
+                            else
+                            {
+                                allMessages[i] = message;
+                            }
+                            break;
                         }
-                        else
+                        else if (i == allMessages.Count - 1)
                         {
-                            allMessages[i] = message;
+                            allMessages.Add(message);
                         }
-                        break;
-                    }
-                    else if (i == allMessages.Count - 1)
-                    {
-                        allMessages.Add(message);
                     }
                 }
-                message.Message.ImagePath = SaveImage(message.Message.Image);
+                if (!delete)
+                {
+                    message.Message.ImagePath = SaveImage(message.Message.Image);
+                }
                 string json = JsonConvert.SerializeObject(allMessages, Formatting.Indented);
 
                 if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
@@ -140,7 +154,8 @@ namespace WSMS.Services
                 string imageFolderPath = FolderPath + "\\images";
                 if (!Directory.Exists(imageFolderPath)) { Directory.CreateDirectory(imageFolderPath); }
                 string fileName = filePath.Substring(filePath.LastIndexOf("/"));
-                string newImagePath = imageFolderPath + fileName;
+                fileName = (fileName[0] == '/') ? fileName.Remove(0, 1) : fileName;
+                string newImagePath = imageFolderPath + "\\" + fileName;
                 if (!File.Exists(newImagePath))
                     using (var fileStream = new FileStream(newImagePath, FileMode.Create))
                     {
@@ -191,7 +206,7 @@ namespace WSMS.Services
                 }
                 //logs
                 resultSending["Message Text"] = message.Text.Split("\n").ToList();
-                Logger.SaveSendingLogs(resultSending);
+                // Logger.SaveSendingLogs(resultSending);
             }
             else
             {

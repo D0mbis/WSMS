@@ -153,7 +153,7 @@ namespace WSMS.ViewModels
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
             if (SelectedMessage != null)
             {
-                if (SelectedMessage.IsChanged || window == null) { return true; }
+                if (SelectedMessage.IsChanged || window != null) { return true; }
             }
             return false;
         }
@@ -178,6 +178,7 @@ namespace WSMS.ViewModels
         {
             MessageService.UpdateMessages(SelectedMessage, true);
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            SelectedMessage = new MessageWrapper(new Message());
         }
         #endregion
 
@@ -225,8 +226,8 @@ namespace WSMS.ViewModels
 
         private void OnUpdateData()
         {
-            SelectedMessage = new MessageWrapper(new Message());
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            SelectedMessage = new MessageWrapper(new Message());
         }
     }
 }

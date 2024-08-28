@@ -34,7 +34,7 @@ namespace WSMS.Models
             get => image ?? new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
             set
             {
-                ImagePath = value?.ToString();
+                //ImagePath = value?.ToString();
                 Set(ref image, value);
             }
         }
