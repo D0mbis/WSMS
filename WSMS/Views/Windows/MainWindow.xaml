@@ -16,6 +16,11 @@
         <KeyBinding Modifiers="Shift" Key="Esc" Command="{Binding CloseApplicationCommand}"/>
         <!-- Fix it!!!! -->
     </Window.InputBindings>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding CloseApplicationCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <DockPanel >
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -92,7 +97,7 @@
                         </ListView.ItemTemplate>
                     </ListView>
 
-                    <Button Grid.Column="2" Content="Button" Command="{Binding LoadCustomersCommand}"
+                    <Button Grid.Column="2" Content="Button" Command="{Binding CloseApplicationCommand}"
                             HorizontalAlignment="Center"  VerticalAlignment="Top"/>
                 </Grid>
 
@@ -108,10 +113,8 @@
                         <RowDefinition Height="360"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Border BorderBrush="Black" BorderThickness="1" Margin="10" CornerRadius="5">
-                        <Label x:Name="DropLabel" Content="{Binding SelectedMessage.Message.Image}" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0"></Label>
-                    </Border>
-                    <Image x:Name="ImageBlock" VerticalAlignment="Top"  Height="400" Width="420" Margin="3"  Grid.Column="0" Grid.Row="1" 
+                    <Image x:Name="ImageBlock" VerticalAlignment="Top"  Height="400" Width="420" Margin="3"  
+                             Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                              Source="{Binding SelectedMessage.Message.Image, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource ImageDefaultStyle}" AllowDrop="True" Drop="Image_Drop"/>
                     <TextBox Grid.Column="0" Grid.Row="2" Height="Auto" Width="Auto"

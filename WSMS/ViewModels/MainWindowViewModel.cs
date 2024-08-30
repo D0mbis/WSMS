@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Windows.Data;
 using WSMS.Infrastructure.Commands.Base;
 using System.Linq;
+using WSMS.Infrastructure.Other;
 
 namespace WSMS.ViewModels
 {
@@ -84,24 +85,17 @@ namespace WSMS.ViewModels
 
         private void OnOpenContactsCommandExecuted(object p)
         {
-            CustomersWindow customersWindow = new();
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsVisible);
+            CustomersWindow customersWindow = new()
+            {
+                Left = mainWindow.Left - mainWindow.Width / 2,
+                Top = mainWindow.Top + 50
+            };
             customersWindow.Show();
         }
         #endregion
         #region LoadCustomersCommand
         public ICommand LoadCustomersCommand { get; }
-
-        private bool CanLoadCustomersCommandExecute(object p)
-        {
-            if (CustomersCategories == null) { return true; }
-            return false;
-        }
-        private void OnStartLoadCustomersCommandExecuted(object p)
-        {
-            /// Load customers categories in SaveMessageWindow
-           // CustomerGroups = CustomersService.LoadAllCategories();
-        }
-
         #endregion
         #region Start/Close browser Comand
         public ICommand StartBrowserCommand { get; }
@@ -153,13 +147,19 @@ namespace WSMS.ViewModels
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
             if (SelectedMessage != null)
             {
-                if (SelectedMessage.IsChanged || window != null) { return true; }
+                if (SelectedMessage.IsChanged && window == null) { return true; }
             }
             return false;
         }
         private void OnOpenSaveMessageWindowExecuted(object p)
         {
-            var saveMessageWindow = new SaveMessageWindow(SelectedMessage, vmUpdateService);
+            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsVisible);
+            var saveMessageWindow = new SaveMessageWindow(SelectedMessage, vmUpdateService)
+            {
+                Left = mainWindow.Left + mainWindow.Width / 2,
+                Top = mainWindow.Top + 50
+            };
+
             saveMessageWindow.Show();
             //  SelectedMessage = new MessageWrapper(new Message()); // unnecessary?
         }
@@ -181,6 +181,17 @@ namespace WSMS.ViewModels
             SelectedMessage = new MessageWrapper(new Message());
         }
         #endregion
+        public ICommand CloseApplicationCommand { get; }
+        private void OnCloseApplicationExecuted(object p)
+        {
+            var window = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsVisible);
+            if (window != null)
+            {
+                WindowPositionSettings.SaveWindowPosition(window);
+                window.Hide();
+                window.Close();
+            }
+        }
 
         #region ImageDrop Command
         public ICommand ImageDropCommand { get; }
@@ -208,6 +219,11 @@ namespace WSMS.ViewModels
         }
         #endregion
         #endregion
+        private void OnUpdateData()
+        {
+            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            SelectedMessage = new MessageWrapper(new Message());
+        }
 
         public MainWindowViewModel()
         {
@@ -222,12 +238,9 @@ namespace WSMS.ViewModels
             OpenSaveMessageWindowCommand = new MyActionCommand(OnOpenSaveMessageWindowExecuted, CanOpenSaveMessageWindowExecute);
             DeleteMessageCommand = new MyActionCommand(OnDeleteMessageCommandExecuted, CanDeleteMessageCommandExecute);
             ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);
+            CloseApplicationCommand = new MyActionCommand(OnCloseApplicationExecuted);
         }
 
-        private void OnUpdateData()
-        {
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
-            SelectedMessage = new MessageWrapper(new Message());
-        }
+
     }
 }
