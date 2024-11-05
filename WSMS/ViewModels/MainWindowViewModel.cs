@@ -11,6 +11,7 @@ using System.Windows.Data;
 using WSMS.Infrastructure.Commands.Base;
 using System.Linq;
 using WSMS.Infrastructure.Other;
+using WSMS.Views;
 
 namespace WSMS.ViewModels
 {
@@ -103,7 +104,9 @@ namespace WSMS.ViewModels
         private void OnStartBrowserCommandExecuted(object p)
         {
 
-            if (DriverBtnContent == "Start browser")
+          /*  AccountsSettings accountsSettings = new AccountsSettings();
+            accountsSettings.Show();*/
+           /* if (DriverBtnContent == "Start browser")
             {
                 WebService.OpenBrowser();
                 DriverBtnContent = "Close browser";
@@ -112,7 +115,7 @@ namespace WSMS.ViewModels
             {
                 WebService.CloseBrowser();
                 DriverBtnContent = "Start browser";
-            }
+            }*/
         }
         #endregion
         #region Start sending Command

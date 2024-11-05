@@ -122,7 +122,6 @@ namespace WSMS.Services
                 return false;
             }
         }
-
         private static string SaveImage(BitmapSource bitmap)
         {
             BitmapEncoder encoder;
@@ -170,7 +169,6 @@ namespace WSMS.Services
                 return string.Empty;
             }
         }
-
         public static BitmapSource GetImage(string url)
         {
             if (url != string.Empty)
@@ -184,7 +182,17 @@ namespace WSMS.Services
             }
             return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
-
+        public static ObservableCollection<CustomersCategoryFull> ChangeIsCheck(ObservableCollection<CustomersCategoryFull> customersCategories, bool flag)
+        {
+            foreach (var mainCategory in customersCategories)
+            {
+                foreach (var category in mainCategory.SubCategories)
+                {
+                    category.IsChecked = flag;
+                }
+            }
+            return customersCategories;
+        }
         public static void StartSending(Message message)
         {
             Dictionary<string, List<string>> resultSending = new();
@@ -212,17 +220,6 @@ namespace WSMS.Services
             {
                 MessageBox.Show("Please, start the browser first.");
             }
-        }
-        public static ObservableCollection<CustomersCategoryFull> ChangeIsCheck(ObservableCollection<CustomersCategoryFull> customersCategories, bool flag)
-        {
-            foreach (var mainCategory in customersCategories)
-            {
-                foreach (var category in mainCategory.SubCategories)
-                {
-                    category.IsChecked = flag;
-                }
-            }
-            return customersCategories;
         }
         private static Dictionary<string, List<string>> SendMessage(Message message)
         {

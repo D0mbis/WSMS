@@ -1,0 +1,90 @@
+﻿<Window x:Class="WSMS.Views.AccountsSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WSMS.Views"
+        mc:Ignorable="d"
+    Title="WhatsApp Manager" Height="350" Width="525">
+    <Grid>
+        <TabControl>
+            <!-- Вкладка управления аккаунтами -->
+            <TabItem Header="Account Manager">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Заголовок -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                               Text="WhatsApp Account Manager"
+                               FontSize="20" FontWeight="Bold"
+                               Margin="10" HorizontalAlignment="Center"/>
+
+                    <!-- Список активных аккаунтов -->
+                    <ListBox x:Name="AccountListBox" Grid.Row="1" Grid.Column="0" Margin="10"
+                             DisplayMemberPath="AccountName"
+                             SelectedValuePath="AccountId"
+                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                    <!-- Панель управления аккаунтами -->
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="10" VerticalAlignment="Top">
+                        <Button x:Name="StartSessionButton" Content="Start Session" Margin="5" Width="100" Click="StartSessionButton_Click"/>
+                        <Button x:Name="StopSessionButton" Content="Stop Session" Margin="5" Width="100" Click="StopSessionButton_Click"/>
+                        <Button x:Name="AddAccountButton" Content="Add Account" Margin="5" Width="100" Click="AddAccountButton_Click"/>
+                        <Button x:Name="RemoveAccountButton" Content="Remove Account" Margin="5" Width="100" Click="RemoveAccountButton_Click"/>
+                    </StackPanel>
+
+                    <!-- Статус бар -->
+                    <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="StatusTextBlock" Text="Ready" Margin="10,0"/>
+                    </StatusBar>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка с CustomersCategories -->
+            <TabItem Header="Customers Categories">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Поле ввода для числового значения days -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="10">
+                        <TextBlock Text="Days:" VerticalAlignment="Center"/>
+                        <TextBox x:Name="DaysTextBox" Width="50" Margin="5,0" PreviewTextInput="DaysTextBox_PreviewTextInput"/>
+                        <Button Content="Apply Filter" Click="ApplyFilterButton_Click" Margin="5,0"/>
+                    </StackPanel>
+
+                    <!-- Список CustomersCategories с чекбоксами -->
+                    <ListView x:Name="CustomersListView" Grid.Row="1" Grid.Column="0" Margin="10" ItemsSource="{Binding}">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}" Width="150"/>
+                                <GridViewColumn Header="Last Date" DisplayMemberBinding="{Binding lastdate}" Width="150"/>
+                                <GridViewColumn Header="Checked">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsChacked}"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

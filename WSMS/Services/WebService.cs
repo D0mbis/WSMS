@@ -4,6 +4,7 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -28,17 +29,19 @@ namespace WSMS.Services
         };
 
         //
-        public static void OpenBrowser()
+        public static void OpenBrowser(string accountId)
         {
             /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
             ChromeDriverService service = ChromeDriverService.CreateDefaultService("PATH of chromedriver.exe folder");
             */
 
             ChromeOptions options = new();
+            accountId = "+79953781761"; 
+            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
+            options.AddArgument($"--user-data-dir={profileDirectory}");
             options.AddUserProfilePreference("intl.accept_languages", "ru-RU");
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
             service.HideCommandPromptWindow = true;
-            options.AddArgument("--user-data-dir=" + SessionsPath); // saving every 2 last sessions
             try
             {
                 Driver = new ChromeDriver(service, options);
@@ -169,10 +172,12 @@ namespace WSMS.Services
                 try
                 {
                     //element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
-                    element = wait.Until(d => { 
+                    element = wait.Until(d =>
+                    {
                         IWebElement? e = default;
                         try { return d.FindElement(locator); }
-                        catch { Errors += $"Selector not found: {locator.Criteria}\n"; return e; }});
+                        catch { Errors += $"Selector not found: {locator.Criteria}\n"; return e; }
+                    });
                     wait.Until(ExpectedConditions.ElementToBeClickable(element));
                     int counter1 = 0;
                     for (int i = 0; i < content.Length; i++)
@@ -201,14 +206,31 @@ namespace WSMS.Services
         }
         public static void CloseBrowser()
         {
-            if (Driver != default)
-                Dispose();
-        }
-        private static void Dispose()
-        {
-            if (Driver != default) { Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default; }
-            //if (MessageService != default) { MessageService = default; }
+            if (Driver != default) { }
+            Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default;
             IsRunning = false;
+            string accountId = "+79953781761";
+            // Пример очистки ненужных данных после завершения сессии
+            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
+
+            List<string> list = new List<string>()
+            {
+                "Default\\Cache",
+                "Default\\GPUCache",
+                "Default\\Code Cache",
+                "optimization_guide_model_store",
+                "GrShaderCache"
+            };
+            foreach (string s in list)
+            {
+                string unneccesaryFolder = Path.Combine(profileDirectory, s);
+                if (Directory.Exists(unneccesaryFolder))
+                {
+                    Directory.Delete(unneccesaryFolder, true);
+                }
+            }
         }
     }
+
 }
+

@@ -17,11 +17,9 @@ namespace WSMS
     /// </summary>
     public partial class MainWindow : Window
     {
-        //public List<CustomersGroup> CustomerGroups { get; set; }
         public MainWindow()
         {
             InitializeComponent();
-
             //GoogleSheetsAPI.PulldbCustomers();
             //CustomersService.AllCustomers;
             var window = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsInitialized);
