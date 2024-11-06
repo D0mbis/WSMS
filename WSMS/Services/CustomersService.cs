@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using WSMS.Models;
@@ -31,7 +33,12 @@ namespace WSMS.Services
                 else if (AllCustomersInGroups == default)
                 {
                     AllCustomersInGroups = new();
-                    var jsonData = File.ReadAllText(dbPath);
+                    string jsonData;
+                    using (StreamReader reader = new(dbPath))
+                    {
+                        jsonData = reader.ReadToEnd();
+                    }
+
                     var items = JsonConvert.DeserializeObject<Dictionary<string, ObservableCollection<Customer>>>(jsonData);
                     AllCustomersInGroups = new();
                     foreach (var item in items.Keys)
@@ -76,7 +83,9 @@ namespace WSMS.Services
                 return AllCustomers;
             }
         }
-        public static void SaveCustomerData(IList<IList<object>> values)
+
+
+        public static void SaveCustomersFiles(IList<IList<object>> values)
         {
             try
             {
@@ -112,12 +121,15 @@ namespace WSMS.Services
                         if (dbCustomers.ContainsKey(customer.MainCategory))
                             dbCustomers[customer.MainCategory].Add(customer);
                         else dbCustomers.Add(customer.MainCategory, new List<Customer>() { customer });
-                        foreach (var regionCategory in dbCustomers.Keys)
-                        {
-                            dbCustomers[regionCategory].Sort((c1, c2) => c1.SubCategory.CompareTo(c2.SubCategory));
-                        }
                     }
-                    string allCategoriesJson = JsonConvert.SerializeObject(allCategories, Formatting.Indented);
+                    foreach (var regionCategory in dbCustomers.Keys)
+                    {
+                        dbCustomers[regionCategory].Sort((c1, c2) => c1.SubCategory.CompareTo(c2.SubCategory));
+                    }
+
+                    Dictionary<string, List<SubCategory>> allCategoriesFormated = GetFormattedCategories(allCategories);
+
+                    string allCategoriesJson = JsonConvert.SerializeObject(allCategoriesFormated, Formatting.Indented);
                     string allCustomersInCategoriesJson = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
                     if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
                     using (StreamWriter stream = new(FolderPath + "\\all categories.json"))
@@ -130,9 +142,59 @@ namespace WSMS.Services
             }
             catch (Exception e)
             {
-                Logger.ShowMyReportMessageBox(e.Message,"CustomersService", "Seve customers data error");
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Seve customers data error");
             }
         }
+
+        private static Dictionary<string, List<SubCategory>> GetFormattedCategories(Dictionary<string, List<string>> allCategories)
+        {
+            Dictionary<string, List<SubCategory>> result = new();
+            foreach (var mainCategory in allCategories.Keys)
+            {
+                List<SubCategory> subCategoriesList = new();
+                foreach (var subCategory in allCategories[mainCategory])
+                {
+                    subCategoriesList.Add(new SubCategory(subCategory));
+                }
+                result[mainCategory] = subCategoriesList;
+            }
+            string allCategoriesPath = FolderPath + "\\all categories.json";
+            if (File.Exists(allCategoriesPath) && allCategories.Count > 0)
+            {
+                result = UpdateCategoriesDateTime(allCategoriesPath, result);
+            }
+            return result;
+        }
+
+        private static Dictionary<string, List<SubCategory>> UpdateCategoriesDateTime(string allCategoriesPath, Dictionary<string, List<SubCategory>> newCategories)
+        {
+            string jsonData;
+            using (FileStream fs = new(allCategoriesPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                using StreamReader reader = new(fs);
+                jsonData = reader.ReadToEnd();
+            }
+            File.Delete(allCategoriesPath);
+            Dictionary<string, List<SubCategory>> oldCategories = JsonConvert.DeserializeObject<Dictionary<string, List<SubCategory>>>(jsonData);
+            foreach (var newMainCategory in newCategories)
+            {
+                foreach (var newSubCategory in newMainCategory.Value)
+                {
+                    foreach (var oldSubCategoryList in oldCategories.Values)
+                    {
+                        foreach (var oldSubCategory in oldSubCategoryList)
+                        {
+                            if (oldSubCategory.Name == newSubCategory.Name)
+                            {
+                                newSubCategory.LastSending = oldSubCategory.LastSending;
+                            }
+                        }
+                    }
+                }
+            }
+            return newCategories;
+        }
+
         public static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)
         {
             for (int i = 0; i < pullValues.Count; i++)
@@ -220,44 +282,6 @@ namespace WSMS.Services
                 return categoriesFullCollection;
             }
         }
-        /* public static Dictionary<CustomersCategories, ObservableCollection<CustomersCategories>> LoadAllCategories()
-         {
-             Dictionary<CustomersCategories, ObservableCollection<CustomersCategories>> categories = new();
-             try
-             {
-                 string filePath = FolderPath + "\\all categories.json";
-                 if (!File.Exists(filePath)) { GoogleSheetsAPI.PulldbCustomers(); }
-                 string data;
-                 using (StreamReader reader = new(filePath))
-                 {
-                     data = reader.ReadToEnd();
-                 }
-                 if (data != string.Empty)
-                 {
-                     var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
-                     foreach (var key in s.Keys)
-                     {
-                         categories.Add(new CustomersCategories(key), new ObservableCollection<CustomersCategories>());
-
-                         foreach (var item in s[key])
-                         {
-                             foreach (var item2 in categories.Keys)
-                             {
-                                 if (item2.Name == key)
-                                 {
-                                     categories[item2].Add(new CustomersCategories(item));
-                                 }
-                             }
-                         }
-                     }
-                 }
-                 return categories;
-             }
-             catch (Exception e)
-             {
-                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllCategories");
-                 return categories;
-             }
-         }*/
+        
     }
 }

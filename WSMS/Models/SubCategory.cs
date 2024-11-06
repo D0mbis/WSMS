@@ -14,6 +14,7 @@ namespace WSMS.Models
     public class SubCategory : Model
     {
         public string Name { get; set; }
+        public DateTime? LastSending { get; set; }
         
         private bool isChecked;
         //private string name;
@@ -30,10 +31,11 @@ namespace WSMS.Models
                 }
             }
         }
-        public SubCategory(string name)
+        public SubCategory(string name, DateTime? lastSending = default)
         {
             IsChecked = true;
             Name = name;
+            LastSending = lastSending ?? new DateTime(2024, 11, 5).Date;
         }
     }
 }

@@ -64,7 +64,7 @@ namespace WSMS.Services
                     SpreadsheetsResource.ValuesResource.GetRequest request =
                             Service.Spreadsheets.Values.Get(SpreadsheetId, range);
                     PullValues = request.Execute().Values;
-                    CustomersService.SaveCustomerData(PullValues);
+                    CustomersService.SaveCustomersFiles(PullValues);
                 }
                 catch (Exception e)
                 {
