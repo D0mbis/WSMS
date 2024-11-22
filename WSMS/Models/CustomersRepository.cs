@@ -24,7 +24,7 @@ namespace WSMS.Models
             }
         }
 
-        private CustomersRepository() // need to check if an instance is always required?
+        private CustomersRepository()
         {
             AllDataBaseDictionary = CustomersService.GetMainDB();
         }

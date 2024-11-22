@@ -11,9 +11,9 @@
         Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch"
         PreviewMouseDown="CuntactsListView_PreviewMouseDown">
     <Window.DataContext>
-        <vm:CustomersViewModel/>
+        <vm:CustomersViewModel />
     </Window.DataContext>
-    <Grid  >
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>
@@ -23,7 +23,7 @@
         <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" Width="200" Height="30"
                 Content="Pull from Excel DB" Command="{Binding PullCustomersFromRemote}"/>
         <Button x:Name="PushtoExcelDB" Grid.Row="0" Margin="220,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
-                Content="Push to Excel DB" Command="{Binding PushValuesToRemoteExcel}"/>
+                Content="Push to Excel DB" Command="{Binding PushSelectedCustomerToRemoteExcel}"/>
         <Button Grid.Row="0" Margin="430,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
                 Content="Add new credentials" Command="{Binding AddNewCredentials}"/>
         <Button Grid.Row="0" Margin="640,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
@@ -41,9 +41,9 @@
                     <GridViewColumn Header="MainDiraction" CellTemplate="{StaticResource ResourceKey=DTCustomer_MainDiraction}" />
                     <GridViewColumn Header="SubDiraction" CellTemplate="{StaticResource ResourceKey=DTCustomer_SubDiraction}" />
                     <GridViewColumn Header="Address" CellTemplate="{StaticResource ResourceKey=DTCustomer_Address}" />
-                 <!--    
+                    <!--    
                 -->
-                    </GridView>
+                </GridView>
             </ListView.View>
         </ListView>
     </Grid>

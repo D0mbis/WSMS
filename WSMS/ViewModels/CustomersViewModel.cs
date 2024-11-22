@@ -85,9 +85,9 @@ namespace WSMS.ViewModels
         }
         #endregion
         #region PushValuesToRemoteExcel Command
-        public ICommand PushValuesToRemoteExcel { get; }
+        public ICommand PushSelectedCustomerToRemoteExcel { get; }
 
-        private bool CanPushValuesToRemoteExcelExecute(object p)
+        private bool CanPushSelectedCustomerToRemoteExcelExecute(object p)
         {
             if (selectedCustomer != default)
             {
@@ -98,17 +98,16 @@ namespace WSMS.ViewModels
 
         private void OnPushValuesToRemoteExcelExecuted(object p)
         {
-            GoogleSheetsAPI.PushValues(SelectedCustomer.ID, SelectedCustomer);
+            GoogleSheetsAPI.PushCustomerUpdate(SelectedCustomer.ID, SelectedCustomer);
         }
         #endregion
         #endregion
         public CustomersViewModel()
         {
             CustomersView = CollectionViewSource.GetDefaultView(Repository.GetCustomers());
-            //CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
             PullCustomersFromRemote = new MyActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
             AddNewCredentials = new MyActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
-            PushValuesToRemoteExcel = new MyActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
+            PushSelectedCustomerToRemoteExcel = new MyActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushSelectedCustomerToRemoteExcelExecute);
             ImportToCsv = new MyActionCommand(OnImportToCsvExecuted, CanImportToCsvExecute);
         }
 
@@ -128,7 +127,7 @@ namespace WSMS.ViewModels
                                customer.PhoneNumber3.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.MainDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.SubDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.Address.Contains(SearchText, StringComparison.OrdinalIgnoreCase);  ///  error not instance ?! and not view diractions in the VIEW
+                               customer.Address.Contains(SearchText, StringComparison.OrdinalIgnoreCase); 
                     }
                     return false;
                 };

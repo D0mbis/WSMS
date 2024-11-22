@@ -1,22 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows;
-using System.Xml.Linq;
 using WSMS.Models;
-using WSMS.Models.Base;
 
 namespace WSMS.Services
 {
     public class CustomersService
     {
-        private readonly CustomersRepository repository = CustomersRepository.Instance;
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
         public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
@@ -128,24 +122,17 @@ namespace WSMS.Services
                                          innerValue => innerValue.Value // Сохранение списка Customer без изменений
                                      )
                              );
-
-
-                    string allDiractionsSortedJson = JsonConvert.SerializeObject(mainDB, Formatting.Indented);
-                    if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
-                    using StreamWriter stream = new(FolderPath + "\\mainDB.json");
-                    stream.Write(allDiractionsSortedJson);
-                    SaveAllDiractions(mainDB); // ??? maybe wee need to delete it because we can get it from the repository? 
                 }
                 return mainDB;
             }
             catch (Exception e)
             {
-                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Save customers data error");
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "GetMainDBFromExcelValues data error");
                 return new Dictionary<string, Dictionary<string, List<Customer>>>();
             }
         }
 
-        private static void SaveAllDiractions(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
+       /* private static void SaveAllDiractions(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
         {
             Dictionary<string, List<SubDiraction>> result = mainDB.ToDictionary(
                     outerKey => outerKey.Key, // Ключ MainDiraction остаётся таким же
@@ -159,7 +146,7 @@ namespace WSMS.Services
                 stream.Write(allDiractionsJson);
             }
 
-        }
+        }*/
         private static Customer ExcelRowToCustomer(IList<object> row)
         {
             if (row.Count < 8) row.Add("");
@@ -294,6 +281,14 @@ namespace WSMS.Services
                 return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Customer>>>>(jsonData);
             }
             catch { return new Dictionary<string, Dictionary<string, List<Customer>>>(); }
+        }
+
+        public static void SaveNewDBCustomers(Dictionary<string, Dictionary<string, List<Customer>>> receivedBD)
+        {
+            string allDiractionsSortedJson = JsonConvert.SerializeObject(receivedBD, Formatting.Indented);
+            if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+            using StreamWriter stream = new(FolderPath + "\\mainDB.json");
+            stream.Write(allDiractionsSortedJson);
         }
     }
 }

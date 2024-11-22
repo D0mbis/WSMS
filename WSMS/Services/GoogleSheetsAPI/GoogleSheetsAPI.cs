@@ -27,18 +27,17 @@ namespace WSMS.Services
         static IList<IList<object>> PullValues;
         private readonly static string FolderPath = $"{Environment.CurrentDirectory}\\Services\\GoogleSheetsAPI";
 
-        public static void PushValues(string customerID = default, Customer customer = default)
+        public static void PushCustomerUpdate(string customerID = default, Customer customer = default)
         {
             if (GetAccess())
             {
-                if (PullValues == null) { PulldbCustomers(); }
+                if (PullValues == null) { PulldbCustomers(false); }
                 try
                 {
                     int rowIndex = PullValues?.Select((row, index) => new { row, index }).FirstOrDefault(x => x.row[0]?.ToString() == customerID)?.index + 2 ?? -1;
                     // Define request parameters.
                     string range = $"{SheetName}!A{rowIndex}"; // Adjust range as needed
-                    var valueRange = new ValueRange();
-                    valueRange.Values = new List<IList<object>> { CustomersService.ConvertToList(customer) };
+                    var valueRange = new ValueRange { Values = new List<IList<object>> { CustomersService.ConvertToList(customer) } };
 
                     // Отправка данных в таблицу
                     var updateRequest = Service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);
@@ -48,14 +47,14 @@ namespace WSMS.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "PushValues");
+                    Logger.ShowMyReportMessageBox(e.Message, "GoogleSheetsAPI", "PushCustomerUpdate");
                 }
             }
         }
         /// <summary>
         /// Pull all customers db from remote Excel and save in "data" folder.
         /// </summary>
-        public static void PulldbCustomers()
+        public static void PulldbCustomers(bool needSave = true)
         {
             if (GetAccess())
                 try
@@ -65,7 +64,11 @@ namespace WSMS.Services
                     SpreadsheetsResource.ValuesResource.GetRequest request =
                             Service.Spreadsheets.Values.Get(SpreadsheetId, range);
                     PullValues = request.Execute().Values;
-                    CustomersService.GetMainDBFromExcelValues(PullValues);
+                    var receivedBD = CustomersService.GetMainDBFromExcelValues(PullValues);
+                    if (needSave)
+                    {
+                        CustomersService.SaveNewDBCustomers(receivedBD);
+                    }
                 }
                 catch (Exception e)
                 {
