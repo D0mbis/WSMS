@@ -1,0 +1,27 @@
+22.11.24 (12:38:38) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (12:44:48) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (12:46:34) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (12:47:26) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (12:54:48) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (16:08:51) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (16:23:14) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (16:30:08) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+
+22.11.24 (16:38:59) 
+Error message: Could not find a part of the path 'D:\Programming_study\WSMS\Services\GoogleSheetsAPI\credentials.json'.
+

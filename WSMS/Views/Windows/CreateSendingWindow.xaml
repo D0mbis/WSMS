@@ -26,13 +26,12 @@
             </Grid.ColumnDefinitions>
 
             <!-- Список направлений -->
-            <DataGrid x:Name="DirectionsGrid" AutoGenerateColumns="False" HeadersVisibility="Column"
+            <DataGrid x:Name="DiractionsGrid" AutoGenerateColumns="False" HeadersVisibility="Column"
                       Margin="5,5,5,5" Background="White" BorderBrush="#A8A8A8" BorderThickness="1">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Направления" Width="*"/>
-                    <DataGridTextColumn Header="Дней без рассылки" Width="150"/>
-                    <DataGridTextColumn Header="Дата" Width="80"/>
-                    <DataGridTemplateColumn Header="Действие" Width="90">
+                    <DataGridTextColumn Header="Дата" Width="120"/>
+                    <DataGridTemplateColumn Header="Выбрать" Width="70">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Content="+" Width="20" Height="20"/>
@@ -42,7 +41,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
-            <DataGrid x:Name="Messages" Grid.Column="1" AutoGenerateColumns="False" HeadersVisibility="Column"
+            <DataGrid x:Name="MessagesGrid" Grid.Column="1" AutoGenerateColumns="False" HeadersVisibility="Column"
           Margin="5,5,5,5" Background="White" BorderBrush="#A8A8A8" BorderThickness="1">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Сообщения" Width="90">

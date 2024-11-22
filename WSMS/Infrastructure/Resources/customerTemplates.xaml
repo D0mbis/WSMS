@@ -43,19 +43,19 @@
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="DTCustomer_MainCategory">
+    <DataTemplate x:Key="DTCustomer_MainDiraction">
         <Grid>
-            <TextBox Text="{Binding MainCategory, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox Text="{Binding MainDiraction, UpdateSourceTrigger=PropertyChanged}"
              Style="{StaticResource TextBoxCustomer}"/>
-            <TextBlock Text="{Binding MainCategory, UpdateSourceTrigger=PropertyChanged}" Width="120" 
+            <TextBlock Text="{Binding MainDiraction, UpdateSourceTrigger=PropertyChanged}" Width="120" 
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="DTCustomer_SubCategory">
+    <DataTemplate x:Key="DTCustomer_SubDiraction">
         <Grid>
-            <TextBox Text="{Binding SubCategory, UpdateSourceTrigger=PropertyChanged}" 
+            <TextBox Text="{Binding SubDiraction, UpdateSourceTrigger=PropertyChanged}" 
              Style="{StaticResource TextBoxCustomer}"/>
-            <TextBlock Text="{Binding SubCategory, UpdateSourceTrigger=PropertyChanged}" Width="120" 
+            <TextBlock Text="{Binding SubDiraction, UpdateSourceTrigger=PropertyChanged}" Width="120" 
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>

@@ -11,10 +11,11 @@ namespace WSMS.ViewModels
 {
     public class CustomersViewModel : Model
     {
+        private readonly CustomersRepository Repository = CustomersRepository.Instance;
         private ObservableCollection<Customer> customers;
         private string searchText;
         private Customer selectedCustomer;
-        public ICollectionView customersView;
+        private ICollectionView customersView;
         public ObservableCollection<Customer> Customers
         {
             get => customers;
@@ -80,7 +81,7 @@ namespace WSMS.ViewModels
         private void OnPullCustomersFromRemoteExecuted(object p)
         {
             GoogleSheetsAPI.PulldbCustomers();
-            CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
+            CustomersView = CollectionViewSource.GetDefaultView(Repository.GetCustomers());
         }
         #endregion
         #region PushValuesToRemoteExcel Command
@@ -103,7 +104,8 @@ namespace WSMS.ViewModels
         #endregion
         public CustomersViewModel()
         {
-            CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
+            CustomersView = CollectionViewSource.GetDefaultView(Repository.GetCustomers());
+            //CustomersView = CollectionViewSource.GetDefaultView(CustomersService.GetCustomersWithoutGroups());
             PullCustomersFromRemote = new MyActionCommand(OnPullCustomersFromRemoteExecuted, CanPullCustomersFromRemoteExecute);
             AddNewCredentials = new MyActionCommand(OnAddNewCredentialsExecuted, CanAddNewCredentialsExecute);
             PushValuesToRemoteExcel = new MyActionCommand(OnPushValuesToRemoteExcelExecuted, CanPushValuesToRemoteExcelExecute);
@@ -124,9 +126,9 @@ namespace WSMS.ViewModels
                                customer.PhoneNumber1.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber2.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber3.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.MainCategory.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.SubCategory.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.Address.Contains(SearchText, StringComparison.OrdinalIgnoreCase);
+                               customer.MainDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                               customer.SubDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                               customer.Address.Contains(SearchText, StringComparison.OrdinalIgnoreCase);  ///  error not instance ?! and not view diractions in the VIEW
                     }
                     return false;
                 };

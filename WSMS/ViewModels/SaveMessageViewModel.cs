@@ -30,8 +30,8 @@ namespace WSMS.ViewModels
         private string selectAllButtonContent = "Unselect all";
         public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
 
-        private ObservableCollection<CustomersCategoryFull> customersCategories;
-        public ObservableCollection<CustomersCategoryFull> CustomersCategories
+        private ObservableCollection<MainDiractionFull> customersCategories;
+        public ObservableCollection<MainDiractionFull> CustomersCategories
         {
             get => customersCategories;
             set

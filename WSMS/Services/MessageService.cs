@@ -52,15 +52,15 @@ namespace WSMS.Services
                 return new ObservableCollection<MessageWrapper>() { new(new Message()) };
             }
         }
-        public static ObservableCollection<CustomersCategoryFull> RemoveUnselectedCategories(ObservableCollection<CustomersCategoryFull> categories)
+        public static ObservableCollection<MainDiractionFull> RemoveUnselectedCategories(ObservableCollection<MainDiractionFull> categories)
         {
             var sortedCategories = categories
-                        .OrderBy(c => c.MainCategory).Where(c => c.IsChecked);
-            var finaly = new ObservableCollection<CustomersCategoryFull>();
+                        .OrderBy(c => c.MainDiraction).Where(c => c.IsChecked);
+            var finaly = new ObservableCollection<MainDiractionFull>();
             foreach (var fullCategory in sortedCategories)
             {
-                var temp = fullCategory.SubCategories.OrderBy(c => c.Name).Where(c => c.IsChecked);
-                finaly.Add(new CustomersCategoryFull(fullCategory.MainCategory, new ObservableCollection<SubCategory>(temp)));
+                var temp = fullCategory.SubDiractions.OrderBy(c => c.Name).Where(c => c.IsChecked);
+                finaly.Add(new MainDiractionFull(fullCategory.MainDiraction, new ObservableCollection<SubDiraction>(temp)));
             }
             return finaly;
         }
@@ -182,11 +182,11 @@ namespace WSMS.Services
             }
             return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
-        public static ObservableCollection<CustomersCategoryFull> ChangeIsCheck(ObservableCollection<CustomersCategoryFull> customersCategories, bool flag)
+        public static ObservableCollection<MainDiractionFull> ChangeIsCheck(ObservableCollection<MainDiractionFull> customersCategories, bool flag)
         {
             foreach (var mainCategory in customersCategories)
             {
-                foreach (var category in mainCategory.SubCategories)
+                foreach (var category in mainCategory.SubDiractions)
                 {
                     category.IsChecked = flag;
                 }

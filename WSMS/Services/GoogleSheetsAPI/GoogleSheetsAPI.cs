@@ -8,6 +8,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -33,8 +34,7 @@ namespace WSMS.Services
                 if (PullValues == null) { PulldbCustomers(); }
                 try
                 {
-
-                    int rowIndex = CustomersService.GetRowIndex(customerID, PullValues);
+                    int rowIndex = PullValues?.Select((row, index) => new { row, index }).FirstOrDefault(x => x.row[0]?.ToString() == customerID)?.index + 2 ?? -1;
                     // Define request parameters.
                     string range = $"{SheetName}!A{rowIndex}"; // Adjust range as needed
                     var valueRange = new ValueRange();
@@ -44,6 +44,7 @@ namespace WSMS.Services
                     var updateRequest = Service.Spreadsheets.Values.Update(valueRange, SpreadsheetId, range);
                     updateRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.RAW;
                     updateRequest.Execute();
+                    // need to update old customer if exist in the repository HERE!!!
                 }
                 catch (Exception e)
                 {
@@ -64,7 +65,7 @@ namespace WSMS.Services
                     SpreadsheetsResource.ValuesResource.GetRequest request =
                             Service.Spreadsheets.Values.Get(SpreadsheetId, range);
                     PullValues = request.Execute().Values;
-                    CustomersService.SaveCustomersFiles(PullValues);
+                    CustomersService.GetMainDBFromExcelValues(PullValues);
                 }
                 catch (Exception e)
                 {

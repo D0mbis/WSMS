@@ -38,6 +38,6 @@ namespace WSMS.Models
                 Set(ref image, value);
             }
         }
-        public ObservableCollection<CustomersCategoryFull>? Categories { get; set; }
+        public ObservableCollection<MainDiractionFull>? Categories { get; set; }
     }
 }

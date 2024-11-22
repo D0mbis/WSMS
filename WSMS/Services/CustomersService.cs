@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Xml.Linq;
 using WSMS.Models;
 using WSMS.Models.Base;
 
@@ -15,19 +16,21 @@ namespace WSMS.Services
 {
     public class CustomersService
     {
+        private readonly CustomersRepository repository = CustomersRepository.Instance;
+        private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
         public static List<CustomersGroup>? AllCustomersInGroups { get; private set; }
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
-        private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
 
-        private static bool LoadAllCustomersInGroups()
+
+        /*private static bool LoadAllCustomersInGroups()
         {
             try
             {
-                string dbPath = $"{Environment.CurrentDirectory}\\data\\dbCustomers.json";
+                string dbPath = FolderPath + "\\mainDB.json";
                 if (!File.Exists(dbPath))
                 {
                     //GoogleSheetsAPI.PulldbCustomers();
-                    MessageBox.Show("File \"dbCustomers.json\" not found, please pull from Excel db.");
+                    MessageBox.Show("File \"mainDB.json\" not found, please pull from Excel db.");
                     return false;
                 }
                 else if (AllCustomersInGroups == default)
@@ -53,8 +56,8 @@ namespace WSMS.Services
                 Logger.ShowMyReportMessageBox(ex.Message, "CustomersService", "LoadCustomersInGroups method");
                 return false;
             }
-        }
-        public static ObservableCollection<Customer> GetCustomersWithoutGroups()
+        }  // отредактировать после pull from excel*/
+        /*public static ObservableCollection<Customer> GetCustomersWithoutGroups()
         {
             try
             {
@@ -82,91 +85,99 @@ namespace WSMS.Services
                 AllCustomers = null;
                 return AllCustomers;
             }
-        }
-
-
-        public static void SaveCustomersFiles(IList<IList<object>> values)
+        }*/
+        /// <summary>
+        /// Returns the entire database as a dictionary.
+        /// </summary>
+        /// <param name="values">Values from Excel table</param>
+        /// <returns></returns>
+        public static Dictionary<string, Dictionary<string, List<Customer>>> GetMainDBFromExcelValues(IList<IList<object>> values)
         {
             try
             {
-                Dictionary<string, List<string>> allCategories = new();
-                Dictionary<string, List<Customer>> dbCustomers = new();
-                // Fetch the data.
+                Dictionary<string, Dictionary<string, List<Customer>>>? mainDB = new();
                 if (values != default && values.Count > 0)
                 {
                     foreach (var row in values)
                     {
-                        if (row.Count < 7)
+                        var customer = ExcelRowToCustomer(row);
+                        if (!mainDB.ContainsKey(customer.MainDiraction))
                         {
-                            MessageBox.Show(row[0].ToString());
+                            mainDB.Add(customer.MainDiraction, new Dictionary<string, List<Customer>>() { { customer.MainDiraction, new List<Customer>() { customer } } });
+                            continue;
                         }
-                        Customer customer = new()
+
+                        if (!mainDB[customer.MainDiraction].ContainsKey(customer.SubDiraction))
                         {
-                            ID = row[0]?.ToString() ?? "",
-                            Name = row[1]?.ToString() ?? "",
-                            PhoneNumber1 = row[2]?.ToString() ?? "",
-                            PhoneNumber2 = row[3]?.ToString() ?? "",
-                            PhoneNumber3 = row[4]?.ToString() ?? "",
-                            MainCategory = row[5]?.ToString() ?? "",
-                            SubCategory = row[6]?.ToString() ?? ""
-                        };
-                        row.Add("");
-                        customer.Address = row[7]?.ToString() ?? "";
-                        if (allCategories.ContainsKey(customer.MainCategory))
-                        {
-                            if (!allCategories[customer.MainCategory].Contains(customer.SubCategory))
-                                allCategories[customer.MainCategory].Add(customer.SubCategory);
+                            mainDB[customer.MainDiraction].Add(customer.SubDiraction, new List<Customer>() { customer });
                         }
-                        else allCategories.Add(customer.MainCategory, new List<string>() { customer.SubCategory });
-                        if (dbCustomers.ContainsKey(customer.MainCategory))
-                            dbCustomers[customer.MainCategory].Add(customer);
-                        else dbCustomers.Add(customer.MainCategory, new List<Customer>() { customer });
-                    }
-                    foreach (var regionCategory in dbCustomers.Keys)
-                    {
-                        dbCustomers[regionCategory].Sort((c1, c2) => c1.SubCategory.CompareTo(c2.SubCategory));
-                    }
+                        else
+                        {
+                            mainDB[customer.MainDiraction][customer.SubDiraction].Add(customer);
+                        }
 
-                    Dictionary<string, List<SubCategory>> allCategoriesFormated = GetFormattedCategories(allCategories);
+                    }
+                    mainDB = mainDB
+                             .OrderBy(outer => outer.Key) // Сортировка внешнего словаря по ключам (outer.Key)
+                             .ToDictionary(
+                                 outerKey => outerKey.Key, // Сохранение ключа внешнего словаря
+                                 outerValue => outerValue.Value
+                                     .OrderBy(inner => inner.Key) // Сортировка внутреннего словаря по ключам (inner.Key)
+                                     .ToDictionary(
+                                         innerKey => innerKey.Key, // Сохранение ключа внутреннего словаря
+                                         innerValue => innerValue.Value // Сохранение списка Customer без изменений
+                                     )
+                             );
 
-                    string allCategoriesJson = JsonConvert.SerializeObject(allCategoriesFormated, Formatting.Indented);
-                    string allCustomersInCategoriesJson = JsonConvert.SerializeObject(dbCustomers, Formatting.Indented);
+
+                    string allDiractionsSortedJson = JsonConvert.SerializeObject(mainDB, Formatting.Indented);
                     if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
-                    using (StreamWriter stream = new(FolderPath + "\\all categories.json"))
-                    {
-                        stream.Write(allCategoriesJson);
-                    }
-                    using StreamWriter str = new($"{FolderPath}\\dbCustomers.json");
-                    str.Write(allCustomersInCategoriesJson);
+                    using StreamWriter stream = new(FolderPath + "\\mainDB.json");
+                    stream.Write(allDiractionsSortedJson);
+                    SaveAllDiractions(mainDB); // ??? maybe wee need to delete it because we can get it from the repository? 
                 }
+                return mainDB;
             }
             catch (Exception e)
             {
-                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Seve customers data error");
+                Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "Save customers data error");
+                return new Dictionary<string, Dictionary<string, List<Customer>>>();
             }
         }
 
-        private static Dictionary<string, List<SubCategory>> GetFormattedCategories(Dictionary<string, List<string>> allCategories)
+        private static void SaveAllDiractions(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
         {
-            Dictionary<string, List<SubCategory>> result = new();
-            foreach (var mainCategory in allCategories.Keys)
+            Dictionary<string, List<SubDiraction>> result = mainDB.ToDictionary(
+                    outerKey => outerKey.Key, // Ключ MainDiraction остаётся таким же
+                    outerValue => outerValue.Value.Select(inner => new SubDiraction(inner.Key)).ToList()); // Преобразуем в List<SubDiraction>
+            string allDiractionsPath = FolderPath + "\\all diractions.json";
+            if (File.Exists(allDiractionsPath) && result.Count > 0)
             {
-                List<SubCategory> subCategoriesList = new();
-                foreach (var subCategory in allCategories[mainCategory])
-                {
-                    subCategoriesList.Add(new SubCategory(subCategory));
-                }
-                result[mainCategory] = subCategoriesList;
+                result = UpdateCategoriesDateTime(allDiractionsPath, result);
+                string allDiractionsJson = JsonConvert.SerializeObject(result, Formatting.Indented);
+                using StreamWriter stream = new(allDiractionsPath);
+                stream.Write(allDiractionsJson);
             }
-            string allCategoriesPath = FolderPath + "\\all categories.json";
-            if (File.Exists(allCategoriesPath) && allCategories.Count > 0)
+
+        }
+        private static Customer ExcelRowToCustomer(IList<object> row)
+        {
+            if (row.Count < 8) row.Add("");
+            return new()
             {
-                result = UpdateCategoriesDateTime(allCategoriesPath, result);
-            }
-            return result;
+                ID = row[0]?.ToString() ?? "",
+                Name = row[1]?.ToString() ?? "",
+                PhoneNumber1 = row[2]?.ToString() ?? "",
+                PhoneNumber2 = row[3]?.ToString() ?? "",
+                PhoneNumber3 = row[4]?.ToString() ?? "",
+                MainDiraction = row[5]?.ToString() ?? "",
+                SubDiraction = row[6]?.ToString() ?? "",
+                Address = row[7]?.ToString() ?? ""
+            };
         }
 
-        private static Dictionary<string, List<SubCategory>> UpdateCategoriesDateTime(string allCategoriesPath, Dictionary<string, List<SubCategory>> newCategories)
+
+        private static Dictionary<string, List<SubDiraction>> UpdateCategoriesDateTime(string allCategoriesPath, Dictionary<string, List<SubDiraction>> newCategories)
         {
             string jsonData;
             using (FileStream fs = new(allCategoriesPath, FileMode.Open, FileAccess.Read, FileShare.None))
@@ -175,7 +186,7 @@ namespace WSMS.Services
                 jsonData = reader.ReadToEnd();
             }
             File.Delete(allCategoriesPath);
-            Dictionary<string, List<SubCategory>> oldCategories = JsonConvert.DeserializeObject<Dictionary<string, List<SubCategory>>>(jsonData);
+            Dictionary<string, List<SubDiraction>> oldCategories = JsonConvert.DeserializeObject<Dictionary<string, List<SubDiraction>>>(jsonData);
             foreach (var newMainCategory in newCategories)
             {
                 foreach (var newSubCategory in newMainCategory.Value)
@@ -195,18 +206,6 @@ namespace WSMS.Services
             return newCategories;
         }
 
-        public static int GetRowIndex(string customerID, IList<IList<object>>? pullValues)
-        {
-            for (int i = 0; i < pullValues.Count; i++)
-            {
-
-                if (pullValues[i][0].ToString() == customerID)
-                {
-                    return i + 2;
-                }
-            }
-            return -1;
-        }
         public static IList<object> ConvertToList(Customer customer)
         {
             IList<object> result = new List<object>();
@@ -223,7 +222,7 @@ namespace WSMS.Services
             try
             {
                 if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
-                if (AllCustomers.Count == 0) { GetCustomersWithoutGroups(); }
+                if (AllCustomers.Count == 0) { CustomersRepository.Instance.GetCustomers(); }
                 using StreamWriter writer = new StreamWriter($"{FolderPath}\\dbCustomers.csv");
                 // header
                 writer.WriteLine("Notes\tName\tPhone 1 - Value\tPhone 2 - Value\tPhone 3 - Value\tGroup Membership\t " +
@@ -243,9 +242,9 @@ namespace WSMS.Services
                 Logger.ShowMyReportMessageBox(ex.Message, "CustomerService", "ImportToCSV Error");
             }
         }
-        public static ObservableCollection<CustomersCategoryFull> LoadAllCategories()
+        public static ObservableCollection<MainDiractionFull> LoadAllCategories()
         {
-            ObservableCollection<CustomersCategoryFull> categoriesFullCollection = new();
+            ObservableCollection<MainDiractionFull> categoriesFullCollection = new();
             try
             {
                 string filePath = FolderPath + "\\all categories.json";
@@ -260,15 +259,15 @@ namespace WSMS.Services
                     var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
                     foreach (var key in s.Keys)
                     {
-                        categoriesFullCollection.Add(new CustomersCategoryFull(key, new ObservableCollection<SubCategory>()));
+                        categoriesFullCollection.Add(new MainDiractionFull(key, new ObservableCollection<SubDiraction>()));
 
                         foreach (var item in s[key])
                         {
                             foreach (var item2 in categoriesFullCollection)
                             {
-                                if (item2.MainCategory == key)
+                                if (item2.MainDiraction == key)
                                 {
-                                    item2.SubCategories.Add(new SubCategory(item));
+                                    item2.SubDiractions.Add(new SubDiraction(item));
                                 }
                             }
                         }
@@ -282,6 +281,19 @@ namespace WSMS.Services
                 return categoriesFullCollection;
             }
         }
-        
+
+        internal static Dictionary<string, Dictionary<string, List<Customer>>> GetMainDB()
+        {
+            try
+            {
+                string dbPath = FolderPath + "\\mainDB.json";
+                if (!File.Exists(dbPath)) { GoogleSheetsAPI.PulldbCustomers(); }
+                string jsonData;
+                using StreamReader reader = new(dbPath);
+                jsonData = reader.ReadToEnd();
+                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Customer>>>>(jsonData);
+            }
+            catch { return new Dictionary<string, Dictionary<string, List<Customer>>>(); }
+        }
     }
 }
