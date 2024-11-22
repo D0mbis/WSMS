@@ -12,10 +12,10 @@ namespace WSMS.ViewModels
     public class CustomersViewModel : Model
     {
         private readonly CustomersRepository Repository = CustomersRepository.Instance;
-        private ObservableCollection<Customer> customers;
-        private string searchText;
-        private Customer selectedCustomer;
-        private ICollectionView customersView;
+        private ObservableCollection<Customer>? customers;
+        private string? searchText;
+        private Customer? selectedCustomer;
+        private ICollectionView? customersView;
         public ObservableCollection<Customer> Customers
         {
             get => customers;

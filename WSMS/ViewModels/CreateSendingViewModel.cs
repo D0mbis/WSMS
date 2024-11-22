@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using WSMS.Models;
 using WSMS.Models.Base;
 
 namespace WSMS.ViewModels
 {
-    class CreateSendingViewModel : Model
+    public class CreateSendingViewModel : Model
     {
-        private List<SubDiraction>? subCategoriesList;
-        public List<SubDiraction>? SubCategoriesList { get => subCategoriesList; set => Set(ref subCategoriesList, value); }
+        private ObservableCollection<SubDiraction>? subDiractions;
+        public ObservableCollection<SubDiraction>? SubDiractions { get => subDiractions; set => Set(ref subDiractions, value); }
 
-        CreateSendingViewModel()
+        public CreateSendingViewModel()
         {
-            SubCategoriesList = new List<SubDiraction>();
+            SubDiractions = CustomersRepository.Instance.GetSubDiractions();
         }
     }
 }

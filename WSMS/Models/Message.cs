@@ -38,6 +38,6 @@ namespace WSMS.Models
                 Set(ref image, value);
             }
         }
-        public ObservableCollection<MainDiractionFull>? Categories { get; set; }
+        public ObservableCollection<MainDiraction>? Diractions { get; set; }
     }
 }

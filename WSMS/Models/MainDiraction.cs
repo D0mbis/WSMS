@@ -6,11 +6,11 @@ using WSMS.Models.Base;
 
 namespace WSMS.Models
 {
-    public class MainDiractionFull : Model
+    public class MainDiraction : Model
     {
         [JsonProperty(Order = 1)]
-        public string MainDiraction { get; set; }
-        private ObservableCollection<SubDiraction> subDiractions;
+        public string Name { get; set; }
+        private ObservableCollection<SubDiraction>? subDiractions;
         [JsonProperty(Order = 2)]
         public ObservableCollection<SubDiraction> SubDiractions
         {
@@ -52,9 +52,9 @@ namespace WSMS.Models
                 }
             }
         }
-        public MainDiractionFull(string mainDiraction, ObservableCollection<SubDiraction> subDiractions)
+        public MainDiraction(string name, ObservableCollection<SubDiraction> subDiractions)
         {
-            MainDiraction = mainDiraction;
+            Name = name;
             SubDiractions = subDiractions;
             IsChecked = true;
         }
@@ -71,9 +71,9 @@ namespace WSMS.Models
 
             if (e.OldItems != null)
             {
-                foreach (SubDiraction subCategory in e.OldItems)
+                foreach (SubDiraction subDiraction in e.OldItems)
                 {
-                    subCategory.PropertyChanged -= SubDiraction_PropertyChanged;
+                    subDiraction.PropertyChanged -= SubDiraction_PropertyChanged;
                 }
             }
 

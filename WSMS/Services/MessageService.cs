@@ -27,7 +27,7 @@ namespace WSMS.Services
                 if (!File.Exists(messagesFilePath))
                 {
                     using FileStream stream = new(messagesFilePath, FileMode.Create);
-                    return new ObservableCollection<MessageWrapper>() { new MessageWrapper(new Message()) };
+                    return new ObservableCollection<MessageWrapper>() { new (new Message()) };
                 }
                 else
                 {
@@ -52,15 +52,15 @@ namespace WSMS.Services
                 return new ObservableCollection<MessageWrapper>() { new(new Message()) };
             }
         }
-        public static ObservableCollection<MainDiractionFull> RemoveUnselectedCategories(ObservableCollection<MainDiractionFull> categories)
+        public static ObservableCollection<MainDiraction> RemoveUnselectedDiractions(ObservableCollection<MainDiraction> diractions)
         {
-            var sortedCategories = categories
-                        .OrderBy(c => c.MainDiraction).Where(c => c.IsChecked);
-            var finaly = new ObservableCollection<MainDiractionFull>();
-            foreach (var fullCategory in sortedCategories)
+            var sortedDiractions = diractions
+                        .OrderBy(c => c.Name).Where(c => c.IsChecked);
+            var finaly = new ObservableCollection<MainDiraction>();
+            foreach (var fullDiraction in sortedDiractions)
             {
-                var temp = fullCategory.SubDiractions.OrderBy(c => c.Name).Where(c => c.IsChecked);
-                finaly.Add(new MainDiractionFull(fullCategory.MainDiraction, new ObservableCollection<SubDiraction>(temp)));
+                var temp = fullDiraction.SubDiractions.OrderBy(c => c.Name).Where(c => c.IsChecked);
+                finaly.Add(new MainDiraction(fullDiraction.Name, new ObservableCollection<SubDiraction>(temp)));
             }
             return finaly;
         }
@@ -182,16 +182,16 @@ namespace WSMS.Services
             }
             return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
-        public static ObservableCollection<MainDiractionFull> ChangeIsCheck(ObservableCollection<MainDiractionFull> customersCategories, bool flag)
+        public static ObservableCollection<MainDiraction> ChangeIsCheck(ObservableCollection<MainDiraction> customersDiractions, bool flag)
         {
-            foreach (var mainCategory in customersCategories)
+            foreach (var mainDiraction in customersDiractions)
             {
-                foreach (var category in mainCategory.SubDiractions)
+                foreach (var diraction in mainDiraction.SubDiractions)
                 {
-                    category.IsChecked = flag;
+                    diraction.IsChecked = flag;
                 }
             }
-            return customersCategories;
+            return customersDiractions;
         }
         public static void StartSending(Message message)
         {

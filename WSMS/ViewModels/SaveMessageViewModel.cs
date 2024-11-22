@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
@@ -16,11 +12,11 @@ namespace WSMS.ViewModels
 {
     public class SaveMessageViewModel : Model
     {
-        private readonly VMUpdateService VMUpdateService;
-        private MessageWrapper message;
+        private readonly VMUpdateService? VMUpdateService;
+        private MessageWrapper? message;
         public MessageWrapper Message
         {
-            get => message;
+            get => message ?? new(new());
             set
             {
                 Set(ref message, value);
@@ -30,16 +26,16 @@ namespace WSMS.ViewModels
         private string selectAllButtonContent = "Unselect all";
         public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
 
-        private ObservableCollection<MainDiractionFull> customersCategories;
-        public ObservableCollection<MainDiractionFull> CustomersCategories
+        private ObservableCollection<MainDiraction>? customersDiractions;
+        public ObservableCollection<MainDiraction> CustomersDiractions
         {
-            get => customersCategories;
+            get => customersDiractions ?? new();
             set
             {
-                if (customersCategories != value)
+                if (customersDiractions != value)
                 {
 
-                    Set(ref customersCategories, value);
+                    Set(ref customersDiractions, value);
                 }
             }
         }
@@ -54,7 +50,7 @@ namespace WSMS.ViewModels
         }
         private void OnSaveMessageCommandExecuted(object p)
         {
-            Message.Message.Categories = MessageService.RemoveUnselectedCategories(CustomersCategories);
+            Message.Message.Diractions = MessageService.RemoveUnselectedDiractions(CustomersDiractions);
             MessageService.UpdateMessages(Message);
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
 
@@ -82,16 +78,16 @@ namespace WSMS.ViewModels
                 SelectAllButtonContent = "Select all";
                 flag = false;
             }
-            CustomersCategories = MessageService.ChangeIsCheck(CustomersCategories, flag);
+            CustomersDiractions = MessageService.ChangeIsCheck(CustomersDiractions, flag);
         }
         #endregion
 
         public SaveMessageViewModel(MessageWrapper message, VMUpdateService dataService)
         {
             VMUpdateService = dataService;
-            CustomersCategories = CustomersService.LoadAllCategories();
+            CustomersDiractions = CustomersRepository.Instance.AllDataBase ?? new();
             Message = message;
-            SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted,CanSaveMessageCommandExecute);
+            SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
             SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted);
 
         }

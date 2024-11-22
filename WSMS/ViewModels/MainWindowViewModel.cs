@@ -11,7 +11,6 @@ using System.Windows.Data;
 using WSMS.Infrastructure.Commands.Base;
 using System.Linq;
 using WSMS.Infrastructure.Other;
-using WSMS.Views;
 
 namespace WSMS.ViewModels
 {
@@ -31,8 +30,8 @@ namespace WSMS.ViewModels
         private string driverBtnContent = "Start browser";
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
         #endregion
-        private ObservableCollection<MainDiractionFull> customersCategories;
-        public ObservableCollection<MainDiractionFull> CustomersCategories
+        private ObservableCollection<MainDiraction> customersCategories;
+        public ObservableCollection<MainDiraction> CustomersCategories
         {
             get => customersCategories;
             set
@@ -104,18 +103,18 @@ namespace WSMS.ViewModels
         private void OnStartBrowserCommandExecuted(object p)
         {
 
-          /*  AccountsSettings accountsSettings = new AccountsSettings();
-            accountsSettings.Show();*/
-           /* if (DriverBtnContent == "Start browser")
-            {
-                WebService.OpenBrowser();
-                DriverBtnContent = "Close browser";
-            }
-            else
-            {
-                WebService.CloseBrowser();
-                DriverBtnContent = "Start browser";
-            }*/
+            CreateSendingWindow createSendingWindow = new ();
+            createSendingWindow.Show();
+            /* if (DriverBtnContent == "Start browser")
+             {
+                 WebService.OpenBrowser();
+                 DriverBtnContent = "Close browser";
+             }
+             else
+             {
+                 WebService.CloseBrowser();
+                 DriverBtnContent = "Start browser";
+             }*/
         }
         #endregion
         #region Start sending Command
@@ -243,7 +242,5 @@ namespace WSMS.ViewModels
             ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);
             CloseApplicationCommand = new MyActionCommand(OnCloseApplicationExecuted);
         }
-
-
     }
 }

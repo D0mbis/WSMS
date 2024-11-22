@@ -17,9 +17,7 @@ namespace WSMS.Views.Windows
         public SaveMessageWindow(MessageWrapper message, VMUpdateService vMUpdateService)
         {
             InitializeComponent();
-            
-            var saveMessageViewModel = new SaveMessageViewModel(message, vMUpdateService);
-            this.DataContext = saveMessageViewModel;
+            DataContext = new SaveMessageViewModel(message, vMUpdateService);
         }
 
         

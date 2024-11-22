@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:WSMS.Views.Windows"
         xmlns:s="clr-namespace:WSMS.Services"
         xmlns:vm="clr-namespace:WSMS.ViewModels" 
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
     Title="New Message" Height="600" Width="330">
     <Grid>
@@ -32,7 +32,7 @@
             <Button Content="{Binding SelectAllButtonContent}" Command="{Binding SelectAllCommand}" CommandParameter="{Binding}"
                     Style="{StaticResource ResourceKey=LinkButtonStyle}" FontSize="16" VerticalAlignment="Top" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
-                <ItemsControl ItemsSource="{Binding CustomersCategories}">
+                <ItemsControl ItemsSource="{Binding CustomersDiractions}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate >
                             <Expander IsExpanded="False">
@@ -41,12 +41,12 @@
                                         <StackPanel Orientation="Horizontal" Width="Auto">
                                             <CheckBox Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Name="chk"
                                                       IsChecked="{Binding Path=DataContext.IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}},Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      Content="{Binding Path=DataContext.MainCategory, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}}">
+                                                      Content="{Binding Path=DataContext.Name, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}}">
                                             </CheckBox>
                                         </StackPanel>
                                     </DataTemplate>
                                 </Expander.HeaderTemplate>
-                                <ItemsControl ItemsSource="{Binding SubCategories}">
+                                <ItemsControl ItemsSource="{Binding SubDiractions}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="15,0,0,0">

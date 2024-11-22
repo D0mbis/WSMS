@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WSMS.Models
+﻿namespace WSMS.Models
 {
     public class Customer
     {
@@ -17,19 +11,5 @@ namespace WSMS.Models
         public string? SubDiraction { get; set; } 
         public string? Address { get; set; }
         public bool IsSelected { get; set; } = false;
-
-        public Customer() { }
-        public Customer(string id, string name, string phoneNumber1, string phoneNumber2, string phoneNumber3, 
-            string mainDiraction, string subDiraction, string address)
-        {
-            ID = id;
-            Name = name;
-            PhoneNumber1 = phoneNumber1;
-            PhoneNumber2 = phoneNumber2;
-            PhoneNumber3 = phoneNumber3;
-            MainDiraction = mainDiraction;
-            SubDiraction = subDiraction;
-            Address = address;
-        }
     }
 }

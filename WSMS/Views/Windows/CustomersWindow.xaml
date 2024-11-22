@@ -21,9 +21,9 @@
         <TextBox Grid.Row="0" Margin="10" HorizontalAlignment="Right" Width="200" Height="25"  
                  Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
         <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" Width="200" Height="30"
-                Content="Pull from Excel DB" Command="{Binding PullCustomersFromRemote}"/>
+                Content="Pull main DB fom Excel" Command="{Binding PullCustomersFromRemote}"/>
         <Button x:Name="PushtoExcelDB" Grid.Row="0" Margin="220,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
-                Content="Push to Excel DB" Command="{Binding PushSelectedCustomerToRemoteExcel}"/>
+                Content="Push selected customer" Command="{Binding PushSelectedCustomerToRemoteExcel}"/>
         <Button Grid.Row="0" Margin="430,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"
                 Content="Add new credentials" Command="{Binding AddNewCredentials}"/>
         <Button Grid.Row="0" Margin="640,10,10,10" HorizontalAlignment="Left" Width="200" Height="30"

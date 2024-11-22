@@ -19,7 +19,6 @@ namespace WSMS.Models
         public ObservableCollection<Customer> Customers { get; set; }
         
         private bool isChecked;
-        //private string name;
 
         [JsonIgnore]
         public bool IsChecked
@@ -33,7 +32,7 @@ namespace WSMS.Models
                 }
             }
         }
-        public SubDiraction(string name, DateTime? lastSending = default, ObservableCollection<Customer>? customers = default)
+        public SubDiraction(string name, ObservableCollection<Customer>? customers = default, DateTime? lastSending = default)
         {
             IsChecked = true;
             Name = name;
