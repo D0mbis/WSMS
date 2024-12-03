@@ -1,4 +1,6 @@
-﻿namespace WSMS.Models
+﻿using Newtonsoft.Json;
+
+namespace WSMS.Models
 {
     public class Customer
     {
@@ -7,9 +9,10 @@
         public string? PhoneNumber1 { get; set; }
         public string? PhoneNumber2 { get; set; }
         public string? PhoneNumber3 { get; set; }
-        public string? MainDiraction { get; set; }
-        public string? SubDiraction { get; set; } 
+        public string? MainDirection { get; set; }
+        public string? SubDirection { get; set; } 
         public string? Address { get; set; }
-        public bool IsSelected { get; set; } = false;
+        [JsonIgnore]
+        public bool IsSelected { get; set; }
     }
 }

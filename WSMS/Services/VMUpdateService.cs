@@ -8,7 +8,7 @@ namespace WSMS.Services
 {
     public class VMUpdateService
     {
-        public event Action DataUpdated;
+        public event Action? DataUpdated;
 
         public void UpdateData()
         {

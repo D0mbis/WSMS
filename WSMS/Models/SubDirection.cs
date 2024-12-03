@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Xml.Linq;
 using WSMS.Models.Base;
 
 namespace WSMS.Models
@@ -12,7 +8,7 @@ namespace WSMS.Models
     /// <summary>
     /// Sub categories for Message
     /// </summary>
-    public class SubDiraction : Model
+    public class SubDirection : Model
     {
         public string Name { get; set; }
         public DateTime? LastSending { get; set; }
@@ -32,9 +28,10 @@ namespace WSMS.Models
                 }
             }
         }
-        public SubDiraction(string name, ObservableCollection<Customer>? customers = default, DateTime? lastSending = default)
+
+        public SubDirection(string name, ObservableCollection<Customer>? customers = default, DateTime? lastSending = default)
         {
-            IsChecked = true;
+            IsChecked = false;
             Name = name;
             LastSending = lastSending ?? new DateTime(2024, 11, 5).Date;
             Customers = customers ?? new ObservableCollection<Customer>();

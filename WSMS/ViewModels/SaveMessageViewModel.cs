@@ -26,16 +26,16 @@ namespace WSMS.ViewModels
         private string selectAllButtonContent = "Unselect all";
         public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
 
-        private ObservableCollection<MainDiraction>? customersDiractions;
-        public ObservableCollection<MainDiraction> CustomersDiractions
+        private ObservableCollection<MainDirection>? customersDirections;
+        public ObservableCollection<MainDirection> CustomersDirections
         {
-            get => customersDiractions ?? new();
+            get => customersDirections ?? new();
             set
             {
-                if (customersDiractions != value)
+                if (customersDirections != value)
                 {
 
-                    Set(ref customersDiractions, value);
+                    Set(ref customersDirections, value);
                 }
             }
         }
@@ -50,12 +50,12 @@ namespace WSMS.ViewModels
         }
         private void OnSaveMessageCommandExecuted(object p)
         {
-            Message.Message.Diractions = MessageService.RemoveUnselectedDiractions(CustomersDiractions);
+            Message.Message.Directions = MessageService.RemoveUnselectedDirections(CustomersDirections);
             MessageService.UpdateMessages(Message);
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
 
             window?.Close();
-            VMUpdateService.UpdateData();
+            VMUpdateService?.UpdateData();
             //Message = new MessageWrapper(new Message());
         }
         #endregion
@@ -78,14 +78,14 @@ namespace WSMS.ViewModels
                 SelectAllButtonContent = "Select all";
                 flag = false;
             }
-            CustomersDiractions = MessageService.ChangeIsCheck(CustomersDiractions, flag);
+            CustomersDirections = MessageService.ChangeIsCheck(CustomersDirections, flag);
         }
         #endregion
 
         public SaveMessageViewModel(MessageWrapper message, VMUpdateService dataService)
         {
             VMUpdateService = dataService;
-            CustomersDiractions = CustomersRepository.Instance.AllDataBase ?? new();
+            CustomersDirections = CustomersRepository.Instance.AllDataBase ?? new();
             Message = message;
             SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
             SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted);

@@ -2,13 +2,18 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Customer properties -->
-    
+
     <DataTemplate x:Key="DTCustomer_ID">
         <Grid>
             <TextBox Text="{Binding ID, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource TextBoxCustomer}"/>
             <TextBlock Text="{Binding ID, UpdateSourceTrigger=PropertyChanged}" Width="60" 
                     Style="{StaticResource TextBlockCustomer}"/>
+        </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="DTCustomer_IsSelected">
+        <Grid>
+            <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="DTCustomer_Name">
@@ -43,19 +48,19 @@
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="DTCustomer_MainDiraction">
+    <DataTemplate x:Key="DTCustomer_MainDirection">
         <Grid>
-            <TextBox Text="{Binding MainDiraction, UpdateSourceTrigger=PropertyChanged}"
+            <TextBox Text="{Binding MainDirection, UpdateSourceTrigger=PropertyChanged}"
              Style="{StaticResource TextBoxCustomer}"/>
-            <TextBlock Text="{Binding MainDiraction, UpdateSourceTrigger=PropertyChanged}" Width="120" 
+            <TextBlock Text="{Binding MainDirection, UpdateSourceTrigger=PropertyChanged}" Width="120" 
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="DTCustomer_SubDiraction">
+    <DataTemplate x:Key="DTCustomer_SubDirection">
         <Grid>
-            <TextBox Text="{Binding SubDiraction, UpdateSourceTrigger=PropertyChanged}" 
+            <TextBox Text="{Binding SubDirection, UpdateSourceTrigger=PropertyChanged}" 
              Style="{StaticResource TextBoxCustomer}"/>
-            <TextBlock Text="{Binding SubDiraction, UpdateSourceTrigger=PropertyChanged}" Width="120" 
+            <TextBlock Text="{Binding SubDirection, UpdateSourceTrigger=PropertyChanged}" Width="120" 
                 Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>

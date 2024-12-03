@@ -38,8 +38,8 @@
                     <GridViewColumn Header="Phone №1" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber1}" />
                     <GridViewColumn Header="Phone №2" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber2}" />
                     <GridViewColumn Header="Phone №3" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber3}" />
-                    <GridViewColumn Header="MainDiraction" CellTemplate="{StaticResource ResourceKey=DTCustomer_MainDiraction}" />
-                    <GridViewColumn Header="SubDiraction" CellTemplate="{StaticResource ResourceKey=DTCustomer_SubDiraction}" />
+                    <GridViewColumn Header="MainDirection" CellTemplate="{StaticResource ResourceKey=DTCustomer_MainDirection}" />
+                    <GridViewColumn Header="SubDirection" CellTemplate="{StaticResource ResourceKey=DTCustomer_SubDirection}" />
                     <GridViewColumn Header="Address" CellTemplate="{StaticResource ResourceKey=DTCustomer_Address}" />
                     <!--    
                 -->

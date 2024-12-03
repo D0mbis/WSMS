@@ -1,0 +1,29 @@
+﻿<Window x:Class="WSMS.Views.Windows.SelectedDirectionCustomersWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WSMS.Views.Windows"
+        xmlns:vm="clr-namespace:WSMS.ViewModels"
+        mc:Ignorable="d"
+        Title="SelectedDirectionCustomersWindow" Height="800" Width="1500">
+    <Grid>
+        <ListView x:Name="CuntactsListView" Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" 
+          ItemsSource="{Binding CustomersView, UpdateSourceTrigger=PropertyChanged}"
+          SelectedItem="{Binding SelectedCustomer,  UpdateSourceTrigger=PropertyChanged}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="✅" CellTemplate="{StaticResource ResourceKey=DTCustomer_IsSelected}" Width="30"/>
+                    <GridViewColumn Header="ID" CellTemplate="{StaticResource ResourceKey=DTCustomer_ID}" />
+                    <GridViewColumn Header="Name" CellTemplate="{StaticResource ResourceKey=DTCustomer_Name}" />
+                    <GridViewColumn Header="Phone №1" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber1}" />
+                    <GridViewColumn Header="Phone №2" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber2}" />
+                    <GridViewColumn Header="Phone №3" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber3}" />
+                    <GridViewColumn Header="Address" CellTemplate="{StaticResource ResourceKey=DTCustomer_Address}" />
+                    <GridViewColumn Header="MainDirection" CellTemplate="{StaticResource ResourceKey=DTCustomer_MainDirection}" />
+                    <GridViewColumn Header="SubDirection" CellTemplate="{StaticResource ResourceKey=DTCustomer_SubDirection}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

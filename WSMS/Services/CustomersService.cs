@@ -84,27 +84,27 @@ namespace WSMS.Services
         /// </summary>
         /// <param name="values">Values from Excel table</param>
         /// <returns></returns>
-        /* private static void SaveAllDiractions(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
+        /* private static void SaveAllDirections(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
          {
-             Dictionary<string, List<SubDiraction>> result = mainDB.ToDictionary(
-                     outerKey => outerKey.Key, // Ключ MainDiraction остаётся таким же
-                     outerValue => outerValue.Value.Select(inner => new SubDiraction(inner.Key)).ToList()); // Преобразуем в List<SubDiraction>
-             string allDiractionsPath = FolderPath + "\\all diractions.json";
-             if (File.Exists(allDiractionsPath) && result.Count > 0)
+             Dictionary<string, List<SubDirection>> result = mainDB.ToDictionary(
+                     outerKey => outerKey.Key, // Ключ MainDirection остаётся таким же
+                     outerValue => outerValue.Value.Select(inner => new SubDirection(inner.Key)).ToList()); // Преобразуем в List<SubDirection>
+             string allDirectionsPath = FolderPath + "\\all directions.json";
+             if (File.Exists(allDirectionsPath) && result.Count > 0)
              {
-                 result = UpdateDiractionsDateTime(allDiractionsPath, result);
-                 string allDiractionsJson = JsonConvert.SerializeObject(result, Formatting.Indented);
-                 using StreamWriter stream = new(allDiractionsPath);
-                 stream.Write(allDiractionsJson);
+                 result = UpdateDirectionsDateTime(allDirectionsPath, result);
+                 string allDirectionsJson = JsonConvert.SerializeObject(result, Formatting.Indented);
+                 using StreamWriter stream = new(allDirectionsPath);
+                 stream.Write(allDirectionsJson);
              }
 
          }*/
-        /* public static ObservableCollection<MainDiraction> LoadAllDiractions()
+        /* public static ObservableCollection<MainDirection> LoadAllDirections()
          {
-             ObservableCollection<MainDiraction> diractionsFullCollection = new();
+             ObservableCollection<MainDirection> directionsFullCollection = new();
              try
              {
-                 string filePath = FolderPath + "\\all diractions.json";
+                 string filePath = FolderPath + "\\all directions.json";
                  if (!File.Exists(filePath)) { GoogleSheetsAPI.PulldbCustomers(); }
                  string data;
                  using (StreamReader reader = new(filePath))
@@ -116,26 +116,26 @@ namespace WSMS.Services
                      var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
                      foreach (var key in s.Keys)
                      {
-                         diractionsFullCollection.Add(new MainDiraction(key, new ObservableCollection<SubDiraction>()));
+                         directionsFullCollection.Add(new MainDirection(key, new ObservableCollection<SubDirection>()));
 
                          foreach (var item in s[key])
                          {
-                             foreach (var item2 in diractionsFullCollection)
+                             foreach (var item2 in directionsFullCollection)
                              {
                                  if (item2.Name == key)
                                  {
-                                     item2.SubDiractions.Add(new SubDiraction(item));
+                                     item2.SubDirections.Add(new SubDirection(item));
                                  }
                              }
                          }
                      }
                  }
-                 return diractionsFullCollection;
+                 return directionsFullCollection;
              }
              catch (Exception e)
              {
-                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllDiractions");
-                 return diractionsFullCollection;
+                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllDirections");
+                 return directionsFullCollection;
              }
          }*/
         public static Dictionary<string, Dictionary<string, List<Customer>>> GetMainDBFromExcelValues(IList<IList<object>> values)
@@ -148,19 +148,19 @@ namespace WSMS.Services
                     foreach (var row in values)
                     {
                         var customer = ExcelRowToCustomer(row);
-                        if (!mainDB.ContainsKey(customer.MainDiraction))
+                        if (!mainDB.ContainsKey(customer.MainDirection))
                         {
-                            mainDB.Add(customer.MainDiraction, new Dictionary<string, List<Customer>>() { { customer.MainDiraction, new List<Customer>() { customer } } });
+                            mainDB.Add(customer.MainDirection, new Dictionary<string, List<Customer>>() { { customer.MainDirection, new List<Customer>() { customer } } });
                             continue;
                         }
 
-                        if (!mainDB[customer.MainDiraction].ContainsKey(customer.SubDiraction))
+                        if (!mainDB[customer.MainDirection].ContainsKey(customer.SubDirection))
                         {
-                            mainDB[customer.MainDiraction].Add(customer.SubDiraction, new List<Customer>() { customer });
+                            mainDB[customer.MainDirection].Add(customer.SubDirection, new List<Customer>() { customer });
                         }
                         else
                         {
-                            mainDB[customer.MainDiraction][customer.SubDiraction].Add(customer);
+                            mainDB[customer.MainDirection][customer.SubDirection].Add(customer);
                         }
 
                     }
@@ -195,8 +195,8 @@ namespace WSMS.Services
                 PhoneNumber1 = row[2]?.ToString() ?? "",
                 PhoneNumber2 = row[3]?.ToString() ?? "",
                 PhoneNumber3 = row[4]?.ToString() ?? "",
-                MainDiraction = row[5]?.ToString() ?? "",
-                SubDiraction = row[6]?.ToString() ?? "",
+                MainDirection = row[5]?.ToString() ?? "",
+                SubDirection = row[6]?.ToString() ?? "",
                 Address = row[7]?.ToString() ?? ""
             };
         }
@@ -241,49 +241,53 @@ namespace WSMS.Services
             try
             {
                 string dbPath = FolderPath + "\\mainDB.json";
-                if (!File.Exists(dbPath)) { GoogleSheetsAPI.PulldbCustomers(); }
-                string jsonData;
-                using StreamReader reader = new(dbPath);
-                jsonData = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Customer>>>>(jsonData);
+                if (File.Exists(dbPath))
+                {
+                    /* if (!File.Exists(dbPath)) { GoogleSheetsAPI.PulldbCustomers(); }*/ //TEMP!!
+                    string jsonData;
+                    using StreamReader reader = new(dbPath);
+                    jsonData = reader.ReadToEnd();
+                    return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, List<Customer>>>>(jsonData);
+                }
+                return new();
             }
             catch { return new Dictionary<string, Dictionary<string, List<Customer>>>(); }
         }
 
         public static void SaveNewDBCustomers(Dictionary<string, Dictionary<string, List<Customer>>> receivedBD)
         {
-            string allDiractionsSortedJson = JsonConvert.SerializeObject(receivedBD, Formatting.Indented);
+            string allDirectionsSortedJson = JsonConvert.SerializeObject(receivedBD, Formatting.Indented);
             if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
             using StreamWriter stream = new(FolderPath + "\\mainDB.json");
-            stream.Write(allDiractionsSortedJson);
+            stream.Write(allDirectionsSortedJson);
         }
-        private static Dictionary<string, List<SubDiraction>> UpdateDiractionsDateTime(string allDiractionsPath, Dictionary<string, List<SubDiraction>> newDiractions)
+        private static Dictionary<string, List<SubDirection>> UpdateDirectionsDateTime(string allDirectionsPath, Dictionary<string, List<SubDirection>> newDirections)
         {
             string jsonData;
-            using (FileStream fs = new(allDiractionsPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            using (FileStream fs = new(allDirectionsPath, FileMode.Open, FileAccess.Read, FileShare.None))
             {
                 using StreamReader reader = new(fs);
                 jsonData = reader.ReadToEnd();
             }
-            File.Delete(allDiractionsPath);
-            Dictionary<string, List<SubDiraction>> oldDiractions = JsonConvert.DeserializeObject<Dictionary<string, List<SubDiraction>>>(jsonData);
-            foreach (var newMainDiraction in newDiractions)
+            File.Delete(allDirectionsPath);
+            Dictionary<string, List<SubDirection>> oldDirections = JsonConvert.DeserializeObject<Dictionary<string, List<SubDirection>>>(jsonData);
+            foreach (var newMainDirection in newDirections)
             {
-                foreach (var newSubDiraction in newMainDiraction.Value)
+                foreach (var newSubDirection in newMainDirection.Value)
                 {
-                    foreach (var oldSubDiractionList in oldDiractions.Values)
+                    foreach (var oldSubDirectionList in oldDirections.Values)
                     {
-                        foreach (var oldSubDiraction in oldSubDiractionList)
+                        foreach (var oldSubDirection in oldSubDirectionList)
                         {
-                            if (oldSubDiraction.Name == newSubDiraction.Name)
+                            if (oldSubDirection.Name == newSubDirection.Name)
                             {
-                                newSubDiraction.LastSending = oldSubDiraction.LastSending;
+                                newSubDirection.LastSending = oldSubDirection.LastSending;
                             }
                         }
                     }
                 }
             }
-            return newDiractions;
+            return newDirections;
         }
     }
 }

@@ -30,8 +30,8 @@ namespace WSMS.ViewModels
         private string driverBtnContent = "Start browser";
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
         #endregion
-        private ObservableCollection<MainDiraction> customersCategories;
-        public ObservableCollection<MainDiraction> CustomersCategories
+        private ObservableCollection<MainDirection> customersCategories;
+        public ObservableCollection<MainDirection> CustomersCategories
         {
             get => customersCategories;
             set

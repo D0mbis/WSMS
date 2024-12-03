@@ -52,15 +52,15 @@ namespace WSMS.Services
                 return new ObservableCollection<MessageWrapper>() { new(new Message()) };
             }
         }
-        public static ObservableCollection<MainDiraction> RemoveUnselectedDiractions(ObservableCollection<MainDiraction> diractions)
+        public static ObservableCollection<MainDirection> RemoveUnselectedDirections(ObservableCollection<MainDirection> directions)
         {
-            var sortedDiractions = diractions
+            var sortedDirections = directions
                         .OrderBy(c => c.Name).Where(c => c.IsChecked);
-            var finaly = new ObservableCollection<MainDiraction>();
-            foreach (var fullDiraction in sortedDiractions)
+            var finaly = new ObservableCollection<MainDirection>();
+            foreach (var fullDirection in sortedDirections)
             {
-                var temp = fullDiraction.SubDiractions.OrderBy(c => c.Name).Where(c => c.IsChecked);
-                finaly.Add(new MainDiraction(fullDiraction.Name, new ObservableCollection<SubDiraction>(temp)));
+                var temp = fullDirection.SubDirections.OrderBy(c => c.Name).Where(c => c.IsChecked);
+                finaly.Add(new MainDirection(fullDirection.Name, new ObservableCollection<SubDirection>(temp)));
             }
             return finaly;
         }
@@ -182,16 +182,16 @@ namespace WSMS.Services
             }
             return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
-        public static ObservableCollection<MainDiraction> ChangeIsCheck(ObservableCollection<MainDiraction> customersDiractions, bool flag)
+        public static ObservableCollection<MainDirection> ChangeIsCheck(ObservableCollection<MainDirection> customersDirections, bool flag)
         {
-            foreach (var mainDiraction in customersDiractions)
+            foreach (var mainDirection in customersDirections)
             {
-                foreach (var diraction in mainDiraction.SubDiractions)
+                foreach (var direction in mainDirection.SubDirections)
                 {
-                    diraction.IsChecked = flag;
+                    direction.IsChecked = flag;
                 }
             }
-            return customersDiractions;
+            return customersDirections;
         }
         public static void StartSending(Message message)
         {

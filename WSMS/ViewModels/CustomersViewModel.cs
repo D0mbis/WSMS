@@ -125,8 +125,8 @@ namespace WSMS.ViewModels
                                customer.PhoneNumber1.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber2.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.PhoneNumber3.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.MainDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                               customer.SubDiraction.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                               customer.MainDirection.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                               customer.SubDirection.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
                                customer.Address.Contains(SearchText, StringComparison.OrdinalIgnoreCase); 
                     }
                     return false;

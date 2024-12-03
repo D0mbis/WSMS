@@ -50,13 +50,8 @@ namespace WSMS.Models
 
             if (e.PropertyName == nameof(Message.Text) || e.PropertyName == nameof(Message.ImagePath))
             {
-                IsChanged = !string.Equals(OldTextMessage, Message.Text    ) || !string.Equals(OldImagePath, Message.ImagePath);
+                IsChanged = !string.Equals(OldTextMessage, Message.Text) || !string.Equals(OldImagePath, Message.ImagePath);
             }
         }
     }
-
-
-
-
-
 }

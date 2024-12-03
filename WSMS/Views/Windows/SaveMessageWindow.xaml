@@ -32,7 +32,7 @@
             <Button Content="{Binding SelectAllButtonContent}" Command="{Binding SelectAllCommand}" CommandParameter="{Binding}"
                     Style="{StaticResource ResourceKey=LinkButtonStyle}" FontSize="16" VerticalAlignment="Top" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
-                <ItemsControl ItemsSource="{Binding CustomersDiractions}">
+                <ItemsControl ItemsSource="{Binding CustomersDirections}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate >
                             <Expander IsExpanded="False">
@@ -46,7 +46,7 @@
                                         </StackPanel>
                                     </DataTemplate>
                                 </Expander.HeaderTemplate>
-                                <ItemsControl ItemsSource="{Binding SubDiractions}">
+                                <ItemsControl ItemsSource="{Binding SubDirections}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="15,0,0,0">

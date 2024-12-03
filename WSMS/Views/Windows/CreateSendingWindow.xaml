@@ -15,12 +15,21 @@
 
         <!-- Верхняя панель с кнопками выбора -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
-            <Button Content="Выбранные направления.." Width="200" Margin="5"/>
-            <Button Content="Выбранное сообщение.." Width="200" Margin="5"/>
-            <ComboBox Width="200" Margin="5">
-                <ComboBoxItem Content="Выбран аккаунт.." />
-            </ComboBox>
-            <Button Content="+" Width="30" Height="30" Margin="5"/>
+            <StackPanel Margin="10">
+                <TextBlock Text="Выбрано контактов:" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding SelectedContactsCount}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Margin="10">
+                <TextBlock Text="Выбранное сообщение:" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding SelectedMessage}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Margin="10">
+                <TextBlock Text="Выбранный аккаунт:" VerticalAlignment="Center"/>
+                <ComboBox Width="200" Margin="5">
+                    <ComboBoxItem Content="Выбран аккаунт.." />
+                </ComboBox>
+            </StackPanel>
+            <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding AddCommand}"/>
         </StackPanel>
 
         <!-- Основной контент -->
@@ -31,31 +40,61 @@
             </Grid.ColumnDefinitions>
 
             <!-- Список направлений -->
-            <DataGrid x:Name="DiractionsGrid" 
+            <DataGrid x:Name="DirectionsGrid" 
                       AutoGenerateColumns="False" 
                       HeadersVisibility="Column"
-                      ItemsSource="{Binding SubDiractions}" 
+                      ItemsSource="{Binding SubDirections}" 
                       Margin="5" 
                       Background="White" 
-                      BorderBrush="#A8A8A8" 
-                      BorderThickness="1">  
-                    <DataGrid.Columns>
-                    <!-- Bind to the Name property of SubDiraction -->
-                    <DataGridTextColumn Header="Направления" Binding="{Binding Name}" Width="*"/>
+                      BorderBrush="#A8A8A8" >
+                <!-- BorderThickness="1" SelectionChanged="DirectionsGrid_SelectionChanged"-->
+                <DataGrid.Columns>
+                    <!-- Bind to the Name property of SubDirection -->
+                    <DataGridTemplateColumn Header="Направления" Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" 
+                                       Foreground="Blue" 
+                                       Cursor="Hand"
+                                       TextDecorations="Underline">
+                                    <TextBlock.InputBindings>
+                                        <MouseBinding Gesture="LeftClick"
+                                              Command="{Binding DataContext.EditSeletedCustomers, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              CommandParameter="{Binding}" />
+                                    </TextBlock.InputBindings>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                    <!-- Bind to the LastSending property of SubDiraction -->
-                    <DataGridTextColumn Header="Дата" Binding="{Binding LastSending, StringFormat={}{0:dd.MM.yyyy}}" Width="120"/>
 
-                    <!-- Add a checkbox to select SubDiraction -->
+                    <!-- Bind to the LastSending property of SubDirection -->
+                    <DataGridTemplateColumn Width="200">
+                        <DataGridTemplateColumn.Header>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="Дней без рассылки" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <TextBox Width="50" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Text="{Binding DataContext.FilterDays, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <!-- Отображение значения даты -->
+                                <TextBlock Text="{Binding LastSending, StringFormat={}{0:dd.MM.yyyy}}" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Add a checkbox to select SubDirection -->
                     <DataGridTemplateColumn Header="Выбрать" Width="70">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsChecked}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
-                </DataGrid>
+            </DataGrid>
 
 
             <DataGrid x:Name="MessagesGrid" Grid.Column="1" AutoGenerateColumns="False" HeadersVisibility="Column"

@@ -10,7 +10,7 @@ namespace WSMS.Models
     {
         private static CustomersRepository? instance;
         public Dictionary<string, Dictionary<string, List<Customer>>>? AllDataBaseDictionary { get; set; } = new();
-        public ObservableCollection<MainDiraction> AllDataBase { get; set; } = new();
+        public ObservableCollection<MainDirection> AllDataBase { get; set; } = new();
 
         public static CustomersRepository Instance
         {
@@ -24,37 +24,37 @@ namespace WSMS.Models
         private CustomersRepository()
         {
             AllDataBaseDictionary = CustomersService.GetMainDB();
-            AllDataBase = ConvertToMainDiractions();
+            AllDataBase = ConvertToMainDirections();
         }
-        public ObservableCollection<MainDiraction> ConvertToMainDiractions()
+        public ObservableCollection<MainDirection> ConvertToMainDirections()
         {
             if (AllDataBaseDictionary == null)
-                return new ObservableCollection<MainDiraction>();
+                return new ObservableCollection<MainDirection>();
 
-            var mainDiractions = new ObservableCollection<MainDiraction>();
+            var mainDirections = new ObservableCollection<MainDirection>();
 
             foreach (var mainEntry in AllDataBaseDictionary)
             {
                 string mainDirectionName = mainEntry.Key;
-                var subDiractions = new ObservableCollection<SubDiraction>();
+                var subDirections = new ObservableCollection<SubDirection>();
                 foreach (var subEntry in mainEntry.Value)
                 {
                     string subDirectionName = subEntry.Key;
                     var customers = new ObservableCollection<Customer>(subEntry.Value);
-                    var subDiraction = new SubDiraction(subDirectionName, customers);
-                    subDiractions.Add(subDiraction);
+                    var subDirection = new SubDirection(subDirectionName, customers);
+                    subDirections.Add(subDirection);
                 }
-                var mainDiraction = new MainDiraction(mainDirectionName, subDiractions);
-                mainDiractions.Add(mainDiraction);
+                var mainDirection = new MainDirection(mainDirectionName, subDirections);
+                mainDirections.Add(mainDirection);
             }
-            return mainDiractions;
+            return mainDirections;
         }
-        public ObservableCollection<SubDiraction> GetSubDiractions()
+        public ObservableCollection<SubDirection> GetSubDirections()
         {
-            ObservableCollection<SubDiraction> resault = new();
-            foreach (var diraction in AllDataBase)
+            ObservableCollection<SubDirection> resault = new();
+            foreach (var direction in AllDataBase)
             {
-                foreach (var sub in diraction.SubDiractions)
+                foreach (var sub in direction.SubDirections)
                 {
                     resault.Add(sub);
                 }
