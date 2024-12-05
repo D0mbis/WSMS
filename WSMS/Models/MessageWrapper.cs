@@ -4,7 +4,7 @@ using WSMS.Models.Base;
 
 namespace WSMS.Models
 {
-    public class MessageWrapper : Model
+    public class MessageWrapper : Model 
     {
         [JsonIgnore]
         public string? OldTextMessage { get; set; } = string.Empty;

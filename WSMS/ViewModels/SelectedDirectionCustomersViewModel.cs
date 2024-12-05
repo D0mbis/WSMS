@@ -7,6 +7,8 @@ namespace WSMS.ViewModels
 {
     public class SelectedDirectionCustomersViewModel : Model
     {
+
+        // работает с Message, осталось разобра
         private ICollectionView? customersView;
         public ICollectionView? CustomersView { get => customersView; set => Set(ref customersView, value); }
 

@@ -8,33 +8,22 @@ namespace WSMS.Models
     /// <summary>
     /// Sub categories for Message
     /// </summary>
-    public class SubDirection : Model
+    public class SubDirection : CheckableItemWithChildren<Customer>
     {
         public string Name { get; set; }
         public DateTime? LastSending { get; set; }
-        public ObservableCollection<Customer> Customers { get; set; }
-        
-        private bool isChecked;
-
-        [JsonIgnore]
-        public bool IsChecked
+        public ObservableCollection<Customer> Customers
         {
-            get => isChecked;
-            set
-            {
-                if (isChecked != value)
-                {
-                    Set(ref isChecked, value);
-                }
-            }
+            get => Children;
+            set => Children = value;
         }
 
+      
         public SubDirection(string name, ObservableCollection<Customer>? customers = default, DateTime? lastSending = default)
         {
-            IsChecked = false;
             Name = name;
             LastSending = lastSending ?? new DateTime(2024, 11, 5).Date;
-            Customers = customers ?? new ObservableCollection<Customer>();
+            Children = customers ?? new ObservableCollection<Customer>();
         }
     }
 }

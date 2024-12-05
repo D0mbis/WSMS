@@ -13,7 +13,7 @@
           SelectedItem="{Binding SelectedCustomer,  UpdateSourceTrigger=PropertyChanged}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="✅" CellTemplate="{StaticResource ResourceKey=DTCustomer_IsSelected}" Width="30"/>
+                    <GridViewColumn Header="✅" CellTemplate="{StaticResource ResourceKey=DTCustomer_IsChecked}" Width="30"/>
                     <GridViewColumn Header="ID" CellTemplate="{StaticResource ResourceKey=DTCustomer_ID}" />
                     <GridViewColumn Header="Name" CellTemplate="{StaticResource ResourceKey=DTCustomer_Name}" />
                     <GridViewColumn Header="Phone №1" CellTemplate="{StaticResource ResourceKey=DTCustomer_PhoneNumber1}" />

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WSMS.Models.Base
 {
     public class CheckableItemWithChildren<TChild> : Model, ICheckable
-    where TChild : Model
+     where TChild : Model, INotifyPropertyChanged
     {
         private bool isChecked;
         public bool IsChecked
@@ -20,6 +16,7 @@ namespace WSMS.Models.Base
             {
                 if (Set(ref isChecked, value))
                 {
+                    // Устанавливаем состояние для всех дочерних элементов
                     if (Children != null)
                     {
                         foreach (var child in Children)
@@ -27,7 +24,7 @@ namespace WSMS.Models.Base
                             if (child is CheckableItemWithChildren<TChild> childWithChildren)
                                 childWithChildren.IsChecked = value;
                             else if (child is ICheckable checkableChild)
-                                checkableChild.IsChecked = value; 
+                                checkableChild.IsChecked = value;
                         }
                     }
                 }
@@ -88,7 +85,7 @@ namespace WSMS.Models.Base
             }
         }
 
-        private void UpdateIsChecked()
+        public void UpdateIsChecked()
         {
             if (Children.All(c => (c as ICheckable)?.IsChecked == true))
             {
@@ -100,11 +97,10 @@ namespace WSMS.Models.Base
             }
             else
             {
-                isChecked = true;
+                isChecked = true; // или false для частично выбранного состояния
             }
 
             OnPropertyChanged(nameof(IsChecked));
         }
     }
-
 }

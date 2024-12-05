@@ -37,14 +37,16 @@ namespace WSMS.Models
             {
                 string mainDirectionName = mainEntry.Key;
                 var subDirections = new ObservableCollection<SubDirection>();
+                var mainDirection = new MainDirection(mainDirectionName, subDirections);
                 foreach (var subEntry in mainEntry.Value)
                 {
                     string subDirectionName = subEntry.Key;
                     var customers = new ObservableCollection<Customer>(subEntry.Value);
+                    
                     var subDirection = new SubDirection(subDirectionName, customers);
                     subDirections.Add(subDirection);
                 }
-                var mainDirection = new MainDirection(mainDirectionName, subDirections);
+                 mainDirection.SubDirections = subDirections;
                 mainDirections.Add(mainDirection);
             }
             return mainDirections;

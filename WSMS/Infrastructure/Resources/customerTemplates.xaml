@@ -11,9 +11,9 @@
                     Style="{StaticResource TextBlockCustomer}"/>
         </Grid>
     </DataTemplate>
-    <DataTemplate x:Key="DTCustomer_IsSelected">
+    <DataTemplate x:Key="DTCustomer_IsChecked">
         <Grid>
-            <CheckBox IsChecked="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" />
+            <CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
     </DataTemplate>
     <DataTemplate x:Key="DTCustomer_Name">

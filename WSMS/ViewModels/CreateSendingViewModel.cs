@@ -12,7 +12,7 @@ using WSMS.Views.Windows;
 
 namespace WSMS.ViewModels
 {
-    public class CreateSendingViewModel : Model
+    public class CreateSendingViewModel : CheckableItemWithChildren<SubDirection> 
     {
         #region Properties
         private ObservableCollection<SubDirection> allSubDirections;
@@ -21,10 +21,6 @@ namespace WSMS.ViewModels
             get => allSubDirections; 
             set
             {
-                foreach (var subDirection in value)
-                {
-                    subDirection.PropertyChanged += Update;
-                }
                 Set(ref allSubDirections, value);
             }
         }
