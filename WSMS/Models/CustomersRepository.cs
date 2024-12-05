@@ -26,6 +26,13 @@ namespace WSMS.Models
             AllDataBaseDictionary = CustomersService.GetMainDB();
             AllDataBase = ConvertToMainDirections();
         }
+        public int GetCheckedCustomersCount()
+        {
+            return AllDataBase
+                .SelectMany(main => main.SubDirections) 
+                .Where(sub => sub.IsChecked)            
+                .Sum(sub => sub.Customers?.Count(c => c.IsChecked) ?? 0);
+        }
         public ObservableCollection<MainDirection> ConvertToMainDirections()
         {
             if (AllDataBaseDictionary == null)

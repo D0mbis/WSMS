@@ -12,16 +12,31 @@ using WSMS.Views.Windows;
 
 namespace WSMS.ViewModels
 {
-    public class CreateSendingViewModel : CheckableItemWithChildren<SubDirection> 
+    public class CreateSendingViewModel : CheckableItemWithChildren<SubDirection>
     {
         #region Properties
         private ObservableCollection<SubDirection> allSubDirections;
         public ObservableCollection<SubDirection> AllSubDirections
         {
-            get => allSubDirections; 
+            get => allSubDirections;
             set
             {
+                if (allSubDirections != null)
+                {
+                    foreach (var subDirection in allSubDirections)
+                    {
+                        subDirection.PropertyChanged -= Update;
+                    }
+                }
                 Set(ref allSubDirections, value);
+
+                if (allSubDirections != null)
+                {
+                    foreach (var subDirection in allSubDirections)
+                    {
+                        subDirection.PropertyChanged += Update;
+                    }
+                }
             }
         }
         private ICollectionView? subDirections;
@@ -42,9 +57,10 @@ namespace WSMS.ViewModels
         }
 
         private ObservableCollection<SubDirection> selecledSubDirections;
-        public ObservableCollection<SubDirection> SelectedSubDirections { get => selecledSubDirections; 
-            set => 
-                Set(ref selecledSubDirections, value); 
+        public ObservableCollection<SubDirection> SelectedSubDirections
+        {
+            get => selecledSubDirections;
+            set => Set(ref selecledSubDirections, value);
         }
         private int selectedContactsCount;
         public int SelectedContactsCount
@@ -76,20 +92,19 @@ namespace WSMS.ViewModels
             AllSubDirections = CustomersRepository.Instance.GetSubDirections();
             SubDirections = CollectionViewSource.GetDefaultView(AllSubDirections);
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
-
-
             EditSeletedCustomers = new MyActionCommand(OnEditSeletedCustomersCommandExecuted, CanEditSeletedCustomersCommandExecute);
+            SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
         }
 
         private void Update(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SubDirection.IsChecked)) // Проверяем, что изменилось IsChecked
+            if (e.PropertyName == nameof(SubDirection.IsChecked))
             {
-                if (sender is SubDirection changedItem)
-                {
-                    SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
-                    SelectedContactsCount = SelectedSubDirections.Sum(subDirection => subDirection.Customers?.Count ?? 0);
-                }
+                // Обновляем выбранные SubDirections
+                SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
+
+                // Обновляем количество выбранных клиентов
+                SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             }
         }
         private void ApplyDateFilter()
