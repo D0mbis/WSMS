@@ -5,6 +5,7 @@
 
 #Folders
 Reports/
+WSMS/Services/GoogleSheetsAPI
 
 # User-specific files
 *.rsuser

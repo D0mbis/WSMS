@@ -6,7 +6,7 @@ using System.Linq;
 namespace WSMS.Models.Base
 {
     public class CheckableItemWithChildren<TChild> : Model, ICheckable
-     where TChild : Model, INotifyPropertyChanged
+     where TChild : Model
     {
         private bool isChecked;
         public bool IsChecked
