@@ -10,15 +10,19 @@ namespace WSMS.Models
     /// </summary>
     public class SubDirection : CheckableItemWithChildren<Customer>
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public DateTime? LastSending { get; set; }
         public ObservableCollection<Customer> Customers
         {
             get => Children;
             set => Children = value;
         }
+        public SubDirection( string name)
+        {
+            Name = name;
+        }
 
-      
+
         public SubDirection(string name, ObservableCollection<Customer>? customers = default, DateTime? lastSending = default)
         {
             Name = name;

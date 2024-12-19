@@ -20,7 +20,7 @@
         <TextBlock Text="Enter the name for the new message:" 
                    Grid.Row="0" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="14 "/>
 
-        <TextBox Name="MessageNameTextBox" Text="{Binding Message.Message.Name, UpdateSourceTrigger=PropertyChanged}"
+        <TextBox Name="MessageNameTextBox" Text="{Binding MessageWrapper.Message.Name, UpdateSourceTrigger=PropertyChanged}"
                  Grid.Row="0"  HorizontalAlignment="Stretch" Margin="5,15,5,0"
                  Height="30" FontSize="25" TextAlignment="Center" VerticalContentAlignment="Center"/>
 
@@ -32,16 +32,16 @@
             <Button Content="{Binding SelectAllButtonContent}" Command="{Binding SelectAllCommand}" CommandParameter="{Binding}"
                     Style="{StaticResource ResourceKey=LinkButtonStyle}" FontSize="16" VerticalAlignment="Top" />
             <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
-                <ItemsControl ItemsSource="{Binding CustomersDirections}">
+                <ItemsControl ItemsSource="{Binding MessageWrapper.Message.Directions}">
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate >
+                        <DataTemplate>
                             <Expander IsExpanded="False">
                                 <Expander.HeaderTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Width="Auto">
                                             <CheckBox Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" FontSize="18" Name="chk"
-                                                      IsChecked="{Binding Path=DataContext.IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}},Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      Content="{Binding Path=DataContext.Name, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}}">
+                                                      Content="{Binding Path=DataContext.MainDirection, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}}}"
+                                                      IsChecked="{Binding Path=DataContext.IsChecked, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Expander}},Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                             </CheckBox>
                                         </StackPanel>
                                     </DataTemplate>
@@ -50,7 +50,7 @@
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="15,0,0,0">
-                                                <CheckBox Content="{Binding Name}" 
+                                                <CheckBox Content="{Binding SubDirection}" 
                                                           IsChecked="{Binding IsChecked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  Margin="5"/>
                                             </StackPanel>
                                         </DataTemplate>

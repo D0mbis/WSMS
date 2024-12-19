@@ -178,7 +178,7 @@ namespace WSMS.ViewModels
         }
         private void OnDeleteMessageCommandExecuted(object p)
         {
-            MessageService.UpdateMessages(SelectedMessage, true);
+            MessageService.EditMessages(SelectedMessage, true);
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
             SelectedMessage = new MessageWrapper(new Message());
         }

@@ -29,8 +29,8 @@ namespace WSMS.Models
         public int GetCheckedCustomersCount()
         {
             return AllDataBase
-                .SelectMany(main => main.SubDirections) 
-                .Where(sub => sub.IsChecked)            
+                .SelectMany(main => main.SubDirections)
+                .Where(sub => sub.IsChecked)
                 .Sum(sub => sub.Customers?.Count(c => c.IsChecked) ?? 0);
         }
         public ObservableCollection<MainDirection> ConvertToMainDirections()
@@ -49,16 +49,16 @@ namespace WSMS.Models
                 {
                     string subDirectionName = subEntry.Key;
                     var customers = new ObservableCollection<Customer>(subEntry.Value);
-                    
+
                     var subDirection = new SubDirection(subDirectionName, customers);
                     subDirections.Add(subDirection);
                 }
-                 mainDirection.SubDirections = subDirections;
+                mainDirection.SubDirections = subDirections;
                 mainDirections.Add(mainDirection);
             }
             return mainDirections;
         }
-        public ObservableCollection<SubDirection> GetSubDirections()
+        public ObservableCollection<SubDirection> GetSubDirectionsFull()
         {
             ObservableCollection<SubDirection> resault = new();
             foreach (var direction in AllDataBase)
@@ -67,6 +67,20 @@ namespace WSMS.Models
                 {
                     resault.Add(sub);
                 }
+            }
+            return resault;
+        }
+        public ObservableCollection<MessageAllowDirections> GetSubDirections()
+        {
+            ObservableCollection<MessageAllowDirections> resault = new();
+            foreach (var direction in AllDataBase)
+            {
+                ObservableCollection<SubDirectionsNames> temp = new();
+                foreach (var sub in direction.SubDirections)
+                {
+                    temp.Add(new() { SubDirection = sub.Name });
+                }
+                resault.Add(new() {MainDirection = direction.Name, SubDirections = temp });
             }
             return resault;
         }

@@ -13,50 +13,34 @@ namespace WSMS.ViewModels
     public class SaveMessageViewModel : Model
     {
         private readonly VMUpdateService? VMUpdateService;
-        private MessageWrapper? message;
-        public MessageWrapper Message
+        private MessageWrapper? messageWrapper;
+        public MessageWrapper MessageWrapper
         {
-            get => message ?? new(new());
+            get => messageWrapper ?? new(new());
             set
             {
-                Set(ref message, value);
+                Set(ref messageWrapper, value);
             }
         }
 
         private string selectAllButtonContent = "Unselect all";
         public string SelectAllButtonContent { get => selectAllButtonContent; set => Set(ref selectAllButtonContent, value); }
 
-        private ObservableCollection<MainDirection>? customersDirections;
-        public ObservableCollection<MainDirection> CustomersDirections
-        {
-            get => customersDirections ?? new();
-            set
-            {
-                if (customersDirections != value)
-                {
-
-                    Set(ref customersDirections, value);
-                }
-            }
-        }
-
         #region SaveMessage Command
         public ICommand SaveMessageCommand { get; }
         private bool CanSaveMessageCommandExecute(object p)
         {
-            if (Message.Message.Name != string.Empty)
+            if (MessageWrapper.Message.Name != string.Empty)
             { return true; }
             else return false;
         }
         private void OnSaveMessageCommandExecuted(object p)
         {
-            Message.Message.Directions = MessageService.RemoveUnselectedDirections(CustomersDirections);
-            MessageService.UpdateMessages(Message);
+            MessageService.EditMessages(MessageWrapper);
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
 
             window?.Close();
             VMUpdateService?.UpdateData();
-            //Message = new MessageWrapper(new Message());
         }
         #endregion
 
@@ -78,15 +62,15 @@ namespace WSMS.ViewModels
                 SelectAllButtonContent = "Select all";
                 flag = false;
             }
-            CustomersDirections = MessageService.ChangeIsCheck(CustomersDirections, flag);
+            MessageWrapper.Message.Directions = MessageService.ChangeIsCheck(MessageWrapper.Message.Directions, flag);
         }
         #endregion
 
-        public SaveMessageViewModel(MessageWrapper message, VMUpdateService dataService)
+        public SaveMessageViewModel(MessageWrapper messageWrapper, VMUpdateService dataService)
         {
             VMUpdateService = dataService;
-            CustomersDirections = CustomersRepository.Instance.AllDataBase ?? new();
-            Message = message;
+            MessageWrapper = messageWrapper;
+            messageWrapper.Message.Directions = CustomersRepository.Instance.GetSubDirections() ?? new();
             SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
             SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted);
 

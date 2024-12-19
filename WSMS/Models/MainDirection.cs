@@ -20,7 +20,6 @@ namespace WSMS.Models
         {
             Name = name;
             SubDirections = subDirections;
-            IsChecked = false;
         }
     }
 }

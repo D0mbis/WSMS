@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows.Data;
@@ -9,10 +10,10 @@ using WSMS.Services;
 
 namespace WSMS.Models
 {
-    public class Message : Model
+    public class Message : CheckableItemWithChildren<MessageAllowDirections>
     {
-        public string? Name { get; set; } = string.Empty;
-        private string? text = string.Empty;
+        public string? Name { get; set; }
+        private string? text;
         public string? Text
         {
             get => text;
@@ -21,7 +22,7 @@ namespace WSMS.Models
                 Set(ref text, value);
             }
         }
-        private string? imagePath = string.Empty;
+        private string? imagePath;
         public string? ImagePath
         {
             get => imagePath;
@@ -34,10 +35,13 @@ namespace WSMS.Models
             get => image ?? new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
             set
             {
-                //ImagePath = value?.ToString();
                 Set(ref image, value);
             }
         }
-        public ObservableCollection<MainDirection>? Directions { get; set; }
+        public ObservableCollection<MessageAllowDirections>? Directions
+        {
+            get => Children;
+            set => Children = value;
+        }
     }
 }

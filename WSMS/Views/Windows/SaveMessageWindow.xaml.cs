@@ -14,9 +14,9 @@ namespace WSMS.Views.Windows
     public partial class SaveMessageWindow : Window
     {
         public static bool IsOpened;
-        public SaveMessageWindow(MessageWrapper message, VMUpdateService vMUpdateService)
+        public SaveMessageWindow(MessageWrapper messageWrapper, VMUpdateService vMUpdateService)
         {
-            DataContext = new SaveMessageViewModel(message, vMUpdateService);
+            DataContext = new SaveMessageViewModel(messageWrapper, vMUpdateService);
             InitializeComponent();
         }
 

@@ -16,6 +16,7 @@ namespace WSMS.Models
         [JsonIgnore]
         public bool IsSelected { get; set; }
         private bool isChecked;
+        [JsonIgnore]
         public bool IsChecked { get => isChecked; set => Set(ref isChecked, value); }
     }
 }

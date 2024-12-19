@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace WSMS.Models.Base
      where TChild : Model
     {
         private bool isChecked;
+        [JsonIgnore]
         public bool IsChecked
         {
             get => isChecked;
@@ -32,6 +34,7 @@ namespace WSMS.Models.Base
         }
 
         private ObservableCollection<TChild> children;
+        [JsonIgnore]
         public ObservableCollection<TChild> Children
         {
             get => children;

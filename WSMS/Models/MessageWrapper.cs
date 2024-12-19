@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using WSMS.Models.Base;
 
@@ -53,5 +54,6 @@ namespace WSMS.Models
                 IsChanged = !string.Equals(OldTextMessage, Message.Text) || !string.Equals(OldImagePath, Message.ImagePath);
             }
         }
+
     }
 }

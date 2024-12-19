@@ -27,7 +27,7 @@ namespace WSMS.Services
                 if (!File.Exists(messagesFilePath))
                 {
                     using FileStream stream = new(messagesFilePath, FileMode.Create);
-                    return new ObservableCollection<MessageWrapper>() { new (new Message()) };
+                    return new ObservableCollection<MessageWrapper>() {new(new()) };
                 }
                 else
                 {
@@ -36,31 +36,30 @@ namespace WSMS.Services
                     {
                         jsonData = reader.ReadToEnd();
                     }
-                    // ObservableCollection<MessageWrapper>[] temp = Array.Empty<ObservableCollection<MessageWrapper>>();
                     var temp = JsonConvert.DeserializeObject<ObservableCollection<MessageWrapper>>(jsonData);
                     if (temp != null)
-                        foreach (var item in temp)
+                        foreach (var message in temp)
                         {
-                            item.Message.Image = GetImage(item.Message.ImagePath);
+                            message.Message.Image = GetImage(message.Message.ImagePath);
                         }
-                    return temp ?? new ObservableCollection<MessageWrapper>() { new(new Message()) };
+                    return temp ?? new ObservableCollection<MessageWrapper>() {new(new()) };
                 }
             }
             catch (Exception ex)
             {
                 Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "LoadMessages error.");
-                return new ObservableCollection<MessageWrapper>() { new(new Message()) };
+                return new ObservableCollection<MessageWrapper>() { new(new()) };
             }
         }
-        public static ObservableCollection<MainDirection> RemoveUnselectedDirections(ObservableCollection<MainDirection> directions)
+        public static ObservableCollection<MessageAllowDirections> RemoveUnselectedDirections(ObservableCollection<MessageAllowDirections> directions)
         {
             var sortedDirections = directions
-                        .OrderBy(c => c.Name).Where(c => c.IsChecked);
-            var finaly = new ObservableCollection<MainDirection>();
-            foreach (var fullDirection in sortedDirections)
+                        .OrderBy(c => c.MainDirection).Where(c => c.IsChecked);
+            var finaly = new ObservableCollection<MessageAllowDirections>();
+            foreach (var direction in sortedDirections)
             {
-                var temp = fullDirection.SubDirections.OrderBy(c => c.Name).Where(c => c.IsChecked);
-                finaly.Add(new MainDirection(fullDirection.Name, new ObservableCollection<SubDirection>(temp)));
+                var temp = direction.SubDirections.OrderBy(c => c.SubDirection).Where(c => c.IsChecked);
+                finaly.Add(new() { MainDirection = direction.MainDirection, SubDirections = new ObservableCollection<SubDirectionsNames> (temp) });
             }
             return finaly;
         }
@@ -70,12 +69,13 @@ namespace WSMS.Services
         /// <param name="message"></param>
         /// <param name="delete"></param>
         /// <returns></returns>
-        public static bool UpdateMessages(MessageWrapper message, bool delete = false)
+        public static void EditMessages(MessageWrapper message, bool delete = false)
         {
             try
             {
+                message.Message.Directions = RemoveUnselectedDirections(message.Message.Directions?? new());
                 var allMessages = LoadMessages();
-                if (allMessages.Count == 1 && allMessages[0].Message.Name == string.Empty)
+                if (allMessages.Count == 1 && allMessages[0].Message.Name == null || allMessages[0].Message.Name == string.Empty)
                 {
                     allMessages[0] = message;
                 }
@@ -90,7 +90,7 @@ namespace WSMS.Services
                                 allMessages.Remove(allMessages[i]);
                                 if (allMessages.Count == 0)
                                 {
-                                    allMessages.Add(new MessageWrapper(new Message()));
+                                    allMessages.Add(new MessageWrapper(new()));
                                 }
                             }
                             else
@@ -114,14 +114,15 @@ namespace WSMS.Services
                 if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
                 using StreamWriter stream = new($"{FolderPath}\\all messages.json", false);
                 stream.Write(json);
-                return true;
+                //return true;
             }
             catch (Exception ex)
             {
                 Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "SaveMessage method error.");
-                return false;
+               // return false;
             }
         }
+        
         private static string SaveImage(BitmapSource bitmap)
         {
             BitmapEncoder encoder;
@@ -182,16 +183,14 @@ namespace WSMS.Services
             }
             return new BitmapImage(new Uri("pack://application:,,,/data/messages/placeholder.png"));
         }
-        public static ObservableCollection<MainDirection> ChangeIsCheck(ObservableCollection<MainDirection> customersDirections, bool flag)
+        public static ObservableCollection<MessageAllowDirections> ChangeIsCheck(ObservableCollection<MessageAllowDirections> messageAllowDirections, bool flag)
         {
-            foreach (var mainDirection in customersDirections)
+            foreach (var mainDirection in messageAllowDirections)
             {
-                foreach (var direction in mainDirection.SubDirections)
-                {
-                    direction.IsChecked = flag;
-                }
+                if (flag) { mainDirection.IsChecked = false; }
+                if (mainDirection.IsChecked != flag) { mainDirection.IsChecked = flag; }
             }
-            return customersDirections;
+            return messageAllowDirections;
         }
         public static void StartSending(Message message)
         {

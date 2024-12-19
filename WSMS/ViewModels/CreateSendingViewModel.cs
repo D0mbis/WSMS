@@ -89,7 +89,7 @@ namespace WSMS.ViewModels
 
         public CreateSendingViewModel()
         {
-            AllSubDirections = CustomersRepository.Instance.GetSubDirections();
+            AllSubDirections = CustomersRepository.Instance.GetSubDirectionsFull();
             SubDirections = CollectionViewSource.GetDefaultView(AllSubDirections);
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
             EditSeletedCustomers = new MyActionCommand(OnEditSeletedCustomersCommandExecuted, CanEditSeletedCustomersCommandExecute);
@@ -100,10 +100,7 @@ namespace WSMS.ViewModels
         {
             if (e.PropertyName == nameof(SubDirection.IsChecked))
             {
-                // Обновляем выбранные SubDirections
                 SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
-
-                // Обновляем количество выбранных клиентов
                 SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             }
         }
