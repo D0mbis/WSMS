@@ -1,7 +1,7 @@
 ﻿<Window x:Class="WSMS.Views.Windows.CreateSendingWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Создание шаблона рассылки" Height="600" Width="800"
+        Title="Создание шаблона рассылки" MaxHeight="700" MaxWidth="815"
         xmlns:vm="clr-namespace:WSMS.ViewModels">
     <Window.DataContext>
         <vm:CreateSendingViewModel/>
@@ -40,63 +40,108 @@
             </Grid.ColumnDefinitions>
 
             <!-- Список направлений -->
-            <DataGrid x:Name="DirectionsGrid" 
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Margin="5,3,5,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <Border BorderBrush="Gray" BorderThickness="1" Padding="0">
+                        <TextBlock Grid.Column="0" Text="Дней без рассылки" TextAlignment="Center" FontSize="19" Margin="0,0,5,0" Height="Auto" HorizontalAlignment="Stretch"
+                                   FontWeight="Bold" 
+                               />
+                    </Border>
+                    <TextBox Grid.Column="1" Height="Auto" FontWeight="Black" FontSize="19" TextAlignment="Center" VerticalAlignment="Center" 
+                     Text="{Binding DataContext.FilterDays, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <DataGrid x:Name="DirectionsGrid" 
                       AutoGenerateColumns="False" 
                       HeadersVisibility="Column"
                       ItemsSource="{Binding SubDirections}" 
                       Margin="5" 
                       Background="White" 
-                      BorderBrush="#A8A8A8" >
-                <!-- BorderThickness="1" SelectionChanged="DirectionsGrid_SelectionChanged"-->
-                <DataGrid.Columns>
-                    <!-- Bind to the Name property of SubDirection -->
-                    <DataGridTemplateColumn Header="Направления" Width="*">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" 
+                      BorderBrush="#A8A8A8"
+                      Grid.Row="1">
+                    <!-- BorderThickness="1" SelectionChanged="DirectionsGrid_SelectionChanged"-->
+                    <DataGrid.Columns>
+                        <!-- Bind to the Name property of SubDirection -->
+                        <DataGridTemplateColumn Header="Направления" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate >
+                                    <TextBlock Text="{Binding Name}"
+                                               Margin="1"
                                        Foreground="Blue" 
                                        Cursor="Hand"
                                        TextDecorations="Underline">
-                                    <TextBlock.InputBindings>
-                                        <MouseBinding Gesture="LeftClick"
+                                        <TextBlock.InputBindings>
+                                            <MouseBinding Gesture="LeftClick"
                                               Command="{Binding DataContext.EditSeletedCustomers, RelativeSource={RelativeSource AncestorType=Window}}"
                                               CommandParameter="{Binding}" />
-                                    </TextBlock.InputBindings>
-                                </TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                                        </TextBlock.InputBindings>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
 
-                    <!-- Bind to the LastSending property of SubDirection -->
-                    <DataGridTemplateColumn Width="200">
-                        <DataGridTemplateColumn.Header>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="Дней без рассылки" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                                <TextBox Width="50" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                    Text="{Binding DataContext.FilterDays, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-                        </DataGridTemplateColumn.Header>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <!-- Отображение значения даты -->
-                                <TextBlock Text="{Binding LastSending, StringFormat={}{0:dd.MM.yyyy}}" VerticalAlignment="Center"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                        <!-- Bind to the LastSending property of SubDirection -->
+                        <DataGridTemplateColumn Width="80" Header="Дата">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <!-- Отображение значения даты -->
+                                    <TextBlock Text="{Binding LastSending, StringFormat={}{0:dd.MM.yyyy}}" TextAlignment="Center" Margin="1"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                    <!-- Add a checkbox to select SubDirection -->
-                    <DataGridTemplateColumn Header="Выбрать" Width="70">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                        <!-- Add a checkbox to select SubDirection -->
+                        <DataGridTemplateColumn Header="Выбрать" Width="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsChecked, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
 
-
+            <Grid Grid.Column="1" Margin="5,3,5,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Margin="2,0,2,2" Height="Auto" Content="Редактировать сообщения  🖉" FontWeight="Bold" FontSize="19" VerticalContentAlignment="Center"/>
+                <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
+              BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
+              ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
+                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="160"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
+                                        <Image Source="{ Binding Message.Image}" Height="200" Width="Auto" HorizontalAlignment="Stretch" Margin="3"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding Message.Name}" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
+                                FontSize="18"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            </Grid>
+            <!--
             <DataGrid x:Name="MessagesGrid" Grid.Column="1" AutoGenerateColumns="False" HeadersVisibility="Column"
                          Margin="5,5,5,5" Background="White" BorderBrush="#A8A8A8" BorderThickness="1">
                 <DataGrid.Columns>
@@ -121,6 +166,7 @@
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
+            -->
         </Grid>
     </Grid>
 </Window>

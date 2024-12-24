@@ -14,7 +14,7 @@ namespace WSMS.ViewModels
 {
     public class CreateSendingViewModel : CheckableItemWithChildren<SubDirection>
     {
-        #region Properties
+        #region Properties of Customers
         private ObservableCollection<SubDirection> allSubDirections;
         public ObservableCollection<SubDirection> AllSubDirections
         {
@@ -73,6 +73,17 @@ namespace WSMS.ViewModels
         }
         #endregion
 
+        #region Properties of Messages
+        private ICollectionView messagesView;
+
+        public ICollectionView MessagesView
+        {
+            get { return messagesView; }
+            set { messagesView = value; }
+        }
+
+        #endregion
+
         #region Commands
         public ICommand EditSeletedCustomers { get; }
         private bool CanEditSeletedCustomersCommandExecute(object p) => true;
@@ -94,6 +105,7 @@ namespace WSMS.ViewModels
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
             EditSeletedCustomers = new MyActionCommand(OnEditSeletedCustomersCommandExecuted, CanEditSeletedCustomersCommandExecute);
             SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
+            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
         }
 
         private void Update(object? sender, PropertyChangedEventArgs e)
@@ -122,7 +134,7 @@ namespace WSMS.ViewModels
                 }
                 else
                 {
-                    collectionView.Filter = null; // Сброс фильтра
+                    collectionView.Filter = null;
                 }
                 collectionView.Refresh();
             }

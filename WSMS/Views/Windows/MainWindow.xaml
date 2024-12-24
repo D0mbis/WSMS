@@ -122,12 +122,12 @@
                                Text="{Binding SelectedMessage.Message.Text, UpdateSourceTrigger=PropertyChanged}" Margin="3" />
                     <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2" Content="Save" Command="{Binding OpenSaveMessageWindowCommand}"/>
                     <Button Grid.Column="1" Grid.Row="0" Width="120" Height="35" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="2" Content="Delete" Command="{Binding DeleteMessageCommand}"/>
-                    <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
+                    <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Left" Margin="2"
                                  BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
                                  ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
+                                <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="100"/>

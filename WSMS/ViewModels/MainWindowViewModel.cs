@@ -43,7 +43,6 @@ namespace WSMS.ViewModels
                 }
             }
         }
-        private ObservableCollection<MessageWrapper> messages;
         private MessageWrapper selectedMessage;
         public MessageWrapper SelectedMessage
         {
@@ -60,15 +59,6 @@ namespace WSMS.ViewModels
             get => messagesView; set
             {
                 Set(ref messagesView, value);
-            }
-        }
-
-        public ObservableCollection<MessageWrapper> Messages
-        {
-            get => messages;
-            set
-            {
-                Set(ref messages, value);
             }
         }
 

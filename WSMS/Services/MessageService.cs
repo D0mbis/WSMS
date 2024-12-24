@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WSMS.Models;
-using WSMS.Models.Base;
 
 namespace WSMS.Services
 {
@@ -122,7 +121,6 @@ namespace WSMS.Services
                // return false;
             }
         }
-        
         private static string SaveImage(BitmapSource bitmap)
         {
             BitmapEncoder encoder;
@@ -192,6 +190,8 @@ namespace WSMS.Services
             }
             return messageAllowDirections;
         }
+       
+        // FIX this:
         public static void StartSending(Message message)
         {
             Dictionary<string, List<string>> resultSending = new();

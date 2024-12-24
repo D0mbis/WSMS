@@ -19,28 +19,5 @@ namespace WSMS.Views.Windows
             DataContext = new SaveMessageViewModel(messageWrapper, vMUpdateService);
             InitializeComponent();
         }
-
-        
-
-        /// If need to add unselected Message
-        /*private void MainWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.OriginalSource is FrameworkElement element)
-            {
-                if ((element.DataContext is Customer))
-                {
-                    return;
-                }
-                while (element != null && !(element is Button))
-                {
-                    element = (FrameworkElement)VisualTreeHelper.GetParent(element);
-                }
-                if (element == null || element is Button button && button.Name != PushtoExcelDB.Name)
-                {
-                    CuntactsListView.SelectedItem = null;
-                    return;
-                }
-            }
-        }*/
     }
 }
