@@ -25,12 +25,5 @@ namespace WSMS
             var window = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsInitialized);
             WindowPositionSettings.RestoreWindowPosition(window);
         }
-        private void Image_Drop(object sender, DragEventArgs e)
-        {
-            if (DataContext is MainWindowViewModel viewModel)
-            {
-                viewModel.ImageDropCommand.Execute(e);
-            }
-        }
     }
 }

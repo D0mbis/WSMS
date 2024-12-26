@@ -13,7 +13,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхняя панель с кнопками выбора -->
+        <!-- Top panel -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
             <StackPanel Margin="10">
                 <TextBlock Text="Выбрано контактов:" VerticalAlignment="Center"/>
@@ -29,17 +29,17 @@
                     <ComboBoxItem Content="Выбран аккаунт.." />
                 </ComboBox>
             </StackPanel>
-            <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding AddCommand}"/>
+            <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding EditMessegesCommand}"/>
         </StackPanel>
 
-        <!-- Основной контент -->
+        <!-- Main content-->
         <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="77*"/>
-                <ColumnDefinition Width="53*"/>
+                <ColumnDefinition Width="57*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Список направлений -->
+            <!-- Customers list -->
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
@@ -56,7 +56,7 @@
                                    FontWeight="Bold" 
                                />
                     </Border>
-                    <TextBox Grid.Column="1" Height="Auto" FontWeight="Black" FontSize="19" TextAlignment="Center" VerticalAlignment="Center" 
+                    <TextBox Grid.Column="1" Height="Auto" FontWeight="DemiBold" FontSize="19" TextAlignment="Center" VerticalAlignment="Center" 
                      Text="{Binding DataContext.FilterDays, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
                 <DataGrid x:Name="DirectionsGrid" 
@@ -110,63 +110,42 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
-
+            <!-- Message list -->
             <Grid Grid.Column="1" Margin="5,3,5,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" Margin="2,0,2,2" Height="Auto" Content="Редактировать сообщения  🖉" FontWeight="Bold" FontSize="19" VerticalContentAlignment="Center"/>
+                <Button Grid.Row="0" Margin="2,0,2,2" Height="Auto" Content="Редактировать сообщения  🖉" 
+                        FontWeight="Bold" FontSize="19" VerticalContentAlignment="Center" 
+                        Command="{Binding EditMessagesCommand}"/>
                 <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
-              BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
-              ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
-                            <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="160"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
-                                        <Image Source="{ Binding Message.Image}" Height="200" Width="Auto" HorizontalAlignment="Stretch" Margin="3"/>
-                                    </Border>
-                                    <TextBlock Text="{Binding Message.Name}" TextWrapping="Wrap" Margin="10,0,0,0" Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
-                                FontSize="18"/>
-                                </Grid>
-                            </Border>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-            </Grid>
-            <!--
-            <DataGrid x:Name="MessagesGrid" Grid.Column="1" AutoGenerateColumns="False" HeadersVisibility="Column"
-                         Margin="5,5,5,5" Background="White" BorderBrush="#A8A8A8" BorderThickness="1">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Сообщения" Width="90">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <Rectangle Width="50" Height="50" Fill="White" Stroke="Black" Margin="5"/>
-                                    <TextBox Text="Название рассылки" Width="150" Margin="5"/>
+                          BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
+                          ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" 
+                          SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
+                                <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
                                     <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <Button Grid.Row="0" Content="+" Width="25" Height="25" Margin="5"/>
-                                        <Button Grid.Row="1" Content="🖉" Width="25" Height="25" Margin="5" VerticalContentAlignment="Center"/>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="160"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
+                                            <Image Source="{ Binding Message.Image}" Height="200" Width="Auto" 
+                                               HorizontalAlignment="Stretch" Margin="3"/>
+                                        </Border>
+                                        <TextBlock Text="{Binding Message.Name}" TextWrapping="Wrap" Margin="10,0,0,0" 
+                                               Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
+                                               FontSize="18"/>
                                     </Grid>
-
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-            -->
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

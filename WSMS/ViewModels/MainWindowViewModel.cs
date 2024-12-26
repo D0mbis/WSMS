@@ -14,9 +14,8 @@ using WSMS.Infrastructure.Other;
 
 namespace WSMS.ViewModels
 {
-    internal class MainWindowViewModel : Model
+    public class MainWindowViewModel : Model
     {
-        private readonly VMUpdateService vmUpdateService;
         #region Title Window
         private string _Title = "WSMS";
         /// <summary Header MainWindow </summary>
@@ -41,24 +40,6 @@ namespace WSMS.ViewModels
 
                     Set(ref customersCategories, value);
                 }
-            }
-        }
-        private MessageWrapper selectedMessage;
-        public MessageWrapper SelectedMessage
-        {
-            get => selectedMessage;
-            set
-            {
-                Set(ref selectedMessage, value);
-            }
-        }
-
-        ICollectionView messagesView;
-        public ICollectionView MessagesView
-        {
-            get => messagesView; set
-            {
-                Set(ref messagesView, value);
             }
         }
 
@@ -132,47 +113,8 @@ namespace WSMS.ViewModels
             // Contacts = string.Join("\n", WebService.GetNotDeliveredContacts(contacts, IdentifierText));
         }
         #endregion
-        #region OpenSaveMessageWindow Command
-        public ICommand OpenSaveMessageWindowCommand { get; }
-        private bool CanOpenSaveMessageWindowExecute(object p)
-        {
-            var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
-            if (SelectedMessage != null)
-            {
-                if (SelectedMessage.IsChanged && window == null) { return true; }
-            }
-            return false;
-        }
-        private void OnOpenSaveMessageWindowExecuted(object p)
-        {
-            var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsVisible);
-            var saveMessageWindow = new SaveMessageWindow(SelectedMessage, vmUpdateService)
-            {
-                Left = mainWindow.Left + mainWindow.Width / 2,
-                Top = mainWindow.Top + 50
-            };
-
-            saveMessageWindow.Show();
-            //  SelectedMessage = new MessageWrapper(new Message()); // unnecessary?
-        }
-        #endregion
-        #region DeleteMessage Command
-        public ICommand DeleteMessageCommand { get; }
-        private bool CanDeleteMessageCommandExecute(object p)
-        {
-            if (SelectedMessage != null)
-            {
-                if (SelectedMessage.Message.Name != string.Empty) return true;
-            }
-            return false;
-        }
-        private void OnDeleteMessageCommandExecuted(object p)
-        {
-            MessageService.EditMessages(SelectedMessage, true);
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
-            SelectedMessage = new MessageWrapper(new Message());
-        }
-        #endregion
+      
+        
         public ICommand CloseApplicationCommand { get; }
         private void OnCloseApplicationExecuted(object p)
         {
@@ -185,51 +127,15 @@ namespace WSMS.ViewModels
             }
         }
 
-        #region ImageDrop Command
-        public ICommand ImageDropCommand { get; }
-        private void OnImageDropCommandExecuted(object p)
-        {
-            if (p is DragEventArgs e && e.Data.GetDataPresent(DataFormats.FileDrop, true))
-            {
-                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files.Length > 0)
-                {
-                    var filePath = files[0];
-                    try
-                    {
-                        SelectedMessage.Message.Image = MessageService.GetImage(filePath);
-                        SelectedMessage.Message.ImagePath = filePath;
-                        //CommandManager.InvalidateRequerySuggested();
-                        (OpenSaveMessageWindowCommand as MyActionCommand).RaiseCanExecuteChanged();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Failed to load image: {ex.Message}");
-                    }
-                }
-            }
-        }
+       
         #endregion
-        #endregion
-        private void OnUpdateData()
-        {
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
-            SelectedMessage = new MessageWrapper(new Message());
-        }
 
         public MainWindowViewModel()
         {
-            vmUpdateService = new VMUpdateService();
-            vmUpdateService.DataUpdated += OnUpdateData;
-            SelectedMessage = new MessageWrapper(new Message());
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
             StartBrowserCommand = new MyActionCommand(OnStartBrowserCommandExecuted, CanStartBrowserCommandExecute);
             StartSendingCommand = new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
             OpenContactsCommand = new MyActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
-            OpenSaveMessageWindowCommand = new MyActionCommand(OnOpenSaveMessageWindowExecuted, CanOpenSaveMessageWindowExecute);
-            DeleteMessageCommand = new MyActionCommand(OnDeleteMessageCommandExecuted, CanDeleteMessageCommandExecute);
-            ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);
             CloseApplicationCommand = new MyActionCommand(OnCloseApplicationExecuted);
         }
     }

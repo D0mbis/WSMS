@@ -75,18 +75,29 @@ namespace WSMS.ViewModels
 
         #region Properties of Messages
         private ICollectionView messagesView;
+        private MessageWrapper? selectedMessage;
 
         public ICollectionView MessagesView
         {
-            get { return messagesView; }
-            set { messagesView = value; }
+            get => messagesView; 
+            set => Set(ref messagesView, value); 
         }
+
+       
+        public MessageWrapper SelectedMessage
+        {
+            get => selectedMessage?? new(new());
+            set => Set(ref selectedMessage, value);
+        }
+
+
 
         #endregion
 
         #region Commands
-        public ICommand EditSeletedCustomers { get; }
-        private bool CanEditSeletedCustomersCommandExecute(object p) => true;
+        private ICommand editSeletedCustomers;
+        public ICommand EditSeletedCustomers => editSeletedCustomers ??= new MyActionCommand(OnEditSeletedCustomersCommandExecuted);
+        //private bool CanEditSeletedCustomersCommandExecute(object p) => true;
 
         private void OnEditSeletedCustomersCommandExecuted(object p)
         {
@@ -96,6 +107,19 @@ namespace WSMS.ViewModels
                 window.ShowDialog();
             }
         }
+        private ICommand editMessagesCommand;
+        public ICommand EditMessagesCommand => editMessagesCommand ??= new MyActionCommand(OnEdit);
+        //private bool CanEditSeletedCustomersCommandExecute(object p) => true;
+
+        private void OnEdit(object p)
+        {
+            MessagesWindow window = new(new(SelectedMessage));
+            bool? result = window.ShowDialog();
+            if (result == false)
+            {
+                MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            }
+        }
         #endregion
 
         public CreateSendingViewModel()
@@ -103,7 +127,6 @@ namespace WSMS.ViewModels
             AllSubDirections = CustomersRepository.Instance.GetSubDirectionsFull();
             SubDirections = CollectionViewSource.GetDefaultView(AllSubDirections);
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
-            EditSeletedCustomers = new MyActionCommand(OnEditSeletedCustomersCommandExecuted, CanEditSeletedCustomersCommandExecute);
             SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
         }
@@ -115,6 +138,7 @@ namespace WSMS.ViewModels
                 SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
                 SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             }
+        
         }
         private void ApplyDateFilter()
         {
@@ -139,5 +163,6 @@ namespace WSMS.ViewModels
                 collectionView.Refresh();
             }
         }
+
     }
 }
