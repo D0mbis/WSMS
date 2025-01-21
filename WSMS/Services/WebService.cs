@@ -18,7 +18,6 @@ namespace WSMS.Services
         public static string Errors { get; set; }
         public static bool IsRunning { get; set; } = false;
         private static readonly string Url = "https://web.whatsapp.com/";
-        private static readonly string SessionsPath = $"{Environment.CurrentDirectory}\\Sessions"; //is possible to add different accounts like "Cookies\\Account name(number phone)
         private static readonly Dictionary<string, string> ElementsPaths = new()
         {
             { "Search field", "div[aria-label='Текстовое поле поиска']"},
@@ -36,7 +35,7 @@ namespace WSMS.Services
             */
 
             ChromeOptions options = new();
-            accountId = "+79953781761"; 
+            //accountId = "+79953781761";
             string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
             options.AddArgument($"--user-data-dir={profileDirectory}");
             options.AddUserProfilePreference("intl.accept_languages", "ru-RU");
@@ -204,16 +203,19 @@ namespace WSMS.Services
             }
             wait = default;
         }
-        public static void CloseBrowser()
+        public static void CloseBrowser(string accountId)
         {
             if (Driver != default) { }
             Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default;
             IsRunning = false;
-            string accountId = "+79953781761";
-            // Пример очистки ненужных данных после завершения сессии
-            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
+            //string accountId = "+79953781761";
+            CleanAccountFolders(accountId);
 
-            List<string> list = new List<string>()
+        }
+        private static void CleanAccountFolders(string accountId)
+        {
+            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
+            List<string> list = new()
             {
                 "Default\\Cache",
                 "Default\\GPUCache",

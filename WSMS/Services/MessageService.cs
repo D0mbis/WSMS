@@ -26,7 +26,7 @@ namespace WSMS.Services
                 if (!File.Exists(messagesFilePath))
                 {
                     using FileStream stream = new(messagesFilePath, FileMode.Create);
-                    return new ObservableCollection<MessageWrapper>() {new(new()) };
+                    return new ObservableCollection<MessageWrapper>() { new(new()) };
                 }
                 else
                 {
@@ -41,7 +41,7 @@ namespace WSMS.Services
                         {
                             message.Message.Image = GetImage(message.Message.ImagePath);
                         }
-                    return temp ?? new ObservableCollection<MessageWrapper>() {new(new()) };
+                    return temp ?? new ObservableCollection<MessageWrapper>() { new(new()) };
                 }
             }
             catch (Exception ex)
@@ -58,7 +58,7 @@ namespace WSMS.Services
             foreach (var direction in sortedDirections)
             {
                 var temp = direction.SubDirections.OrderBy(c => c.SubDirection).Where(c => c.IsChecked);
-                finaly.Add(new() { MainDirection = direction.MainDirection, SubDirections = new ObservableCollection<SubDirectionsNames> (temp) });
+                finaly.Add(new() { MainDirection = direction.MainDirection, SubDirections = new ObservableCollection<SubDirectionsNames>(temp) });
             }
             return finaly;
         }
@@ -72,7 +72,7 @@ namespace WSMS.Services
         {
             try
             {
-                message.Message.Directions = RemoveUnselectedDirections(message.Message.Directions?? new());
+                message.Message.Directions = RemoveUnselectedDirections(message.Message.Directions ?? new());
                 var allMessages = LoadMessages();
                 if (allMessages.Count == 1 && allMessages[0].Message.Name == null || allMessages[0].Message.Name == string.Empty)
                 {
@@ -100,7 +100,8 @@ namespace WSMS.Services
                         }
                         else if (i == allMessages.Count - 1)
                         {
-                            allMessages.Add(message);
+                            allMessages.Insert(0, message);
+                            break;
                         }
                     }
                 }
@@ -118,7 +119,7 @@ namespace WSMS.Services
             catch (Exception ex)
             {
                 Logger.ShowMyReportMessageBox(ex.Message, "MessageService", "SaveMessage method error.");
-               // return false;
+                // return false;
             }
         }
         private static string SaveImage(BitmapSource bitmap)
@@ -190,7 +191,7 @@ namespace WSMS.Services
             }
             return messageAllowDirections;
         }
-       
+
         // FIX this:
         public static void StartSending(Message message)
         {
@@ -208,7 +209,7 @@ namespace WSMS.Services
                         Dictionary<string, List<string>> tempResultD = SendMessage(message);
                         resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
                         resultSending["Not sent"] = tempResultD["Not sent"];
-                        WebService.CloseBrowser();
+                        //WebService.CloseBrowser();
                     }
                 }
                 //logs

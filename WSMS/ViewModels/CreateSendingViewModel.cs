@@ -8,6 +8,7 @@ using WSMS.Infrastructure.Commands.Base;
 using WSMS.Models;
 using WSMS.Models.Base;
 using WSMS.Services;
+using WSMS.Views;
 using WSMS.Views.Windows;
 
 namespace WSMS.ViewModels
@@ -76,17 +77,14 @@ namespace WSMS.ViewModels
         #region Properties of Messages
         private ICollectionView messagesView;
         private MessageWrapper? selectedMessage;
-
         public ICollectionView MessagesView
         {
-            get => messagesView; 
-            set => Set(ref messagesView, value); 
+            get => messagesView;
+            set => Set(ref messagesView, value);
         }
-
-       
         public MessageWrapper SelectedMessage
         {
-            get => selectedMessage?? new(new());
+            get => selectedMessage ?? new(new());
             set => Set(ref selectedMessage, value);
         }
 
@@ -94,7 +92,26 @@ namespace WSMS.ViewModels
 
         #endregion
 
+        #region Properties of Accounts
+        private ObservableCollection<WhatsAppAccount>? whatsAppAccounts;
+        private ObservableCollection<WhatsAppAccount>? selectedWhatsAppAccount;
+
+        public ObservableCollection<WhatsAppAccount> WhatsAppAccounts
+        {
+            get => whatsAppAccounts ?? new(new());
+            set => Set(ref whatsAppAccounts, value);
+        }
+        public ObservableCollection<WhatsAppAccount> SelectedWhatsAppAccount
+        {
+            get => selectedWhatsAppAccount ?? new(new());
+            set => Set(ref selectedWhatsAppAccount, value);
+        }
+
+
+        #endregion
+
         #region Commands
+        #region EditSeletedCustomers
         private ICommand editSeletedCustomers;
         public ICommand EditSeletedCustomers => editSeletedCustomers ??= new MyActionCommand(OnEditSeletedCustomersCommandExecuted);
         //private bool CanEditSeletedCustomersCommandExecute(object p) => true;
@@ -107,11 +124,11 @@ namespace WSMS.ViewModels
                 window.ShowDialog();
             }
         }
+        #endregion
+        #region EditMessages
         private ICommand editMessagesCommand;
-        public ICommand EditMessagesCommand => editMessagesCommand ??= new MyActionCommand(OnEdit);
-        //private bool CanEditSeletedCustomersCommandExecute(object p) => true;
-
-        private void OnEdit(object p)
+        public ICommand EditMessagesCommand => editMessagesCommand ??= new MyActionCommand(OnEditMessages);
+        private void OnEditMessages(object p)
         {
             MessagesWindow window = new(new(SelectedMessage));
             bool? result = window.ShowDialog();
@@ -121,6 +138,20 @@ namespace WSMS.ViewModels
             }
         }
         #endregion
+        #region EditAccaunts
+        private ICommand editAccauntsCommand;
+        public ICommand EditAccauntsCommand => editAccauntsCommand ??= new MyActionCommand(OnEditAccauntsCommand);
+        private void OnEditAccauntsCommand(object p)
+        {
+            AccountsSettings window = new();
+            bool? result = window.ShowDialog();
+            if (result == false)
+            {
+                //MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            }
+        }
+        #endregion
+        #endregion
 
         public CreateSendingViewModel()
         {
@@ -129,6 +160,7 @@ namespace WSMS.ViewModels
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
             SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            WhatsAppAccounts = WhatsAppAccountsService.GetAccounts();
         }
 
         private void Update(object? sender, PropertyChangedEventArgs e)
@@ -138,7 +170,7 @@ namespace WSMS.ViewModels
                 SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
                 SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             }
-        
+
         }
         private void ApplyDateFilter()
         {

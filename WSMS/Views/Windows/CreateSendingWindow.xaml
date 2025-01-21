@@ -21,14 +21,43 @@
             </StackPanel>
             <StackPanel Margin="10">
                 <TextBlock Text="Выбранное сообщение:" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding SelectedMessage}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding SelectedMessage.Message.Name}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </StackPanel>
             <StackPanel Margin="10">
                 <TextBlock Text="Выбранный аккаунт:" VerticalAlignment="Center"/>
-                <ComboBox Width="200" Margin="5">
-                    <ComboBoxItem Content="Выбран аккаунт.." />
+                <ComboBox Width="200" Margin="5" ItemsSource="{Binding WhatsAppAccounts}" SelectedItem="{Binding SelectedWhatsAppAccount}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl HorizontalAlignment="Stretch">
+                                <ContentControl.Style>
+                                    <Style TargetType="ContentControl">
+                                        <Setter Property="Content" Value="{Binding Name}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Name}" Value="Редактировать..">
+                                                <Setter Property="ContentTemplate">
+                                                    <Setter.Value>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding}"
+                                                                        Margin="1" Foreground="Blue" Cursor="Hand" TextDecorations="Underline">
+                                                                <TextBlock.InputBindings>
+                                                                     <MouseBinding Gesture="LeftClick"
+                                                                      Command="{Binding DataContext.EditAccauntsCommand, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                                                      CommandParameter="{Binding}" />       
+                                                                </TextBlock.InputBindings>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ContentControl.Style>
+                            </ContentControl>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
             </StackPanel>
+
             <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding EditMessegesCommand}"/>
         </StackPanel>
 
@@ -67,7 +96,6 @@
                       Background="White" 
                       BorderBrush="#A8A8A8"
                       Grid.Row="1">
-                    <!-- BorderThickness="1" SelectionChanged="DirectionsGrid_SelectionChanged"-->
                     <DataGrid.Columns>
                         <!-- Bind to the Name property of SubDirection -->
                         <DataGridTemplateColumn Header="Направления" Width="*">
