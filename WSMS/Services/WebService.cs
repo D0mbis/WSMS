@@ -28,15 +28,17 @@ namespace WSMS.Services
         };
 
         //
-        public static void OpenBrowser(string accountId)
+        public static void OpenBrowser(string accountName)
         {
             /*"As of Selenium 4.6, Selenium downloads the correct driver for you. You shouldn’t need to do anything. (from ducumentation)
             ChromeDriverService service = ChromeDriverService.CreateDefaultService("PATH of chromedriver.exe folder");
             */
 
+
+            // НУЖНО СДЕЛАТЬ УНИКАЛЬНЫЙ ЭКЗ DRIVER для каждой сессии чтобы можно было использовать одновременно, открывать и закрывать,
+            // ТОЛЬКО В СЛУЧАЕ ЕСЛИ УДАСТСЯ избавиться от работы с буфером обмена
             ChromeOptions options = new();
-            //accountId = "+79953781761";
-            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountId);
+            string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", accountName);
             options.AddArgument($"--user-data-dir={profileDirectory}");
             options.AddUserProfilePreference("intl.accept_languages", "ru-RU");
             ChromeDriverService service = ChromeDriverService.CreateDefaultService();
@@ -203,14 +205,15 @@ namespace WSMS.Services
             }
             wait = default;
         }
-        public static void CloseBrowser(string accountId)
+        public static void CloseBrowser(string accountName)
         {
-            if (Driver != default) { }
-            Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default;
-            IsRunning = false;
-            //string accountId = "+79953781761";
-            CleanAccountFolders(accountId);
-
+            if (Driver != default && Driver != null)
+            {
+                Driver.Close(); Driver.Quit(); Driver.Dispose(); Driver = default;
+                IsRunning = false;
+                //string accountId = "+79953781761";
+                CleanAccountFolders(accountName);
+            }
         }
         private static void CleanAccountFolders(string accountId)
         {

@@ -7,7 +7,12 @@ namespace WSMS.Services
 {
     public class WhatsAppAccountsService
     {
-        public static ObservableCollection<WhatsAppAccount>? GetAccounts()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="available">Available to add last account from button EditAccaunts</param>
+        /// <returns></returns>
+        public static ObservableCollection<WhatsAppAccount>? GetAccounts(bool available = false)
         {
             string profilesDirectory = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Users");
             string[] subdirectoryEntries = Directory.GetDirectories(profilesDirectory);
@@ -15,35 +20,26 @@ namespace WSMS.Services
             // Получаем только имена подпапок
             foreach (string subdirectory in subdirectoryEntries)
             {
-                accounts.Add(new WhatsAppAccount() { Id = Path.GetFileName(subdirectory), Name = Path.GetFileName(subdirectory) });
+                accounts.Add(new WhatsAppAccount() { Name = Path.GetFileName(subdirectory) });
             }
-            accounts.Add(new WhatsAppAccount() { Id ="EditAccaunts", Name = "Редактировать.." });
+            if (available)
+                accounts.Add(new WhatsAppAccount() { Name = "Редактировать..  🖉" });
             return accounts;
         }
 
-        public static void UpdateAccounts(ObservableCollection<WhatsAppAccount> accounts, bool delete = false)
+        public static void UpdateAccounts(ObservableCollection<WhatsAppAccount> accounts, WhatsAppAccount whatsAppAccount, string userInput = default)
         {
-            if (!delete)
+            if (userInput != default)
             {
-                string accountId = Guid.NewGuid().ToString();
-                //string accountName = $"Account {Accounts.Count + 1}";
-                // Accounts.Add(new WhatsAppAccount { AccountId = accountId, AccountName = accountName });
-                // StatusTextBlock.Text = $"Added {accountName}";
+                accounts.Add(new WhatsAppAccount { Name = userInput });
+                string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", userInput);
+                if (!Directory.Exists(profileDirectory)) { Directory.CreateDirectory(profileDirectory); }
             }
-            else {
-                /*
-
-                     var selectedAccount = AccountListBox.SelectedItem as WhatsAppAccount;
-                if (selectedAccount != null)
-                {
-                    Accounts.Remove(selectedAccount);
-                    StatusTextBlock.Text = $"Removed {selectedAccount.AccountName}";
-                }
-                else
-                {
-                    MessageBox.Show("Please select an account to remove.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                    */
+            else
+            {
+                accounts.Remove(whatsAppAccount);
+                string profileDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Users", whatsAppAccount.Name);
+                if (Directory.Exists(profileDirectory)) { Directory.Delete(profileDirectory, true); }
             }
         }
     }

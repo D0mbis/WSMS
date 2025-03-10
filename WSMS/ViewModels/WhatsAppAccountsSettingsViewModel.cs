@@ -21,6 +21,7 @@ namespace WSMS.ViewModels
         private string statusTextBlock;
         private ObservableCollection<WhatsAppAccount> accounts;
         private WhatsAppAccount selectedAccount;
+        private string userInput = string.Empty;
 
         public string StatusTextBlock
         {
@@ -36,16 +37,18 @@ namespace WSMS.ViewModels
             get => selectedAccount;
             set => Set(ref selectedAccount, value);
         }
-
+        public string UserInput { get => userInput; set => Set(ref userInput, value); }
 
         #region Commands
         #region AddNewAccountCommand
         private ICommand addNewAccountCommand;
-        public ICommand AddNewAccountCommand => addNewAccountCommand ??= new MyActionCommand(OnAddNewAccountCommandCommandExecuted);
-
-        private void OnAddNewAccountCommandCommandExecuted(object p)
+        public ICommand AddNewAccountCommand => addNewAccountCommand ??= new MyActionCommand(OnAddNewAccountCommandExecuted, CanAddNewAccountCommandExecuted);
+        private bool CanAddNewAccountCommandExecuted(object p) => UserInput != string.Empty;
+        private void OnAddNewAccountCommandExecuted(object p)
         {
-            WhatsAppAccountsService.UpdateAccounts(Accounts);
+            WhatsAppAccountsService.UpdateAccounts(Accounts, SelectedAccount, UserInput);
+            StatusTextBlock = $"Added {UserInput}";
+            UserInput = string.Empty;
         }
         #endregion
         #region DeleteAccountCommand
@@ -54,7 +57,7 @@ namespace WSMS.ViewModels
 
         private void OnDeleteAccountCommandCommandExecuted(object p)
         {
-            WhatsAppAccountsService.UpdateAccounts(Accounts, true);
+            WhatsAppAccountsService.UpdateAccounts(Accounts, SelectedAccount);
         }
         #endregion
         #region StartSessionCommand
@@ -64,7 +67,7 @@ namespace WSMS.ViewModels
         {
             if (SelectedAccount != null)
             {
-                WebService.OpenBrowser(SelectedAccount.Id);
+                WebService.OpenBrowser(SelectedAccount.Name);
                 StatusTextBlock = $"Started session for {selectedAccount.Name}";
             }
             else
@@ -81,7 +84,7 @@ namespace WSMS.ViewModels
         {
             if (SelectedAccount != null)
             {
-                WebService.CloseBrowser(SelectedAccount.Id);
+                WebService.CloseBrowser(SelectedAccount.Name);
                 StatusTextBlock = $"Stopped session for {selectedAccount.Name}";
             }
             else

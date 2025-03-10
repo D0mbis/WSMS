@@ -7,7 +7,7 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
     Title="WhatsApp Manager" Height="350" Width="525">
-    
+
     <Window.DataContext>
         <vm:WhatsAppAccountsSettingsViewModel/>
     </Window.DataContext>
@@ -31,19 +31,58 @@
                                Margin="10" HorizontalAlignment="Center"/>
 
             <!-- Accounts List -->
-            <ListBox x:Name="AccountListBox" Grid.Row="1" Grid.Column="0" Margin="10"
-                             DisplayMemberPath="AccountName"
-                             SelectedValuePath="AccountId"
-                             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                     ItemsSource="{Binding Accounts}"
-                     SelectedItem="{Binding SelectedAccount}"/>
+            <DataGrid x:Name="AccountDataGrid"
+          Grid.Row="1" Grid.Column="0"
+          Margin="10"
+          ItemsSource="{Binding Accounts}"
+          SelectedItem="{Binding SelectedAccount}"
+          AutoGenerateColumns="False"
+          HeadersVisibility="Column"
+          CanUserAddRows="False"
+          CanUserDeleteRows="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Имя" Binding="{Binding Name}" Width="Auto" />
+                    <DataGridTextColumn Header="ID" Binding="{Binding AvailableForSending}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+
 
             <!-- Control Panel -->
             <StackPanel Grid.Row="1" Grid.Column="1" Margin="10" VerticalAlignment="Top">
-                <Button x:Name="StartSessionButton" Content="Start Session" Margin="5" Width="100" Command="{Binding StartSessionCommand}"/>
-                <Button x:Name="StopSessionButton" Content="Stop Session" Margin="5" Width="100" Command="{Binding StopSessionCommand}"/>
-                <Button x:Name="AddAccountButton" Content="Add Account" Margin="5" Width="100" Command="{Binding AddNewAccountCommand}"/>
-                <Button x:Name="RemoveAccountButton" Content="Remove Account" Margin="5" Width="100" Command="{Binding DeleteAccountCommand}"/>
+                <Button x:Name="StartSessionButton" Content="Start session" Margin="5" Width="100" Command="{Binding StartSessionCommand}"/>
+                <Button x:Name="StopSessionButton" Content="Stop session" Margin="5" Width="100" Command="{Binding StopSessionCommand}"/>
+                <Button x:Name="RemoveAccountButton" Content="Remove account" Margin="5" Width="100" Command="{Binding DeleteAccountCommand}"/>
+                <Button x:Name="AddNewAccountButton" Content="Add new account" Margin="5" Width="100" Command="{Binding AddNewAccountCommand}"/>
+                <Grid>
+                    <!-- Input TextBox -->
+                    <TextBox x:Name="InputBox" 
+                         Width="200" 
+                         Height="30" 
+                         VerticalAlignment="Top" 
+                         HorizontalAlignment="Left" 
+                         Margin="10" 
+                         Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}" />
+
+                    <!-- Placeholder Text -->
+                    <TextBlock Text="Введите текст..." 
+                           Foreground="Gray" 
+                           VerticalAlignment="Center" 
+                           HorizontalAlignment="Left" 
+                           Margin="15,0,0,0"
+                           IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <!-- Скрыть подсказку, если в TextBox есть текст -->
+                                    <DataTrigger Binding="{Binding ElementName=InputBox, Path=Text.Length}" Value="0">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </StackPanel>
 
             <StatusBar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">

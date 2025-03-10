@@ -160,7 +160,7 @@ namespace WSMS.ViewModels
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
             SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
             MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
-            WhatsAppAccounts = WhatsAppAccountsService.GetAccounts();
+            WhatsAppAccounts = WhatsAppAccountsService.GetAccounts(true);
         }
 
         private void Update(object? sender, PropertyChangedEventArgs e)

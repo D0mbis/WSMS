@@ -10,7 +10,7 @@ namespace WSMS.Models
 {
     public class WhatsAppAccount
     {
-        public string? Id { get; set; }
         public string? Name { get; set; }
+        public int? AvailableForSending { get; set; } = 100;
     }
 }

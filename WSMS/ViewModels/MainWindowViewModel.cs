@@ -11,6 +11,7 @@ using System.Windows.Data;
 using WSMS.Infrastructure.Commands.Base;
 using System.Linq;
 using WSMS.Infrastructure.Other;
+using WSMS.Views;
 
 namespace WSMS.ViewModels
 {
@@ -46,7 +47,7 @@ namespace WSMS.ViewModels
         #region Comands
         #region OpenContactsCommand
 
-        public ICommand OpenContactsCommand { get; }
+        public ICommand OpenContactsCommand;
 
         private bool CanOpenContactsCommandExecute(object p)
         {
@@ -74,8 +75,17 @@ namespace WSMS.ViewModels
         private void OnStartBrowserCommandExecuted(object p)
         {
 
-            CreateSendingWindow createSendingWindow = new ();
-            createSendingWindow.Show();
+
+            AccountsSettings window = new();
+            bool? result = window.ShowDialog();
+            if (result == false)
+            {
+                //MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            }
+
+
+            /*CreateSendingWindow createSendingWindow = new ();
+            createSendingWindow.Show();*/
             /* if (DriverBtnContent == "Start browser")
              {
                  WebService.OpenBrowser();
