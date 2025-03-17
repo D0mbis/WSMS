@@ -70,17 +70,17 @@ namespace WSMS.Models
             }
             return resault;
         }
-        public ObservableCollection<MessageAllowDirections> GetSubDirections()
+        public ObservableCollection<MessageAllowDirections> GetSubDirectionsNames()
         {
             ObservableCollection<MessageAllowDirections> resault = new();
             foreach (var direction in AllDataBase)
             {
-                ObservableCollection<SubDirectionsNames> temp = new();
+                ObservableCollection<SubDirectionName> temp = new();
                 foreach (var sub in direction.SubDirections)
                 {
                     temp.Add(new() { SubDirection = sub.Name });
                 }
-                resault.Add(new() {MainDirection = direction.Name, SubDirections = temp });
+                resault.Add(new() { MainDirection = direction.Name, SubDirections = temp });
             }
             return resault;
         }

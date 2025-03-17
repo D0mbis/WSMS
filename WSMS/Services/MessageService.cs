@@ -58,7 +58,7 @@ namespace WSMS.Services
             foreach (var direction in sortedDirections)
             {
                 var temp = direction.SubDirections.OrderBy(c => c.SubDirection).Where(c => c.IsChecked);
-                finaly.Add(new() { MainDirection = direction.MainDirection, SubDirections = new ObservableCollection<SubDirectionsNames>(temp) });
+                finaly.Add(new() { MainDirection = direction.MainDirection, SubDirections = new ObservableCollection<SubDirectionName>(temp) });
             }
             return finaly;
         }
@@ -241,6 +241,14 @@ namespace WSMS.Services
                 }
             }
             return outputD;
+        }
+
+        public static void AddTemplate(SendingTemplate sendingTemplate)
+        {
+            string json = JsonConvert.SerializeObject(sendingTemplate, Formatting.Indented);
+            if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+            using StreamWriter stream = new($"{FolderPath}\\sending templates.json", false);
+            stream.Write(json);
         }
     }
 }

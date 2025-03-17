@@ -76,26 +76,8 @@ namespace WSMS.ViewModels
         {
 
 
-            AccountsSettings window = new();
-            bool? result = window.ShowDialog();
-            if (result == false)
-            {
-                //MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
-            }
-
-
-            /*CreateSendingWindow createSendingWindow = new ();
-            createSendingWindow.Show();*/
-            /* if (DriverBtnContent == "Start browser")
-             {
-                 WebService.OpenBrowser();
-                 DriverBtnContent = "Close browser";
-             }
-             else
-             {
-                 WebService.CloseBrowser();
-                 DriverBtnContent = "Start browser";
-             }*/
+            CreateSendingWindow createSendingWindow = new ();
+            createSendingWindow.Show();
         }
         #endregion
         #region Start sending Command

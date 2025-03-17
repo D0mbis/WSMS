@@ -11,6 +11,7 @@ namespace WSMS.Models
     public class SubDirection : CheckableItemWithChildren<Customer>
     {
         public string? Name { get; set; }
+        [JsonIgnore]
         public DateTime? LastSending { get; set; }
         public ObservableCollection<Customer> Customers
         {

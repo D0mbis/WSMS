@@ -17,7 +17,7 @@ namespace WSMS.ViewModels
     {
         #region Properties of Customers
         private ObservableCollection<SubDirection> allSubDirections;
-        public ObservableCollection<SubDirection> AllSubDirections
+        public ObservableCollection<SubDirection>? AllSubDirections
         {
             get => allSubDirections;
             set
@@ -94,16 +94,16 @@ namespace WSMS.ViewModels
 
         #region Properties of Accounts
         private ObservableCollection<WhatsAppAccount>? whatsAppAccounts;
-        private ObservableCollection<WhatsAppAccount>? selectedWhatsAppAccount;
+        private WhatsAppAccount? selectedWhatsAppAccount;
 
         public ObservableCollection<WhatsAppAccount> WhatsAppAccounts
         {
             get => whatsAppAccounts ?? new(new());
             set => Set(ref whatsAppAccounts, value);
         }
-        public ObservableCollection<WhatsAppAccount> SelectedWhatsAppAccount
+        public WhatsAppAccount SelectedWhatsAppAccount
         {
-            get => selectedWhatsAppAccount ?? new(new());
+            get => selectedWhatsAppAccount;
             set => Set(ref selectedWhatsAppAccount, value);
         }
 
@@ -114,7 +114,6 @@ namespace WSMS.ViewModels
         #region EditSeletedCustomers
         private ICommand editSeletedCustomers;
         public ICommand EditSeletedCustomers => editSeletedCustomers ??= new MyActionCommand(OnEditSeletedCustomersCommandExecuted);
-        //private bool CanEditSeletedCustomersCommandExecute(object p) => true;
 
         private void OnEditSeletedCustomersCommandExecuted(object p)
         {
@@ -149,6 +148,25 @@ namespace WSMS.ViewModels
             {
                 //MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
             }
+        }
+        #endregion
+        #region SaveTemplate
+        private ICommand addTemplateCommand;
+        private bool CanAddTemplateCommandCommandExecute(object p)
+        {
+            return SelectedSubDirections.Count != 0 &&
+            SelectedWhatsAppAccount != null &&
+            SelectedMessage.Message.Name != null;
+        }
+        public ICommand AddTemplateCommand => addTemplateCommand ??= new MyActionCommand(OnAddTemplateCommand, CanAddTemplateCommandCommandExecute);
+        private void OnAddTemplateCommand(object p)
+        {
+            MessageService.AddTemplate(new SendingTemplate()
+            {
+                Account = SelectedWhatsAppAccount.Name,
+                Message = SelectedMessage.Message,
+                SelectedCustomers = CustomersService.GetLiteSubDirections(SelectedSubDirections)
+            });
         }
         #endregion
         #endregion

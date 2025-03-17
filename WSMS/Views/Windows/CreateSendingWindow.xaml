@@ -70,7 +70,7 @@
                 </ComboBox>
             </StackPanel>
 
-            <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding EditMessegesCommand}"/>
+            <Button Content="+" Width="30" Height="30" Margin="5" Command="{Binding AddTemplateCommand}"/>
         </StackPanel>
 
         <!-- Main content-->

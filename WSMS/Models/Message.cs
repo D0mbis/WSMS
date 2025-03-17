@@ -1,12 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using WSMS.Models.Base;
-using WSMS.Services;
 
 namespace WSMS.Models
 {
@@ -38,6 +34,7 @@ namespace WSMS.Models
                 Set(ref image, value);
             }
         }
+        [JsonIgnore]
         public ObservableCollection<MessageAllowDirections>? Directions
         {
             get => Children;

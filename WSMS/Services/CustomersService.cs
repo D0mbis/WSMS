@@ -14,130 +14,6 @@ namespace WSMS.Services
         private static readonly string FolderPath = $"{Environment.CurrentDirectory}\\data";
         private static ObservableCollection<Customer>? AllCustomers { get; set; }
 
-
-        /*private static bool LoadAllCustomersInGroups()
-        {
-            try
-            {
-                string dbPath = FolderPath + "\\mainDB.json";
-                if (!File.Exists(dbPath))
-                {
-                    //GoogleSheetsAPI.PulldbCustomers();
-                    MessageBox.Show("File \"mainDB.json\" not found, please pull from Excel db.");
-                    return false;
-                }
-                else if (AllCustomersInGroups == default)
-                {
-                    AllCustomersInGroups = new();
-                    string jsonData;
-                    using (StreamReader reader = new(dbPath))
-                    {
-                        jsonData = reader.ReadToEnd();
-                    }
-
-                    var items = JsonConvert.DeserializeObject<Dictionary<string, ObservableCollection<Customer>>>(jsonData);
-                    AllCustomersInGroups = new();
-                    foreach (var item in items.Keys)
-                    {
-                        AllCustomersInGroups.Add(new CustomersGroup(item, items[item]));
-                    }
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.ShowMyReportMessageBox(ex.Message, "CustomersService", "LoadCustomersInGroups method");
-                return false;
-            }
-        }  // отредактировать после pull from excel*/
-        /*public static ObservableCollection<Customer> GetCustomersWithoutGroups()
-        {
-            try
-            {
-
-                if (LoadAllCustomersInGroups())
-                {
-                    AllCustomers = new ObservableCollection<Customer>();
-                    foreach (var entry in AllCustomersInGroups)
-                    {
-                        foreach (Customer customer in entry.Customers)
-                        {
-                            AllCustomers.Add(customer);
-                        }
-                    }
-                    return AllCustomers;
-                }
-                else
-                {
-                    return AllCustomers;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.ShowMyReportMessageBox(ex.Message, "CustomersService", "GetCustomersWithoutGroups");
-                AllCustomers = null;
-                return AllCustomers;
-            }
-        }*/
-        /// <summary>
-        /// Returns the entire database as a dictionary.
-        /// </summary>
-        /// <param name="values">Values from Excel table</param>
-        /// <returns></returns>
-        /* private static void SaveAllDirections(Dictionary<string, Dictionary<string, List<Customer>>> mainDB)
-         {
-             Dictionary<string, List<SubDirection>> result = mainDB.ToDictionary(
-                     outerKey => outerKey.Key, // Ключ MainDirection остаётся таким же
-                     outerValue => outerValue.Value.Select(inner => new SubDirection(inner.Key)).ToList()); // Преобразуем в List<SubDirection>
-             string allDirectionsPath = FolderPath + "\\all directions.json";
-             if (File.Exists(allDirectionsPath) && result.Count > 0)
-             {
-                 result = UpdateDirectionsDateTime(allDirectionsPath, result);
-                 string allDirectionsJson = JsonConvert.SerializeObject(result, Formatting.Indented);
-                 using StreamWriter stream = new(allDirectionsPath);
-                 stream.Write(allDirectionsJson);
-             }
-
-         }*/
-        /* public static ObservableCollection<MainDirection> LoadAllDirections()
-         {
-             ObservableCollection<MainDirection> directionsFullCollection = new();
-             try
-             {
-                 string filePath = FolderPath + "\\all directions.json";
-                 if (!File.Exists(filePath)) { GoogleSheetsAPI.PulldbCustomers(); }
-                 string data;
-                 using (StreamReader reader = new(filePath))
-                 {
-                     data = reader.ReadToEnd();
-                 }
-                 if (data != string.Empty)
-                 {
-                     var s = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(data);
-                     foreach (var key in s.Keys)
-                     {
-                         directionsFullCollection.Add(new MainDirection(key, new ObservableCollection<SubDirection>()));
-
-                         foreach (var item in s[key])
-                         {
-                             foreach (var item2 in directionsFullCollection)
-                             {
-                                 if (item2.Name == key)
-                                 {
-                                     item2.SubDirections.Add(new SubDirection(item));
-                                 }
-                             }
-                         }
-                     }
-                 }
-                 return directionsFullCollection;
-             }
-             catch (Exception e)
-             {
-                 Logger.ShowMyReportMessageBox(e.Message, "CustomersService", "LoadAllDirections");
-                 return directionsFullCollection;
-             }
-         }*/
         public static Dictionary<string, Dictionary<string, List<Customer>>> GetMainDBFromExcelValues(IList<IList<object>> values)
         {
             try
@@ -253,6 +129,20 @@ namespace WSMS.Services
             }
             catch { return new Dictionary<string, Dictionary<string, List<Customer>>>(); }
         }
+
+        public static ObservableCollection<LiteSubDirections> GetLiteSubDirections(ObservableCollection<SubDirection> subDirectionsInput)
+        {
+            ObservableCollection<LiteSubDirections> resault = new();
+            foreach (SubDirection subdirection in subDirectionsInput)
+            {
+                ObservableCollection<LiteCustomer> customers = new(
+                    subdirection.Customers.Select(c => new LiteCustomer { Name = c.Name })
+                    );
+                resault.Add(new LiteSubDirections() { Name = subdirection.Name, Customers = customers});
+            }
+            return resault;
+        }
+
 
         public static void SaveNewDBCustomers(Dictionary<string, Dictionary<string, List<Customer>>> receivedBD)
         {

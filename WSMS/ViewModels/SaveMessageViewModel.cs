@@ -70,7 +70,7 @@ namespace WSMS.ViewModels
         {
             VMUpdateService = dataService;
             MessageWrapper = messageWrapper;
-            messageWrapper.Message.Directions = CustomersRepository.Instance.GetSubDirections() ?? new();
+            messageWrapper.Message.Directions = CustomersRepository.Instance.GetSubDirectionsNames() ?? new();
             SaveMessageCommand = new MyActionCommand(OnSaveMessageCommandExecuted, CanSaveMessageCommandExecute);
             SelectAllCommand = new MyActionCommand(OnSelectAllCommandExecuted);
 
