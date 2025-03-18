@@ -266,9 +266,14 @@ namespace WSMS.Services
             using (StreamReader reader = new(templatesFilePath))
             {
                 jsonData = reader.ReadToEnd();
+                var temp = JsonConvert.DeserializeObject<ObservableCollection<SendingTemplate>>(jsonData);
+                if (temp != null)
+                    foreach (var message in temp)
+                    {
+                        message.Message.Image = GetImage(message.Message.ImagePath);
+                    }
+                return temp ?? new ();
             }
-            return JsonConvert.DeserializeObject<ObservableCollection<SendingTemplate>>(jsonData) ?? new();
-
         }
     }
 }

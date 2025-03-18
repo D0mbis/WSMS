@@ -84,6 +84,11 @@ namespace WSMS.Models
             }
             return resault;
         }
+        public void UpdateRepository()
+        {
+            Instance.AllDataBaseDictionary = CustomersService.GetMainDB();
+            Instance.AllDataBase = ConvertToMainDirections();
+        }
         public ObservableCollection<Customer> GetCustomers()
         {
             if (AllDataBaseDictionary == null)

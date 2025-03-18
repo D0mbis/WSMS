@@ -32,7 +32,7 @@ namespace WSMS.ViewModels
         #region Comands
         #region OpenContactsCommand
 
-        public ICommand OpenContactsCommand;
+        public ICommand OpenContactsCommand { get; }
 
         private bool CanOpenContactsCommandExecute(object p)
         {
@@ -59,8 +59,6 @@ namespace WSMS.ViewModels
         private bool CanStartBrowserCommandExecute(object p) => true;
         private void OnStartBrowserCommandExecuted(object p)
         {
-
-
             CreateSendingWindow createSendingWindow = new();
             createSendingWindow.Show();
         }
@@ -91,7 +89,7 @@ namespace WSMS.ViewModels
         }
         #endregion
 
-
+        #region CloseAppCommand
         public ICommand CloseApplicationCommand { get; }
         private void OnCloseApplicationExecuted(object p)
         {
@@ -103,8 +101,16 @@ namespace WSMS.ViewModels
                 window.Close();
             }
         }
+        #endregion
+        #region TemplatesUpdate
+        private ICommand templatesUpdateCommand;
+        public ICommand TemplatesUpdateCommand => templatesUpdateCommand ??= new MyActionCommand(OnTemplatesUpdateCommandExecuted);
 
-
+        private void OnTemplatesUpdateCommandExecuted(object obj)
+        {
+            Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
+        }
+        #endregion
         #endregion
 
         public MainWindowViewModel()

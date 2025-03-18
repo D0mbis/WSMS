@@ -81,6 +81,7 @@ namespace WSMS.ViewModels
         private void OnPullCustomersFromRemoteExecuted(object p)
         {
             GoogleSheetsAPI.PulldbCustomers();
+            Repository.UpdateRepository();
             CustomersView = CollectionViewSource.GetDefaultView(Repository.GetCustomers());
         }
         #endregion

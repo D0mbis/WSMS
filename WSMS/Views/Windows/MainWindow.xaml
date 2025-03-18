@@ -81,6 +81,7 @@
                         <Button Content="Start" Width="80" Height="40" Margin="10"/>
                         <Button Content="Stop" Width="80" Height="40" Margin="10"/>
                         <Button Content="Pause/Continue" Width="120" Height="40" Margin="10"/>
+                        <Button Content="Update" Command="{Binding TemplatesUpdateCommand}" Width="120" Height="40" Margin="10"/>
                     </StackPanel>
 
                     <!-- Прогресс и таймер -->
@@ -130,33 +131,29 @@
                                                         <RowDefinition Height="80"/>
                                                         <RowDefinition Height="50"/>
                                                     </Grid.RowDefinitions>
-                                                <TextBlock Grid.Row="0" Text="{Binding Account}" TextWrapping="Wrap" Margin="3" 
+                                                    <TextBlock Grid.Row="0" Text="{Binding Account}" TextWrapping="Wrap" Margin="3" 
                                                            VerticalAlignment="Center" HorizontalAlignment="Center"
                                                            FontSize="18" FontWeight="Bold" />
-                                                <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCustomers}"  
+                                                    <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCustomers}"  
                                                                   BorderBrush="Transparent" BorderThickness="0">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
                                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
                                                     <CheckBox Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
                                                                Style="{StaticResource GreenBigCheckBox}" />
                                                 </Grid>
-
                                             </Grid>
                                         </Border>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
-
                     </StackPanel>
                 </Grid>
-
-
             </TabItem>
         </TabControl>
     </DockPanel>
