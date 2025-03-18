@@ -245,10 +245,30 @@ namespace WSMS.Services
 
         public static void AddTemplate(SendingTemplate sendingTemplate)
         {
-            string json = JsonConvert.SerializeObject(sendingTemplate, Formatting.Indented);
+            var oldTemplates = loadMessageTemplates();
+            oldTemplates.Add(sendingTemplate);
+            string json = JsonConvert.SerializeObject(oldTemplates, Formatting.Indented);
             if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
             using StreamWriter stream = new($"{FolderPath}\\sending templates.json", false);
             stream.Write(json);
+        }
+
+        public static ObservableCollection<SendingTemplate> loadMessageTemplates()
+        {
+            if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+            string templatesFilePath = FolderPath + "\\sending templates.json";
+            if (!File.Exists(templatesFilePath))
+            {
+                using FileStream stream = new(templatesFilePath, FileMode.Create);
+                return new ObservableCollection<SendingTemplate>() { new() };
+            }
+            string jsonData = string.Empty;
+            using (StreamReader reader = new(templatesFilePath))
+            {
+                jsonData = reader.ReadToEnd();
+            }
+            return JsonConvert.DeserializeObject<ObservableCollection<SendingTemplate>>(jsonData) ?? new();
+
         }
     }
 }

@@ -66,5 +66,35 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
-
+    <Style x:Key="GreenBigCheckBox" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="Green"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="2" ScaleY="2"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="18" Height="18" BorderThickness="2" BorderBrush="DarkGreen" Background="LightGreen"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Grid>
+                                <Rectangle Fill="Transparent"/>
+                                <Path x:Name="CheckMark" Data="M 2,7 L 6,11 L 12,3" Stroke="Green" StrokeThickness="2" 
+                                  Visibility="Collapsed" 
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ContentPresenter Margin="5,0,0,0"/>
+                    </StackPanel>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

@@ -167,6 +167,7 @@ namespace WSMS.ViewModels
                 Message = SelectedMessage.Message,
                 SelectedCustomers = CustomersService.GetLiteSubDirections(SelectedSubDirections)
             });
+            
         }
         #endregion
         #endregion

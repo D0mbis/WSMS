@@ -17,32 +17,17 @@ namespace WSMS.ViewModels
 {
     public class MainWindowViewModel : Model
     {
-        #region Title Window
-        private string _Title = "WSMS";
-        /// <summary Header MainWindow </summary>
-		public string Title
-        {
-            get => _Title;
-            set => Set(ref _Title, value);
-        }
-        #endregion
-        #region driverButton Content
+        #region Properties
+        private string title = "WSMS";
+        public string Title { get => title; set => Set(ref title, value); }
+
         private string driverBtnContent = "Start browser";
         public string DriverBtnContent { get => driverBtnContent; set => Set(ref driverBtnContent, value); }
-        #endregion
-        private ObservableCollection<MainDirection> customersCategories;
-        public ObservableCollection<MainDirection> CustomersCategories
-        {
-            get => customersCategories;
-            set
-            {
-                if (customersCategories != value)
-                {
 
-                    Set(ref customersCategories, value);
-                }
-            }
-        }
+        private ICollectionView templates;
+        public ICollectionView Templates { get => templates; set => Set(ref templates, value); }
+
+        #endregion
 
         #region Comands
         #region OpenContactsCommand
@@ -76,7 +61,7 @@ namespace WSMS.ViewModels
         {
 
 
-            CreateSendingWindow createSendingWindow = new ();
+            CreateSendingWindow createSendingWindow = new();
             createSendingWindow.Show();
         }
         #endregion
@@ -105,8 +90,8 @@ namespace WSMS.ViewModels
             // Contacts = string.Join("\n", WebService.GetNotDeliveredContacts(contacts, IdentifierText));
         }
         #endregion
-      
-        
+
+
         public ICommand CloseApplicationCommand { get; }
         private void OnCloseApplicationExecuted(object p)
         {
@@ -119,7 +104,7 @@ namespace WSMS.ViewModels
             }
         }
 
-       
+
         #endregion
 
         public MainWindowViewModel()
@@ -129,6 +114,7 @@ namespace WSMS.ViewModels
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
             OpenContactsCommand = new MyActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
             CloseApplicationCommand = new MyActionCommand(OnCloseApplicationExecuted);
+            Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
         }
     }
 }

@@ -66,118 +66,6 @@
                         Message identifier text</Label>
                 </Grid>
             </TabItem>
-            <TabItem Width="Auto" Header="Create sanding">
-                <Grid Margin="10">
-                    <!-- Title -->
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0" Text="WMS" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
-
-                    <!-- Control Buttons and Progress -->
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Content="Start" Width="80" Height="40" Margin="5"/>
-                        <Button Content="Stop" Width="80" Height="40" Margin="5" IsEnabled="False"/>
-                        <Button Content="Pause/Continue" Width="120" Height="40" Margin="5"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                        <ProgressBar Width="300" Height="20" Value="26" Maximum="75" Background="LightGray" Foreground="LightGreen"/>
-                        <TextBlock Text="Progress: 26/75" Margin="10,0,0,0"/>
-                        <TextBlock Text="Time left: 10:13" Margin="10,0,0,0"/>
-                    </StackPanel>
-
-                    <!-- Customer and Task Information -->
-                    <StackPanel Grid.Row="2" Margin="0,20,0,0">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="Now: " Foreground="Green"/>
-                            <TextBlock Text="Customer 1"/>
-                            <TextBlock Text="Next: " Foreground="Green" Margin="10,0,0,0"/>
-                            <TextBlock Text="Customer 2"/>
-                        </StackPanel>
-
-                        <!-- Task 1 -->
-                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="0,10,0,0" Padding="10">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2713; " Foreground="Red"/>
-                                    <TextBlock Text="Предложение недели"/>
-                                    <TextBlock Text="Турфирмы наколенник со светом EY Medical"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="другие свет"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="керамический подшипник"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="4-х канальный тип подклюнения"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="заласние ротора в наличии"/>
-                                </StackPanel>
-                                <TextBlock Text="&#x2014; цена актуальна до 15.03.2025."/>
-                                <TextBlock Text="&#x2014; (77/993)378-17-61"/>
-                                <TextBlock Text="Брокер: &#x2713;"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Text="НОВОЯХТИНСК"/>
-                                    <TextBlock Text="27-28"/>
-                                    <CheckBox IsChecked="True"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Task 2 -->
-                        <Border BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Margin="0,10,0,0" Padding="10">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2713; " Foreground="Red"/>
-                                    <TextBlock Text="Предложение недели"/>
-                                    <TextBlock Text="Турфирмы наколенник со светом EY Medical"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                    <TextBlock Text="&#x2014;"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="другие свет"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="керамический подшипник"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="4-х канальный тип подклюнения"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="&#x2022; " Foreground="Green"/>
-                                    <TextBlock Text="заласние ротора в наличии"/>
-                                </StackPanel>
-                                <TextBlock Text="&#x2014; цена актуальна до 15.03.2025."/>
-                                <TextBlock Text="&#x2014; (77/993)378-17-61"/>
-                                <TextBlock Text="Брокер: &#x2713;"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <TextBlock Text="НОВОЯХТИНСК"/>
-                                    <TextBlock Text="27-28"/>
-                                    <CheckBox IsChecked="True"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-            </TabItem>
             <TabItem Width="Auto" Header="GPT">
 
                 <Grid>
@@ -211,68 +99,53 @@
 
                     <!-- Список заказов -->
                     <StackPanel Orientation="Vertical" Margin="20,170,20,20" Grid.ColumnSpan="2">
-                        <Border BorderBrush="Gray" BorderThickness="1" Padding="10" CornerRadius="5" Background="LightGray" Margin="0,0,0,10">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Пустое изображение -->
-                                <Rectangle Width="80" Height="80" Fill="LightGray" Stroke="Black" Grid.Column="0"/>
-
-                                <!-- Описание -->
-                                <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                                    <TextBlock Text="📌Предложение недели" FontWeight="Bold"/>
-                                    <TextBlock Text="Турбинный наконечник со светом EYY Medical 🇨🇳" FontSize="12"/>
-                                    <TextBlock Text="🔥 4300р. ~4900р." Foreground="Red" FontSize="12"/>
-                                    <TextBlock Text="🟢 яркий свет" FontSize="12"/>
-                                    <TextBlock Text="🟢 керамический подшипник" FontSize="12"/>
-                                    <TextBlock Text="🟢 низкий уровень шума" FontSize="12"/>
-                                    <TextBlock Text="🟢 4-х канальный тип подключения" FontSize="12"/>
-                                    <TextBlock Text="🟢 запасные роторы в наличии" FontSize="12"/>
-                                    <TextBlock Text="⌛ цена актуальна до 15.03.2025" FontSize="12"/>
-                                    <TextBlock Text="📞 +7(995)378-17-61" FontSize="12"/>
-                                    <TextBlock Text="📍БорПакет" FontSize="12"/>
-                                </StackPanel>
-
-                                <!-- Метка города и галочка -->
-                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                    <TextBlock Text="Новошахтинск" FontSize="14" FontWeight="Bold"/>
-                                    <TextBlock Text="27-28" FontSize="14"/>
-                                    <Rectangle Width="50" Height="50" Stroke="Black" Margin="10">
-                                        <Rectangle.Fill>
-                                            <VisualBrush>
-                                                <VisualBrush.Visual>
-                                                    <TextBlock Text="✔" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <ListView Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalContentAlignment="Center" Margin="2"
-                                  BorderThickness="1" ItemContainerStyle="{StaticResource CustomListViewItemStyle}"
-                                  ItemsSource="{Binding MessagesView, UpdateSourceTrigger=PropertyChanged}" 
-                                  SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">      
+                        <ListView Grid.Column="0" Grid.ColumnSpan="3" Margin="2" Height="550"
+                                  BorderThickness="1"
+                                  ItemsSource="{Binding Templates, UpdateSourceTrigger=PropertyChanged}" 
+                                  ItemContainerStyle ="{StaticResource CustomListViewItemStyle}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel Orientation="Vertical" Margin="0" HorizontalAlignment="Center" >
-                                        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
+                                    <StackPanel
+                                        Orientation="Vertical" Margin="0" HorizontalAlignment="Center">
+                                        <Border BorderBrush="Gray" BorderThickness="0.1">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="160"/>
-                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="130"/>
+                                                    <ColumnDefinition Width="320"/>
+                                                    <ColumnDefinition Width="150" />
                                                 </Grid.ColumnDefinitions>
                                                 <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
-                                                    <Image Source="{ Binding Message.Image}" Height="200" Width="Auto" 
-                                 HorizontalAlignment="Stretch" Margin="3"/>
+                                                    <Image Source="{ Binding Message.Image}" Height="170"  
+                                                           HorizontalAlignment="Stretch" Margin="3"/>
                                                 </Border>
-                                                <TextBlock Text="{Binding Message.Name}" TextWrapping="Wrap" Margin="10,0,0,0" 
-                                 Grid.Column="1" Width="120" MaxHeight="120" VerticalAlignment="Center"
-                                 FontSize="18"/>
+                                                <Border Grid.Column="1" BorderBrush="Transparent" BorderThickness="0">
+                                                    <TextBox Grid.Column="1" TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
+                                                        Text="{Binding Message.Text, UpdateSourceTrigger=PropertyChanged}" 
+                                                            Height="170" Margin="3" Background="LightGray"
+                                                            BorderThickness="0" BorderBrush="Transparent" FontSize="12" />
+                                                </Border>
+                                                <Grid Grid.Column="3">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="80"/>
+                                                        <RowDefinition Height="50"/>
+                                                    </Grid.RowDefinitions>
+                                                <TextBlock Grid.Row="0" Text="{Binding Account}" TextWrapping="Wrap" Margin="3" 
+                                                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                           FontSize="18" FontWeight="Bold" />
+                                                <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCustomers}"  
+                                                                  BorderBrush="Transparent" BorderThickness="0">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
+                                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                    <CheckBox Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Style="{StaticResource GreenBigCheckBox}" />
+                                                </Grid>
+
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -285,79 +158,6 @@
 
 
             </TabItem>
-
-            <TabItem Width="Auto" Header="M">
-
-                <Grid>
-                    <!-- Top Buttons -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                        <Button Content="Start" Width="100" Margin="5"/>
-                        <Button Content="Stop" Width="100" Margin="5"/>
-                        <Button Content="Pause/Continue" Width="120" Margin="5"/>
-                    </StackPanel>
-
-                    <!-- Progress Bar -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Rectangle Fill="Green" Width="300" Height="20"/>
-                            <Rectangle Fill="Gray" Width="500" Height="20"/>
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!-- Status Text -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                        <TextBlock Text="Now: Customer 1" Margin="5"/>
-                        <TextBlock Text="Next: Customer 2" Margin="5"/>
-                        <TextBlock Text="Progress: 26/75" Margin="5"/>
-                        <TextBlock Text="Time left: 10:13" Margin="5"/>
-                    </StackPanel>
-
-                    <!-- Main Content -->
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,20,0,0">
-                        <!-- First Section -->
-                        <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel>
-                                    <TextBlock Text="Приложенные недоделки" Foreground="Red"/>
-                                    <TextBlock Text="Турбинный наконечник со светой EYY Medical"/>
-                                    <TextBlock Text="43000р. * 4000р."/>
-                                    <TextBlock Text="Всего: 47000р."/>
-                                    <TextBlock Text="Звонил сегодня, все ок"/>
-                                    <TextBlock Text="4-х канальный тип подключения"/>
-                                    <TextBlock Text="Запасные роторы в наличии"/>
-                                    <TextBlock Text="Цена актуальна до 15.03.2025"/>
-                                    <TextBlock Text="Тел: +7(999)378-17-61"/>
-                                    <TextBlock Text="Возражений нет"/>
-                                </StackPanel>
-                                <CheckBox Content="Новошахтинск 27-28" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Second Section -->
-                        <Border BorderBrush="Black" BorderThickness="1" Margin="5" Padding="10">
-                            <StackPanel Orientation="Horizontal">
-                                <StackPanel>
-                                    <TextBlock Text="Приложенные недоделки" Foreground="Red"/>
-                                    <TextBlock Text="Турбинный наконечник со светой EYY Medical"/>
-                                    <TextBlock Text="43000р. * 4000р."/>
-                                    <TextBlock Text="Всего: 47000р."/>
-                                    <TextBlock Text="Звонил сегодня, все ок"/>
-                                    <TextBlock Text="4-х канальный тип подключения"/>
-                                    <TextBlock Text="Запасные роторы в наличии"/>
-                                    <TextBlock Text="Цена актуальна до 15.03.2025"/>
-                                    <TextBlock Text="Тел: +7(999)378-17-61"/>
-                                    <TextBlock Text="Возражений нет"/>
-                                </StackPanel>
-                                <CheckBox Content="Новошахтинск 27-28" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-
-
-            </TabItem>
-
         </TabControl>
     </DockPanel>
 </Window>
