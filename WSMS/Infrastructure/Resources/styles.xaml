@@ -77,8 +77,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <StackPanel Orientation="Horizontal">
-                        <Border Width="18" Height="18" BorderThickness="2" BorderBrush="DarkGreen" Background="LightGreen"
-                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Border Width="18" Height="18" BorderThickness="0.5" BorderBrush="DarkGreen" Background="LightGreen"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" CornerRadius="3">
                             <Grid>
                                 <Rectangle Fill="Transparent"/>
                                 <Path x:Name="CheckMark" Data="M 2,7 L 6,11 L 12,3" Stroke="Green" StrokeThickness="2" 
@@ -96,5 +96,54 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+    <!-- Style for Icons Button -->
+
+    <Style x:Key="IconButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="130"/>
+        <Setter Property="Height" Value="130"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="3"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransform">
+            <Setter.Value>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+            </Setter.Value>
+        </Setter>
+        <!-- Отключение стандартного фона подсветки при наведении на кнопку -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <!-- Триггер для IsEnabled -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="DarkGray"/>
+                            <Setter Property="Foreground" Value="Gray"/>
+                        </Trigger>
+                        <!-- Триггер для IsMouseOver (оставляем пустым или задаём фиксированный фон) -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <!-- Не меняем Background -->
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="RenderTransform">
+                    <Setter.Value>
+                        <ScaleTransform ScaleX="1.8" ScaleY="1.8"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>
