@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
+using WSMS.Infrastructure.Other;
 using WSMS.Models;
 using WSMS.Models.Base;
 using WSMS.Services;
@@ -41,6 +42,17 @@ namespace WSMS.ViewModels
 
             window?.Close();
             VMUpdateService?.UpdateData();
+        }
+        #endregion
+
+
+        #region CloseWindow
+        public ICommand closeWindowCommand;
+        public ICommand CloseWindowCommand => closeWindowCommand ?? new MyActionCommand(OnCloseWindowCommandExecuted);
+
+        private void OnCloseWindowCommandExecuted(object p)
+        {
+            WindowMenager.CloseWindow<SaveMessageWindow>();
         }
         #endregion
 

@@ -1,13 +1,15 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WSMS.Views.Windows;
 
 namespace WSMS.Infrastructure.Other
 {
-    public static class WindowPositionSettings
+    public static class WindowMenager
     {
         public static void RestoreWindowPosition(Window window)
         {
@@ -31,8 +33,24 @@ namespace WSMS.Infrastructure.Other
                 }
             }
         }
+        /// <summary>
+        /// Open a new window centered relative to the parent window
+        /// </summary>
+        /// <typeparam name="TParent">parentWindow</typeparam>
+        /// <param name="сhildWindow">сhildWindow</param>
+        public static void OpenWindowCentered<TParent>(Window сhildWindow) where TParent : Window
+        {
+            var parentWindow = Application.Current.Windows.OfType<TParent>().FirstOrDefault(w => w.IsVisible);
+            if (parentWindow == null) return;
 
-        public static void SaveWindowPosition(Window window)
+            сhildWindow.WindowStartupLocation = WindowStartupLocation.Manual;
+            сhildWindow.Left = parentWindow.Left + (parentWindow.Width - сhildWindow.Width) / 2;
+            сhildWindow.Top = parentWindow.Top + (parentWindow.Height - сhildWindow.Height) / 2;
+
+            сhildWindow.Show();
+        }
+
+        static void SaveWindowPosition(Window window)
         {
             // Save window position, size, and state
             Properties.Settings.Default.WindowTop = window.Top;
@@ -43,6 +61,25 @@ namespace WSMS.Infrastructure.Other
 
             // Save the settings
             Properties.Settings.Default.Save();
+        }
+
+        /// <summary>
+        /// Save the current position of the selected window
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="savePosition">If you need to save please specify true</param>
+        public static void CloseWindow<T>(bool savePosition = false) where T : Window
+        {
+            var window = Application.Current.Windows.OfType<T>().FirstOrDefault(w => w.IsVisible);
+            if (window != null)
+            {
+                if (savePosition)
+                {
+                    SaveWindowPosition(window);
+                }
+                window.Hide();
+                window?.Close();
+            }
         }
     }
 }

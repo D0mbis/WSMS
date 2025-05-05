@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Windows.Data;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
+using WSMS.Infrastructure.Other;
 using WSMS.Models;
 using WSMS.Models.Base;
 using WSMS.Services;
+using WSMS.Views.Windows;
 namespace WSMS.ViewModels
 {
     public class CustomersViewModel : Model
@@ -100,6 +102,15 @@ namespace WSMS.ViewModels
         private void OnPushValuesToRemoteExcelExecuted(object p)
         {
             GoogleSheetsAPI.PushCustomerUpdate(SelectedCustomer.ID, SelectedCustomer);
+        }
+        #endregion
+        #region CloseWindow
+        public ICommand closeWindowCommand;
+        public ICommand CloseWindowCommand => closeWindowCommand ?? new MyActionCommand(OnCloseWindowCommandExecuted);
+
+        private void OnCloseWindowCommandExecuted(object p)
+        {
+            WindowMenager.CloseWindow<CustomersWindow>(true);
         }
         #endregion
         #endregion

@@ -251,6 +251,23 @@ namespace WSMS.Services
             if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
             using StreamWriter stream = new($"{FolderPath}\\sending templates.json", false);
             stream.Write(json);
+            MessageBox.Show($"Template \"{sendingTemplate.Message.Name}\" was added successfully ");
+        }
+
+        public static void DeleteTemplates(ObservableCollection<SendingTemplate> sendingTemplates)
+        {
+            ObservableCollection<SendingTemplate> newTemplates = new();
+            foreach (SendingTemplate template in sendingTemplates)
+            {
+                if (!template.IsChacked)
+                {
+                    newTemplates.Add(template);
+                }
+            }
+            string json = JsonConvert.SerializeObject(newTemplates, Formatting.Indented);
+            if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
+            using StreamWriter stream = new($"{FolderPath}\\sending templates.json", false);
+            stream.Write(json);
         }
 
         public static ObservableCollection<SendingTemplate> loadMessageTemplates()
@@ -272,7 +289,7 @@ namespace WSMS.Services
                     {
                         message.Message.Image = GetImage(message.Message.ImagePath);
                     }
-                return temp ?? new ();
+                return temp ?? new();
             }
         }
     }

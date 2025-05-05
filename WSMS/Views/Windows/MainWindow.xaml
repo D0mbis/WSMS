@@ -9,19 +9,13 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         xmlns:models="clr-namespace:WSMS.Models"
         mc:Ignorable="d"
-        Title="{Binding Title}" MinHeight="800" MinWidth="700" MaxWidth="700">
+        Title="{Binding Title}" MinHeight="865" MaxHeight="865" MinWidth="700" MaxWidth="700">
     <Window.DataContext>
         <vm:MainWindowViewModel/>
     </Window.DataContext>
     <Window.InputBindings>
         <KeyBinding Modifiers="Shift" Key="Esc" Command="{Binding CloseApplicationCommand}"/>
-        <!-- Fix it!!!! -->
     </Window.InputBindings>
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Closing">
-            <i:InvokeCommandAction Command="{Binding CloseApplicationCommand}" />
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="File">
@@ -30,243 +24,213 @@
             <MenuItem Header="Settings">
             </MenuItem>
         </Menu>
-        <TabControl Margin="10">
-            <TabItem Width="100" Header="Home">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="110"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <!-- Верхний заголовок -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="WSMS" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Width="84"/>
+
+            <!-- Main Controls-->
+            <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,130,5" Command="{Binding OpenContactsCommand}" >
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <iconPacks:PackIconMaterial Kind="AccountGroup" Width="50" Height="50" Foreground="LightSeaGreen" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Customers" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource IconButtonStyle}" Margin="0,0,130,5" Command="{Binding EditMessagesCommand}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" >
+                        <iconPacks:PackIconMaterial Kind="Email" Width="50" Height="50" Foreground="Orange" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Messages" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,0,5" Command="{Binding OpenAccauntsCommand}">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <iconPacks:PackIconMaterial Kind="AccountCog" Width="50" Height="50" Foreground="Blue" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Accounts" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+
+            </StackPanel>
+
+            <!-- Sending controls -->
+
+            <Border Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="91*"/>
-                        <RowDefinition Height="381*"/>
+                        <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="317*"/>
-                        <ColumnDefinition Width="118*"/>
-                        <ColumnDefinition Width="199*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Height="30" 
-                        HorizontalAlignment="Left" VerticalAlignment="Top" 
-                        Content="{Binding DriverBtnContent, UpdateSourceTrigger=PropertyChanged}"
-                        Command="{Binding StartBrowserCommand}" Width="93"/>
-                    <Button Grid.Column="0" Height="30" Width="93"
-                            Content="Contacts" Command="{Binding OpenContactsCommand}"/>
-                    <Button Grid.Column="1" Height="30" 
-                         HorizontalAlignment="Left" VerticalAlignment="Top" 
-                         Content="Start Sending"
-                         Command="{Binding StartSendingCommand}" Width="93"/>
-                    <Button Grid.Row="1" Grid.Column="1" Height="30" 
-                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0"
-                         Content="Check delivery" Width="100"
-                         Command="{Binding CheckDeliveryCommand}"/>
-                    <TextBox x:Name="IdentifierText"
-                        Grid.Column="2" Grid.Row="1"
-                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" 
-                        Height="30" Width="180" AutomationProperties.HelpText="Message identifier text"
-                        TextAlignment="Left"  VerticalContentAlignment="Center" 
-                        Text="{Binding IdentifierText}"/>
-                    <Label Grid.Column="2" Grid.Row="1" Margin="30,35,0,0"
-                           HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="11">
-                        Message identifier text</Label>
-                </Grid>
-            </TabItem>
-            <TabItem Width="50" Header="GPT">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="110"/>
-                        <RowDefinition Height="100"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <!-- Верхний заголовок -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="WSMS" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Width="84"/>
 
-                    <!-- Main Controls-->
-                    <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
-                        <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,130,5" >
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <iconPacks:PackIconMaterial Kind="AccountGroup" Width="50" Height="50" Foreground="LightSeaGreen" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Customers" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
+                    <!-- Кнопки управления и progressbar -->
+                    <Grid Grid.Column="0" Width="600" Height="50">
+                        <!-- Прогрессбар -->
+                        <ProgressBar x:Name="Progress" Height="48" Width="600" Value="50" Maximum="100" Foreground="GreenYellow" BorderBrush="Transparent"/>
 
-                        <Button Style="{StaticResource IconButtonStyle}" Margin="0,0,130,5">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <iconPacks:PackIconMaterial Kind="Email" Width="50" Height="50" Foreground="Orange" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Messages" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
-                            </StackPanel>
-                        </Button>
+                        <!-- Маска с вырезами -->
+                        <Border Background="White" Panel.ZIndex="2">
+                            <Border.OpacityMask>
+                                <DrawingBrush>
+                                    <DrawingBrush.Drawing>
+                                        <GeometryDrawing Brush="White">
+                                            <GeometryDrawing.Geometry >
+                                                <!-- Основная непрозрачная область -->
+                                                <CombinedGeometry GeometryCombineMode="Exclude">
+                                                    <CombinedGeometry.Geometry1>
+                                                        <!-- Весь прямоугольник -->
+                                                        <RectangleGeometry Rect="0,0,600,40"/>
+                                                    </CombinedGeometry.Geometry1>
+                                                    <CombinedGeometry.Geometry2>
+                                                        <!-- Вырезы объединяются тут -->
+                                                        <GeometryGroup>
+                                                            <!-- Вырез по центру (линия высотой 5px) -->
+                                                            <RectangleGeometry Rect="0,17.5,230,10" RadiusY="2.5" />
+                                                            <!-- Вырез под кнопки -->
+                                                            <RectangleGeometry Rect="230, 0, 140, 40" RadiusX="10" RadiusY="10"/>
+                                                            <RectangleGeometry Rect="370,17.5,230,10" RadiusY="2.5"/>
+                                                        </GeometryGroup>
+                                                    </CombinedGeometry.Geometry2>
+                                                </CombinedGeometry>
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Border.OpacityMask>
+                        </Border>
 
-                        <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,0,5">
-                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <iconPacks:PackIconMaterial Kind="AccountCog" Width="50" Height="50" Foreground="Blue" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Accounts" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
+                        <!-- Кнопки -->
+                        <StackPanel Orientation="Horizontal" Width="130" Height="40" HorizontalAlignment="Center"
+                                        VerticalAlignment="Center" Panel.ZIndex="3">
+                            <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
+                                <iconPacks:PackIconMaterial Kind="Play" Width="20" Height="20" Foreground="LimeGreen"/>
+                            </Button>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
+                                <iconPacks:PackIconMaterial Kind="Pause" Width="20" Height="20" Foreground="Yellow"/>
+                            </Button>
+                            <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
+                                <iconPacks:PackIconMaterial Kind="StopCircle" Width="20" Height="20" Foreground="Red"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
 
-
+                    <!-- Прогресс и таймер -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
+                        <TextBlock Text="Now: Customer 1  " FontSize="14"/>
+                        <TextBlock Text="Next: Customer 2  " FontSize="14"/>
+                        <TextBlock Text="Progress: " FontSize="14"/>
+                        <TextBlock Text="26" Foreground="Green" FontSize="14"/>
+                        <TextBlock Text="/75  " FontSize="14"/>
+                        <TextBlock Text="Time left: " FontSize="14"/>
+                        <TextBlock Text="10:13" FontWeight="Bold" FontSize="14"/>
                     </StackPanel>
 
-                    <!-- Sending controls -->
+                </Grid>
+            </Border>
+            <!-- Templates -->
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Background="White" BorderBrush="Gray" BorderThickness="1" Padding="0" CornerRadius="5">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                    <Border Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            
-                            <!-- Кнопки управления и progressbar -->
-                            <Grid Grid.Column="0" Width="600" Height="50">
-                                <!-- Прогрессбар -->
-                                <ProgressBar x:Name="Progress" Height="48" Width="600" Value="50" Maximum="100" Foreground="GreenYellow" BorderBrush="Transparent"/>
-
-                                <!-- Маска с вырезами -->
-                                <Border Background="White" Panel.ZIndex="2">
-                                    <Border.OpacityMask>
-                                        <DrawingBrush>
-                                            <DrawingBrush.Drawing>
-                                                <GeometryDrawing Brush="White">
-                                                    <GeometryDrawing.Geometry >
-                                                        <!-- Основная непрозрачная область -->
-                                                        <CombinedGeometry GeometryCombineMode="Exclude">
-                                                            <CombinedGeometry.Geometry1>
-                                                                <!-- Весь прямоугольник -->
-                                                                <RectangleGeometry Rect="0,0,600,40"/>
-                                                            </CombinedGeometry.Geometry1>
-                                                            <CombinedGeometry.Geometry2>
-                                                                <!-- Вырезы объединяются тут -->
-                                                                <GeometryGroup>
-                                                                    <!-- Вырез по центру (линия высотой 5px) -->
-                                                                    <RectangleGeometry Rect="0,17.5,230,10" RadiusY="2.5" />
-                                                                    <!-- Вырез под кнопки -->
-                                                                    <RectangleGeometry Rect="230, 0, 140, 40" RadiusX="10" RadiusY="10"/>
-                                                                    <RectangleGeometry Rect="370,17.5,230,10" RadiusY="2.5"/>
-                                                                </GeometryGroup>
-                                                            </CombinedGeometry.Geometry2>
-                                                        </CombinedGeometry>
-                                                    </GeometryDrawing.Geometry>
-                                                </GeometryDrawing>
-                                            </DrawingBrush.Drawing>
-                                        </DrawingBrush>
-                                    </Border.OpacityMask>
-                                </Border>
-
-                                <!-- Кнопки -->
-                                <StackPanel Orientation="Horizontal" Width="130" Height="40" HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" Panel.ZIndex="3">
-                                    <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
-                                        <iconPacks:PackIconMaterial Kind="Play" Width="20" Height="20" Foreground="LimeGreen"/>
-                                    </Button>
-                                    <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
-                                        <iconPacks:PackIconMaterial Kind="Pause" Width="20" Height="20" Foreground="Yellow"/>
-                                    </Button>
-                                    <Button Style="{StaticResource IconButtonStyle}" Width="40" Height="40" Margin="2,0,0,0">
-                                        <iconPacks:PackIconMaterial Kind="StopCircle" Width="20" Height="20" Foreground="Red"/>
-                                    </Button>
+                    <Grid Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Background="LightGray" >
+                        <TextBlock Text="TEMPLATES" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="80,0,0,0">
+                            <Button Style="{StaticResource IconButtonStyle}" Margin="15,0,0,0" Width="30" Height="30" Command="{Binding CreateSendingCommand}">
+                                <StackPanel>
+                                    <iconPacks:PackIconMaterial Kind="Plus" Foreground="LightSeaGreen"/>
                                 </StackPanel>
-                            </Grid>
-
-                            <!-- Прогресс и таймер -->
-                            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" >
-                                <TextBlock Text="Now: Customer 1  " FontSize="14"/>
-                                <TextBlock Text="Next: Customer 2  " FontSize="14"/>
-                                <TextBlock Text="Progress: " FontSize="14"/>
-                                <TextBlock Text="26" Foreground="Green" FontSize="14"/>
-                                <TextBlock Text="/75  " FontSize="14"/>
-                                <TextBlock Text="Time left: " FontSize="14"/>
-                                <TextBlock Text="10:13" FontWeight="Bold" FontSize="14"/>
-                            </StackPanel>
-
-                        </Grid>
-                    </Border>
-                    <!-- Templates -->
-                    <Border Grid.Row="3" Grid.ColumnSpan="2" Background="White" BorderBrush="Gray" BorderThickness="1" Padding="1" CornerRadius="5">
-                        <Grid >
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Background="LightGray" >
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="TEMPLATES" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <Button Style="{StaticResource IconButtonStyle}" Margin="10,0,10,0" Width="30" Height="30" >
-                                        <StackPanel>
-                                            <iconPacks:PackIconMaterial Kind="Update" Foreground="LightSeaGreen"/>
-                                        </StackPanel>
-                                    </Button>
+                            </Button>
+                            <Button Style="{StaticResource IconButtonStyle}" Margin="4,0,0,0" Width="30" Height="30" Command="{Binding DeleteTemplateCommand}">
+                                <StackPanel>
+                                    <iconPacks:PackIconMaterial Kind="Delete" Foreground="LightSeaGreen"/>
                                 </StackPanel>
-                            </Grid>
-                            <StackPanel Grid.Row="1" Orientation="Vertical" Grid.ColumnSpan="2">
-                                <ListView Grid.Column="0" Margin="2" Height="550"
+                            </Button>
+                            <Button Style="{StaticResource IconButtonStyle}" Margin="4,0,20,0" Width="30" Height="30" Command="{Binding TemplatesUpdateCommand}" >
+                                <StackPanel>
+                                    <iconPacks:PackIconMaterial Kind="Update" Foreground="LightSeaGreen"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <VirtualizingStackPanel IsVirtualizing="False" Grid.Row="1" Orientation="Vertical" Grid.ColumnSpan="2" >
+                        <ListView Grid.Column="0" Margin="2" MaxHeight="476"
                                   BorderThickness="1"
                                   ItemsSource="{Binding Templates, UpdateSourceTrigger=PropertyChanged}" 
                                   ItemContainerStyle ="{StaticResource CustomListViewItemStyle}">
-                                    <ListView.Template>
-                                        <ControlTemplate TargetType="ListView">
-                                            <ScrollViewer x:Name="ScrollViewer"
+                            <ListView.Template>
+                                <ControlTemplate TargetType="ListView">
+                                    <ScrollViewer x:Name="ScrollViewer"
                                               VerticalScrollBarVisibility="Auto"
                                               CanContentScroll="False"
                                               PanningMode="VerticalOnly">
-                                                <ItemsPresenter />
-                                            </ScrollViewer>
-                                        </ControlTemplate>
-                                    </ListView.Template>
-                                    <ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel
+                                        <ItemsPresenter />
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ListView.Template>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel
                                         Orientation="Vertical" Margin="0" HorizontalAlignment="Center">
-                                                <Border BorderBrush="Gray" BorderThickness="0.1">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="130"/>
-                                                            <ColumnDefinition Width="320"/>
-                                                            <ColumnDefinition Width="180" />
-                                                        </Grid.ColumnDefinitions>
-                                                        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
-                                                            <Image Source="{ Binding Message.Image}" Height="170"  
+                                        <Border BorderBrush="Gray" BorderThickness="0.1" >
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="130"/>
+                                                    <ColumnDefinition Width="320"/>
+                                                    <ColumnDefinition Width="180" />
+                                                </Grid.ColumnDefinitions>
+                                                <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="0.1">
+                                                    <Image Source="{ Binding Message.Image}" Height="170"  
                                                            HorizontalAlignment="Stretch" Margin="3"/>
-                                                        </Border>
-                                                        <Border Grid.Column="1" BorderBrush="Transparent" BorderThickness="0">
-                                                            <TextBox Grid.Column="1" TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
+                                                </Border>
+                                                <Border Grid.Column="1" BorderBrush="Transparent" BorderThickness="0">
+                                                    <TextBox Grid.Column="1" TextWrapping="Wrap" AcceptsTab="True" AcceptsReturn="True"
                                                         Text="{Binding Message.Text, UpdateSourceTrigger=PropertyChanged}" 
                                                             Height="170" Margin="3" Background="WhiteSmoke"
                                                             BorderThickness="0" BorderBrush="Transparent" FontSize="12" />
-                                                        </Border>
-                                                        <Grid Grid.Column="3">
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="30"/>
-                                                                <RowDefinition Height="80"/>
-                                                                <RowDefinition Height="50"/>
-                                                            </Grid.RowDefinitions>
-                                                            <TextBlock Grid.Row="0" Text="{Binding Account}" TextWrapping="Wrap" Margin="3" 
+                                                </Border>
+                                                <Grid Grid.Column="3">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="30"/>
+                                                        <RowDefinition Height="80"/>
+                                                        <RowDefinition Height="50"/>
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Grid.Row="0" Text="{Binding Account}" TextWrapping="Wrap" Margin="3" 
                                                            VerticalAlignment="Center" HorizontalAlignment="Center"
                                                            FontSize="18" FontWeight="Bold" />
-                                                            <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCustomers}"  
+                                                    <ItemsControl Grid.Row="1" ItemsSource="{Binding SelectedCustomers}"  
                                                                   BorderBrush="Transparent" BorderThickness="0">
-                                                                <ItemsControl.ItemTemplate>
-                                                                    <DataTemplate>
-                                                                        <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
                                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                                    </DataTemplate>
-                                                                </ItemsControl.ItemTemplate>
-                                                            </ItemsControl>
-                                                            <CheckBox Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                               Style="{StaticResource GreenBigCheckBox}" />
-                                                        </Grid>
-                                                    </Grid>
-                                                </Border>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <CheckBox Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Style="{StaticResource GreenBigCheckBox}" IsChecked="{Binding IsChacked, UpdateSourceTrigger=PropertyChanged}"/>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </VirtualizingStackPanel>
                 </Grid>
-            </TabItem>
-        </TabControl>
+            </Border>
+        </Grid>
     </DockPanel>
 </Window>

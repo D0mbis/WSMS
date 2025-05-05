@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows.Data;
 using System.Windows.Input;
 using WSMS.Infrastructure.Commands.Base;
+using WSMS.Infrastructure.Other;
 using WSMS.Models;
 using WSMS.Models.Base;
 using WSMS.Services;
@@ -142,7 +143,7 @@ namespace WSMS.ViewModels
         public ICommand EditAccauntsCommand => editAccauntsCommand ??= new MyActionCommand(OnEditAccauntsCommand);
         private void OnEditAccauntsCommand(object p)
         {
-            AccountsSettings window = new();
+            AccountsSettingsWindow window = new();
             bool? result = window.ShowDialog();
             if (result == false)
             {
@@ -168,6 +169,14 @@ namespace WSMS.ViewModels
                 SelectedCustomers = CustomersService.GetLiteSubDirections(SelectedSubDirections)
             });
             
+        }
+        #endregion
+        #region CloseAppCommand
+        ICommand closeWindowCommand;
+        public ICommand CloseWindowCommand => closeWindowCommand ?? new MyActionCommand(OnCloseWindowCommandExecuted);
+        private void OnCloseWindowCommandExecuted(object p)
+        {
+            WindowMenager.CloseWindow<CreateSendingWindow>();
         }
         #endregion
         #endregion

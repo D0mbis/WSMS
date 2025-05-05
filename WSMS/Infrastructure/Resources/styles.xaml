@@ -62,10 +62,13 @@
     <Style TargetType="Image" x:Key="ImageDefaultStyle">
         <Style.Triggers>
             <DataTrigger Binding="{Binding SelectedMessage.Message.Image}" Value="{x:Null}">
-                <Setter Property="Source" Value="{StaticResource PlaceholderImage}"/>
+                <Setter Property="Source" Value="{StaticResource PlaceholderImage}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
+
+
+
     <Style x:Key="GreenBigCheckBox" TargetType="CheckBox">
         <Setter Property="Foreground" Value="Green"/>
         <Setter Property="RenderTransform">

@@ -10,7 +10,7 @@
                 <ResourceDictionary Source="Infrastructure/Resources/styles.xaml"/>
                 <ResourceDictionary Source="Infrastructure/Resources/CustomerTemplates.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <BitmapImage x:Key="PlaceholderImage" UriSource="pack://application:,,,/messages/placeholder.png" />
+            <ImageSource x:Key="PlaceholderImage">pack://application:,,,/messages/placeholder.png</ImageSource>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

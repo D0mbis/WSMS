@@ -34,7 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="data\messages\placeholder.png" />
+    <Resource Include="data\messages\placeholder.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

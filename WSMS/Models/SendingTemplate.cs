@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using WSMS.Models.Base;
 
 namespace WSMS.Models
@@ -8,5 +9,7 @@ namespace WSMS.Models
         public string? Account { get; set; }
         public Message Message { get; set; }
         public ObservableCollection<LiteSubDirections>? SelectedCustomers { get; set; }
+        [JsonIgnore]
+        public bool IsChacked { get; set; }
     }
 }

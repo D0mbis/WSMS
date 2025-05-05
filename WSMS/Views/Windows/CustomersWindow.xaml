@@ -8,11 +8,14 @@
         mc:Ignorable="d"
         KeyUp="Window_KeyUp"
         Closing="Window_Closing"
-        Title="CustomersWindow" Height="800" MinWidth="1350" HorizontalContentAlignment="Stretch"
+        Title="CustomersWindow" Height="800" Width="1350" MinHeight="700" MinWidth="1350" HorizontalContentAlignment="Stretch"
         PreviewMouseDown="CuntactsListView_PreviewMouseDown">
     <Window.DataContext>
         <vm:CustomersViewModel />
     </Window.DataContext>
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CloseWindowCommand}"/>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

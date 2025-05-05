@@ -22,8 +22,7 @@ namespace WSMS
             InitializeComponent();
             //GoogleSheetsAPI.PulldbCustomers();
             //CustomersService.AllCustomers;
-            var window = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault(window => window.IsInitialized);
-            WindowPositionSettings.RestoreWindowPosition(window);
+            WindowMenager.RestoreWindowPosition(this);
         }
     }
 }

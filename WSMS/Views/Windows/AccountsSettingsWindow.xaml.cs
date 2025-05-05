@@ -15,9 +15,9 @@ namespace WSMS.Views
     /// <summary>
     /// Interaction logic for AccountsSettings.xaml
     /// </summary>
-    public partial class AccountsSettings : Window
+    public partial class AccountsSettingsWindow : Window
     {
-        public AccountsSettings()
+        public AccountsSettingsWindow()
         {
             InitializeComponent();
             //DataContext = new WhatsAppAccountsSettingsViewModel();
