@@ -192,57 +192,6 @@ namespace WSMS.Services
             return messageAllowDirections;
         }
 
-        // FIX this:
-        public static void StartSending(Message message)
-        {
-            Dictionary<string, List<string>> resultSending = new();
-            if (WebService.IsRunning)
-            {
-                resultSending = SendMessage(message);
-                if (resultSending["Not sent"].Count > 0)
-                {
-                    var result = MessageBox.Show($"Was not sent {resultSending["Not sent"].Count} messages, do you want to resend for them?",
-                                   "Resemding not sent messages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        //message.Contacts = resultSending["Not sent"].ToArray();
-                        Dictionary<string, List<string>> tempResultD = SendMessage(message);
-                        resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
-                        resultSending["Not sent"] = tempResultD["Not sent"];
-                        //WebService.CloseBrowser();
-                    }
-                }
-                //logs
-                resultSending["Message Text"] = message.Text.Split("\n").ToList();
-                // Logger.SaveSendingLogs(resultSending);
-            }
-            else
-            {
-                MessageBox.Show("Please, start the browser first.");
-            }
-        }
-        private static Dictionary<string, List<string>> SendMessage(Message message)
-        {
-            int contactsCount = 0;
-            Dictionary<string, List<string>> outputD = new();
-            outputD["Successful sent"] = new List<string>();
-            outputD["Not sent"] = new List<string>();
-            //string[] contacts = message.Contacts.Split("\r\n");
-            for (int i = 0; i < contactsCount; i++)
-            {
-                string contact = "contact"; //message.Contacts[i];
-                if (WebService.ToSend(contact, message.Text, GetImage("D:/Notes/Работа Вова/Discount/39.png")))
-                {
-                    outputD["Successful sent"].Add(contact);
-                }
-                else
-                {
-                    outputD["Not sent"].Add(contact);
-                }
-            }
-            return outputD;
-        }
-
         public static void AddTemplate(SendingTemplate sendingTemplate)
         {
             var oldTemplates = loadMessageTemplates();
@@ -291,6 +240,55 @@ namespace WSMS.Services
                     }
                 return temp ?? new();
             }
+        }
+        public static void StartSending(Message message)
+        {
+            Dictionary<string, List<string>> resultSending = new();
+            if (WebService.IsRunning)
+            {
+                resultSending = SendMessage(message);
+                if (resultSending["Not sent"].Count > 0)
+                {
+                    var result = MessageBox.Show($"Was not sent {resultSending["Not sent"].Count} messages, do you want to resend for them?",
+                                   "Resemding not sent messages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        //message.Contacts = resultSending["Not sent"].ToArray();
+                        Dictionary<string, List<string>> tempResultD = SendMessage(message);
+                        resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
+                        resultSending["Not sent"] = tempResultD["Not sent"];
+                        //WebService.CloseBrowser();
+                    }
+                }
+                //logs
+                resultSending["Message Text"] = message.Text.Split("\n").ToList();
+                // Logger.SaveSendingLogs(resultSending);
+            }
+            else
+            {
+                MessageBox.Show("Please, start the browser first.");
+            }
+        }
+        private static Dictionary<string, List<string>> SendMessage(Message message)
+        {
+            int contactsCount = 0;
+            Dictionary<string, List<string>> outputD = new();
+            outputD["Successful sent"] = new List<string>();
+            outputD["Not sent"] = new List<string>();
+            //string[] contacts = message.Contacts.Split("\r\n");
+            for (int i = 0; i < contactsCount; i++)
+            {
+                string contact = "contact"; //message.Contacts[i];
+                if (WebService.ToSend(contact, message.Text, GetImage("D:/Notes/Работа Вова/Discount/39.png")))
+                {
+                    outputD["Successful sent"].Add(contact);
+                }
+                else
+                {
+                    outputD["Not sent"].Add(contact);
+                }
+            }
+            return outputD;
         }
     }
 }

@@ -111,6 +111,7 @@ namespace WSMS.ViewModels
         private void OnCloseWindowCommandExecuted(object p)
         {
             WindowMenager.CloseWindow<CustomersWindow>(true);
+            SelectedCustomer = null;
         }
         #endregion
         #endregion

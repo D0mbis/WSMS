@@ -30,21 +30,22 @@ namespace WSMS.ViewModels
         public SendingTemplate SelectedTemplate
         {
             get => selectedTemplate;
-            set  { Set(ref selectedTemplate, value); MessageBox.Show($"{selectedTemplate} is selected now");  }
+            set { Set(ref selectedTemplate, value); MessageBox.Show($"{selectedTemplate} is selected now"); }
         }
 
 
         #endregion
 
         #region Comands
-        #region OpenContactsCommand
-        public ICommand OpenContactsCommand { get; }
-        private bool CanOpenContactsCommandExecute(object p)
+        #region OpenCustomrsCommand
+        public ICommand OpenCustomersCommand { get; }
+        private bool CanOpenCustomersCommandExecute(object p)
         {
-            if (!CustomersWindow.IsOpen) return true;
-            return false;
+            var openedWindow = Application.Current.Windows.OfType<CustomersWindow>().FirstOrDefault(w => w.IsVisible);
+            return openedWindow == null ? true : false;
+
         }
-        private void OnOpenContactsCommandExecuted(object p)
+        private void OnOpenCustomersCommandExecuted(object p)
         {
             CustomersWindow window = new();
             WindowMenager.OpenWindowCentered<MainWindow>(window);
@@ -55,7 +56,12 @@ namespace WSMS.ViewModels
         #endregion
         #region CreateSendingCommand
         ICommand createSendingCommand;
-        public ICommand CreateSendingCommand => createSendingCommand ?? new MyActionCommand(OnCreateSendingCommandCommandExecuted);
+        public ICommand CreateSendingCommand => createSendingCommand ?? new MyActionCommand(OnCreateSendingCommandCommandExecuted, CanOpenCreateSendingWindow);
+        private bool CanOpenCreateSendingWindow(object p)
+        {
+            var openedWindow = Application.Current.Windows.OfType<CreateSendingWindow>().FirstOrDefault(w => w.IsVisible);
+            return openedWindow == null ? true : false;
+        }
         private void OnCreateSendingCommandCommandExecuted(object p)
         {
             CreateSendingWindow window = new();
@@ -67,8 +73,9 @@ namespace WSMS.ViewModels
         public ICommand DeleteTemplateCommand => deleteTemplateCommand ?? new MyActionCommand(OnDeleteTemplateCommandCommandExecuted);
         private void OnDeleteTemplateCommandCommandExecuted(object p)
         {
-            ObservableCollection<SendingTemplate> templates = new (Templates.Cast<SendingTemplate>());
+            ObservableCollection<SendingTemplate> templates = new(Templates.Cast<SendingTemplate>());
             MessageService.DeleteTemplates(templates);
+            OnTemplatesUpdateCommandExecuted(new ());
         }
         #endregion
         #region Start sending Command
@@ -116,7 +123,12 @@ namespace WSMS.ViewModels
         #endregion
         #region EditMessages  
         private ICommand editMessagesCommand;
-        public ICommand EditMessagesCommand => editMessagesCommand ??= new MyActionCommand(OnEditMessages);
+        public ICommand EditMessagesCommand => editMessagesCommand ??= new MyActionCommand(OnEditMessages, CanOpenMessages);
+        private bool CanOpenMessages(object p)
+        {
+            var openedWindow = Application.Current.Windows.OfType<MessagesWindow>().FirstOrDefault(w => w.IsVisible);
+            return openedWindow == null ? true : false;
+        }
         private void OnEditMessages(object p)
         {
             MessagesWindow window = new(new(new(new())));
@@ -125,11 +137,20 @@ namespace WSMS.ViewModels
         #endregion
         #region Open Accaunts  
         private ICommand openAccauntsCommand;
-        public ICommand OpenAccauntsCommand => openAccauntsCommand ??= new MyActionCommand(OnOpenAccauntsCommand);
+        public ICommand OpenAccauntsCommand => openAccauntsCommand ??= new MyActionCommand(OnOpenAccauntsCommand, CanOpenAccaunts);
+        private bool CanOpenAccaunts(object p)
+        {
+            var openedWindow = Application.Current.Windows.OfType<AccountsSettingsWindow>().FirstOrDefault(w => w.IsVisible);
+            return openedWindow == null ? true : false;
+        }
         private void OnOpenAccauntsCommand(object p)
         {
-            AccountsSettingsWindow window = new();
-            WindowMenager.OpenWindowCentered<MainWindow>(window);
+            var openedWindow = Application.Current.Windows.OfType<AccountsSettingsWindow>().FirstOrDefault(w => w.IsVisible);
+            if (openedWindow == null)
+            {
+                AccountsSettingsWindow window = new();
+                WindowMenager.OpenWindowCentered<MainWindow>(window);
+            }
         }
         #endregion
         #endregion
@@ -138,7 +159,7 @@ namespace WSMS.ViewModels
         {
             StartSendingCommand = new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
-            OpenContactsCommand = new MyActionCommand(OnOpenContactsCommandExecuted, CanOpenContactsCommandExecute);
+            OpenCustomersCommand = new MyActionCommand(OnOpenCustomersCommandExecuted, CanOpenCustomersCommandExecute);
             Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
         }
     }

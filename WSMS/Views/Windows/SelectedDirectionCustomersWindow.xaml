@@ -7,6 +7,9 @@
         xmlns:vm="clr-namespace:WSMS.ViewModels"
         mc:Ignorable="d"
         Title="SelectedDirectionCustomersWindow" Height="800" Width="1500">
+    <Window.InputBindings>
+        <KeyBinding Key="Esc" Command="{Binding CloseWindowCommand}"/>
+    </Window.InputBindings>
     <Grid>
         <ListView x:Name="CuntactsListView" Grid.Row="1" HorizontalAlignment="Center" HorizontalContentAlignment="Stretch" 
           ItemsSource="{Binding CustomersView, UpdateSourceTrigger=PropertyChanged}"

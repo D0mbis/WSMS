@@ -67,7 +67,7 @@
                          Text="{Binding UserInput, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!-- Placeholder Text -->
-                    <TextBlock Text="Введите текст..." 
+                    <TextBlock Text="Account name..." 
                            Foreground="Gray" 
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Left" 

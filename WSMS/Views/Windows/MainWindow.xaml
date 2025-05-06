@@ -40,7 +40,7 @@
 
             <!-- Main Controls-->
             <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" >
-                <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,130,5" Command="{Binding OpenContactsCommand}" >
+                <Button Style="{StaticResource IconButtonStyle}"  Margin="0,0,130,5" Command="{Binding OpenCustomersCommand}" >
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                         <iconPacks:PackIconMaterial Kind="AccountGroup" Width="50" Height="50" Foreground="LightSeaGreen" HorizontalAlignment="Center"/>
                         <TextBlock Text="Customers" FontSize="10" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Center"/>
