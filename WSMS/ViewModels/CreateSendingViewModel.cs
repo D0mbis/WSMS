@@ -166,7 +166,7 @@ namespace WSMS.ViewModels
             {
                 Account = SelectedWhatsAppAccount.Name,
                 Message = SelectedMessage.Message,
-                SelectedCustomers = CustomersService.GetLiteSubDirections(SelectedSubDirections)
+                SelectedSubdirections = CustomersService.GetLiteSubDirections(SelectedSubDirections)
             });
             
         }

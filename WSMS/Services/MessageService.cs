@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using WSMS.Models;
@@ -208,7 +209,7 @@ namespace WSMS.Services
             ObservableCollection<SendingTemplate> newTemplates = new();
             foreach (SendingTemplate template in sendingTemplates)
             {
-                if (!template.IsChacked)
+                if (!template.IsChecked)
                 {
                     newTemplates.Add(template);
                 }
@@ -241,51 +242,68 @@ namespace WSMS.Services
                 return temp ?? new();
             }
         }
-        public static void StartSending(Message message)
+
+        public static void StartSending(ObservableCollection<SendingTemplate> templates)
         {
-            Dictionary<string, List<string>> resultSending = new();
-            if (WebService.IsRunning)
+            foreach (var template in templates)
             {
-                resultSending = SendMessage(message);
-                if (resultSending["Not sent"].Count > 0)
-                {
-                    var result = MessageBox.Show($"Was not sent {resultSending["Not sent"].Count} messages, do you want to resend for them?",
-                                   "Resemding not sent messages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        //message.Contacts = resultSending["Not sent"].ToArray();
-                        Dictionary<string, List<string>> tempResultD = SendMessage(message);
-                        resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
-                        resultSending["Not sent"] = tempResultD["Not sent"];
-                        //WebService.CloseBrowser();
-                    }
-                }
-                //logs
-                resultSending["Message Text"] = message.Text.Split("\n").ToList();
-                // Logger.SaveSendingLogs(resultSending);
-            }
-            else
-            {
-                MessageBox.Show("Please, start the browser first.");
+                LogSendResults(template);
             }
         }
-        private static Dictionary<string, List<string>> SendMessage(Message message)
+        static async Task LogSendResults(SendingTemplate template)
         {
-            int contactsCount = 0;
+
+            Dictionary<string, List<string>> resultSending = new();
+            if (!WebService.IsRunning)
+            { 
+                WebService.OpenBrowser(template.Account);
+                if (!WebService.IsRunning)
+                {
+                    //MessageBox.Show("Could not open browser.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
+            // WebService.CheckAuthorization();// 
+
+            resultSending = TrySendMessage(template.Message, template.SelectedSubdirections);
+            if (resultSending["Not sent"].Count > 0)
+            {
+                var result = MessageBox.Show($"Was not sent {resultSending["Not sent"].Count} messages, do you want to resend for them?",
+                               "Resemding not sent messages", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    //message.Contacts = resultSending["Not sent"].ToArray();
+                    Dictionary<string, List<string>> tempResultD = TrySendMessage(template.Message, template.SelectedSubdirections);
+                    resultSending["Successful sent"].AddRange(tempResultD["Successful sent"]);
+                    resultSending["Not sent"] = tempResultD["Not sent"];
+                    //WebService.CloseBrowser();
+                }
+            }
+            resultSending["Message Text"] = template.Message.Text.Split("\n").ToList();
+            Logger.SaveSendingLogs(resultSending);
+
+        }
+        private static Dictionary<string, List<string>> TrySendMessage(Message message, ObservableCollection<LiteSubDirections> subDirections)
+        {
+            // int contactsCount = 0;
             Dictionary<string, List<string>> outputD = new();
             outputD["Successful sent"] = new List<string>();
             outputD["Not sent"] = new List<string>();
             //string[] contacts = message.Contacts.Split("\r\n");
-            for (int i = 0; i < contactsCount; i++)
+            foreach (var subDirection in subDirections)
             {
-                string contact = "contact"; //message.Contacts[i];
-                if (WebService.ToSend(contact, message.Text, GetImage("D:/Notes/Работа Вова/Discount/39.png")))
+                foreach (var customer in subDirection.Customers)
                 {
-                    outputD["Successful sent"].Add(contact);
-                }
-                else
-                {
-                    outputD["Not sent"].Add(contact);
+                    if (WebService.ToSend(customer.Name, message.Text, message.Image))
+                    {
+                        outputD["Successful sent"].Add(customer.Name);
+                    }
+                    else
+                    {
+                        outputD["Not sent"].Add(customer.Name);
+                    }
+
                 }
             }
             return outputD;

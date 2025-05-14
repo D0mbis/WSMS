@@ -115,7 +115,6 @@
                 <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
             </Setter.Value>
         </Setter>
-        <!-- Отключение стандартного фона подсветки при наведении на кнопку -->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -123,17 +122,18 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <ContentPresenter x:Name="contentPresenter"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      Opacity="1"/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!-- Триггер для IsEnabled -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Background" Value="DarkGray"/>
-                            <Setter Property="Foreground" Value="Gray"/>
+                            <!-- Не трогаем Background -->
+                            <Setter TargetName="contentPresenter" Property="Opacity" Value="0.3"/>
                         </Trigger>
-                        <!-- Триггер для IsMouseOver (оставляем пустым или задаём фиксированный фон) -->
                         <Trigger Property="IsMouseOver" Value="True">
-                            <!-- Не меняем Background -->
+                            <!-- Не меняем фон -->
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -149,4 +149,5 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
 </ResourceDictionary>

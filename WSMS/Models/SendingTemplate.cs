@@ -8,8 +8,9 @@ namespace WSMS.Models
     {
         public string? Account { get; set; }
         public Message Message { get; set; }
-        public ObservableCollection<LiteSubDirections>? SelectedCustomers { get; set; }
-        [JsonIgnore]
-        public bool IsChacked { get; set; }
+        public ObservableCollection<LiteSubDirections>? SelectedSubdirections { get; set; }
+        bool isChecked;
+        public bool IsChecked { get => isChecked; set => Set(ref isChecked, value); }
     }
 }
+

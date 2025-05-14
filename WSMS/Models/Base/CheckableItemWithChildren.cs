@@ -43,8 +43,13 @@ namespace WSMS.Models.Base
                 if (children != value)
                 {
                     if (children != null)
+                    {
                         children.CollectionChanged -= OnChildrenChanged;
-
+                        foreach (var child in children)
+                        {
+                            child.PropertyChanged -= Child_PropertyChanged;
+                        }
+                    }
                     Set(ref children, value);
 
                     if (children != null)

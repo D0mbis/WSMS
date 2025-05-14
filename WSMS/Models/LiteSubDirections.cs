@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WSMS.Models.Base;
 
 namespace WSMS.Models
 {
@@ -11,5 +12,7 @@ namespace WSMS.Models
     {
         public string? Name { get; set; }
         public ObservableCollection<LiteCustomer>? Customers { get; set; }
+        //bool isChecked;
+        //public bool IsChecked { get => isChecked; set => Set(ref isChecked, value); }
     }
 }

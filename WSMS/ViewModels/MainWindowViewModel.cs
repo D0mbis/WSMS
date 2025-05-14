@@ -13,6 +13,7 @@ using System.Linq;
 using WSMS.Infrastructure.Other;
 using WSMS.Views;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Internal;
 
 namespace WSMS.ViewModels
 {
@@ -23,17 +24,11 @@ namespace WSMS.ViewModels
         public string Title { get => title; set => Set(ref title, value); }
 
         private ICollectionView templates;
-        public ICollectionView Templates { get => templates; set => Set(ref templates, value); }
-
-        private SendingTemplate selectedTemplate;
-
-        public SendingTemplate SelectedTemplate
+        public ICollectionView Templates
         {
-            get => selectedTemplate;
-            set { Set(ref selectedTemplate, value); MessageBox.Show($"{selectedTemplate} is selected now"); }
+            get => templates; set =>
+                Set(ref templates, value);
         }
-
-
         #endregion
 
         #region Comands
@@ -75,19 +70,16 @@ namespace WSMS.ViewModels
         {
             ObservableCollection<SendingTemplate> templates = new(Templates.Cast<SendingTemplate>());
             MessageService.DeleteTemplates(templates);
-            OnTemplatesUpdateCommandExecuted(new ());
+            OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
         #region Start sending Command
-        public ICommand StartSendingCommand { get; }
-        private bool CanStartSendingCommandExecute(object p)
-        {
-            return false;
-        }
+        ICommand startSendingCommand;
+        public ICommand StartSendingCommand => startSendingCommand ?? new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
+        private bool CanStartSendingCommandExecute(object p) => Templates.Cast<SendingTemplate>().Any(template => template.IsChecked);
         private void OnStartSendingCommandExecuted(object p)
         {
-            /* Message message = new(contacts, messageText);
-             MessageService.StartSending(message);*/
+            MessageService.StartSending(new (Templates.Cast<SendingTemplate>().Where(template => template.IsChecked)));
         }
         #endregion
         #region Check delivery command
@@ -157,7 +149,6 @@ namespace WSMS.ViewModels
 
         public MainWindowViewModel()
         {
-            StartSendingCommand = new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
             OpenCustomersCommand = new MyActionCommand(OnOpenCustomersCommandExecuted, CanOpenCustomersCommandExecute);
             Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());

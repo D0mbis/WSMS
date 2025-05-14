@@ -20,10 +20,10 @@ namespace WSMS.Services
         private static readonly string Url = "https://web.whatsapp.com/";
         private static readonly Dictionary<string, string> ElementsPaths = new()
         {
-            { "Search field", "div[aria-label='Текстовое поле поиска']"},
-            { "Message input", "div[aria-label='Введите сообщение']" },
-            { "Send button", "span[data-icon='send']" },
-            { "Delete img btn", "button[aria-label='Закрыть']" },
+            { "Search field", ".x1n2onr6.xh8yej3.lexical-rich-text-input div"},
+            { "Message input", "div[aria-placeholder='Введите сообщение']" },
+            { "Send button", "div[aria-label='Отправить']" },
+            { "Delete img btn", "div[aria-label='Закрыть']" },
             { "Delete SearchText btn", "button[aria-label='Отменить поиск']" }
         };
 
@@ -47,6 +47,7 @@ namespace WSMS.Services
             {
                 Driver = new ChromeDriver(service, options);
                 Driver.Navigate().GoToUrl(Url);
+                
                 IsRunning = true;
             }
             catch (Exception ex)
@@ -61,6 +62,13 @@ namespace WSMS.Services
                     MessageBox.Show("The link has been copied, paste it into your browser.");
                 }
             }
+            CheckAuthorization();
+            // try if find QR (wait scaned in the phone and pressed button "OK"), else continue 
+        }
+
+        private static bool CheckAuthorization()
+        {
+            return false;
         }
         public static string[] GetNotDeliveredContacts(string[] contactsArray, string checkText)
         {
