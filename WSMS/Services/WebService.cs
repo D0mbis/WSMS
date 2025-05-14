@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using Google.Apis.Sheets.v4.Data;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace WSMS.Services
 {
@@ -24,7 +26,8 @@ namespace WSMS.Services
             { "Message input", "div[aria-placeholder='Введите сообщение']" },
             { "Send button", "div[aria-label='Отправить']" },
             { "Delete img btn", "div[aria-label='Закрыть']" },
-            { "Delete SearchText btn", "button[aria-label='Отменить поиск']" }
+            { "Delete SearchText btn", "button[aria-label='Отменить поиск']" },
+            {"QRcode", "canvas[aria-label='Scan this QR code to link a device!']" }
         };
 
         //
@@ -47,7 +50,7 @@ namespace WSMS.Services
             {
                 Driver = new ChromeDriver(service, options);
                 Driver.Navigate().GoToUrl(Url);
-                
+
                 IsRunning = true;
             }
             catch (Exception ex)
@@ -63,11 +66,29 @@ namespace WSMS.Services
                 }
             }
             CheckAuthorization();
-            // try if find QR (wait scaned in the phone and pressed button "OK"), else continue 
         }
 
         private static bool CheckAuthorization()
         {
+            var searchField = FindElementWithWait(By.CssSelector(ElementsPaths["Search field"]), 2);
+            if (searchField != null) { 
+                return true; }
+            else
+            {
+                var QRcode = FindElementWithWait(By.CssSelector(ElementsPaths["QRcode"]), 2);
+                if (QRcode != null)
+                {
+                    MessageBoxResult result = MessageBox.Show($"The previous session has expired. To continue, please scan the QR code with your phone and press \"OK.\"",
+                    "Account is not authorized.", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.Yes);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        searchField = FindElementWithWait(By.CssSelector(ElementsPaths["Search field"]), 2);
+                        if (searchField != null)
+                        { return true; }
+                        else { MessageBox.Show($"Authorization error, please try again.", "Account is not authorized.", MessageBoxButton.OK, MessageBoxImage.Error); }
+                    }
+                }
+            }
             return false;
         }
         public static string[] GetNotDeliveredContacts(string[] contactsArray, string checkText)
@@ -162,31 +183,50 @@ namespace WSMS.Services
                 return true;
             }
             catch { return false; }
-            finally
-            {
-                wait5sec = null;
-                wait2sec = null;
-            }
         }
+
+
         /// <summary>
         /// Searching for a web element using a locator to insert content and checking the element's availability after
         /// </summary>
-        private static void SendKeysWithWait(By locator, string[] content = default)
+        private static IWebElement FindElementWithWait(By locator, int time)
+        {
+            IWebElement? element = null;
+            int counter = 0;
+
+            while (counter < 2)
+            {
+                try
+                {
+                    WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(time));
+                    element = wait.Until(d => d.FindElement(locator));
+                    return element; // Элемент найден, возвращаем его
+                }
+                catch (WebDriverTimeoutException ex)
+                {
+                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", "The search time has expired.", false);
+                    counter++;
+                }
+                catch (Exception ex)
+                {
+                    // Другие ошибки (например, StaleElementReferenceException)
+                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", "", false);
+                    counter++;
+                }
+            }
+            Logger.ShowMyReportMessageBox("Element was not found:", "WebServiceErrors", $" {locator}", false);
+            return element;
+        }
+
+        private static void SendKeysWithWait(By locator, string[]? content = default)
         {
             int counter = 0;
-            IWebElement element = default;
+            IWebElement element = FindElementWithWait(locator, 2);
             WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(2));
             while (counter < 2)
             {
                 try
                 {
-                    //element = wait.Until(ExpectedConditions.ElementToBeClickable(locator));
-                    element = wait.Until(d =>
-                    {
-                        IWebElement? e = default;
-                        try { return d.FindElement(locator); }
-                        catch { Errors += $"Selector not found: {locator.Criteria}\n"; return e; }
-                    });
                     wait.Until(ExpectedConditions.ElementToBeClickable(element));
                     int counter1 = 0;
                     for (int i = 0; i < content.Length; i++)
@@ -211,7 +251,6 @@ namespace WSMS.Services
                 }
                 catch { counter++; }
             }
-            wait = default;
         }
         public static void CloseBrowser(string accountName)
         {

@@ -255,17 +255,10 @@ namespace WSMS.Services
 
             Dictionary<string, List<string>> resultSending = new();
             if (!WebService.IsRunning)
-            { 
+            {
                 WebService.OpenBrowser(template.Account);
-                if (!WebService.IsRunning)
-                {
-                    //MessageBox.Show("Could not open browser.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+                if (!WebService.IsRunning) { return; }
             }
-
-            // WebService.CheckAuthorization();// 
-
             resultSending = TrySendMessage(template.Message, template.SelectedSubdirections);
             if (resultSending["Not sent"].Count > 0)
             {
@@ -282,6 +275,7 @@ namespace WSMS.Services
             }
             resultSending["Message Text"] = template.Message.Text.Split("\n").ToList();
             Logger.SaveSendingLogs(resultSending);
+            WebService.CloseBrowser(template.Account);
 
         }
         private static Dictionary<string, List<string>> TrySendMessage(Message message, ObservableCollection<LiteSubDirections> subDirections)

@@ -9,7 +9,7 @@ namespace WSMS.Services
     public static class Logger
     {
         public static string Message { get; set; }
-        private static readonly string dateNow = DateTime.Now.ToString("dd.MM.yy (HH:mm:ss) ");
+        private static readonly string dateNow = DateTime.Now.ToString("dd.MM.yy (HH'h'MM'm')");
         public static void SaveSendingLogs(Dictionary<string, List<string>> resultSending)
         {
             try
@@ -90,17 +90,20 @@ namespace WSMS.Services
         /// </summary>
         /// <param name="exMessage">Exaption message</param>
         /// <param name="filename">File name to save logs (without extansion)</param>
-        /// <param name="myMessage">Message from user</param>
-        public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage)
+        /// <param name="myMessage">Message for the user</param>
+        public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage, bool show = true)
         {
             Message += $"\nError message: {exMessage}\n";
             SaveReport($"{filename}.txt");
-            var result = MessageBox.Show($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Question, MessageBoxResult.Yes);
-            if (result == MessageBoxResult.Yes)
+            if (show)
             {
-                Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");
+                var result = MessageBox.Show($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");
+                }
             }
         }
     }

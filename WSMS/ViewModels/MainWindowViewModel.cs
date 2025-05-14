@@ -29,6 +29,7 @@ namespace WSMS.ViewModels
             get => templates; set =>
                 Set(ref templates, value);
         }
+        private ObservableCollection<SendingTemplate> CollectionTemplates { get; set; }
         #endregion
 
         #region Comands
@@ -68,18 +69,20 @@ namespace WSMS.ViewModels
         public ICommand DeleteTemplateCommand => deleteTemplateCommand ?? new MyActionCommand(OnDeleteTemplateCommandCommandExecuted);
         private void OnDeleteTemplateCommandCommandExecuted(object p)
         {
-            ObservableCollection<SendingTemplate> templates = new(Templates.Cast<SendingTemplate>());
-            MessageService.DeleteTemplates(templates);
+            MessageService.DeleteTemplates(CollectionTemplates);
             OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
         #region Start sending Command
         ICommand startSendingCommand;
         public ICommand StartSendingCommand => startSendingCommand ?? new MyActionCommand(OnStartSendingCommandExecuted, CanStartSendingCommandExecute);
-        private bool CanStartSendingCommandExecute(object p) => Templates.Cast<SendingTemplate>().Any(template => template.IsChecked);
+        private bool CanStartSendingCommandExecute(object p) => CollectionTemplates.Any(template => template.IsChecked);
         private void OnStartSendingCommandExecuted(object p)
         {
-            MessageService.StartSending(new (Templates.Cast<SendingTemplate>().Where(template => template.IsChecked)));
+            ObservableCollection<SendingTemplate> selectedTemplates = new(CollectionTemplates.Where(template => template.IsChecked));
+            MessageService.StartSending(selectedTemplates);
+            MessageService.DeleteTemplates(CollectionTemplates);
+            OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
         #region Check delivery command
@@ -110,6 +113,7 @@ namespace WSMS.ViewModels
         private void OnTemplatesUpdateCommandExecuted(object obj)
         {
             Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
+            CollectionTemplates = new(Templates.Cast<SendingTemplate>());
             MessageBox.Show("Templates updated!");
         }
         #endregion
@@ -152,6 +156,7 @@ namespace WSMS.ViewModels
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
             OpenCustomersCommand = new MyActionCommand(OnOpenCustomersCommandExecuted, CanOpenCustomersCommandExecute);
             Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
+            CollectionTemplates = new(Templates.Cast<SendingTemplate>());
         }
     }
 }
