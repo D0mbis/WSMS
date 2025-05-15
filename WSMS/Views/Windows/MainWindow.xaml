@@ -148,7 +148,7 @@
                     <Grid Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Background="LightGray" >
                         <TextBlock Text="TEMPLATES" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="80,0,0,0">
-                            <Button Style="{StaticResource IconButtonStyle}" Margin="15,0,0,0" Width="30" Height="30" Command="{Binding CreateSendingCommand}">
+                            <Button Style="{StaticResource IconButtonStyle}" Margin="15,0,0,0" Width="30" Height="30" Command="{Binding CreateTemplateCommand}">
                                 <StackPanel>
                                     <iconPacks:PackIconMaterial Kind="Plus" Foreground="LightSeaGreen"/>
                                 </StackPanel>

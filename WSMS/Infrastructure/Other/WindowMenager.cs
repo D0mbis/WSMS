@@ -38,7 +38,7 @@ namespace WSMS.Infrastructure.Other
         /// </summary>
         /// <typeparam name="TParent">parentWindow</typeparam>
         /// <param name="сhildWindow">сhildWindow</param>
-        public static void OpenWindowCentered<TParent>(Window сhildWindow) where TParent : Window
+        public static void OpenWindowCentered<TParent>(Window сhildWindow, bool showDialog = false) where TParent : Window
         {
             var parentWindow = Application.Current.Windows.OfType<TParent>().FirstOrDefault(w => w.IsVisible);
             if (parentWindow == null) return;
@@ -46,8 +46,10 @@ namespace WSMS.Infrastructure.Other
             сhildWindow.WindowStartupLocation = WindowStartupLocation.Manual;
             сhildWindow.Left = parentWindow.Left + (parentWindow.Width - сhildWindow.Width) / 2;
             сhildWindow.Top = parentWindow.Top + (parentWindow.Height - сhildWindow.Height) / 2;
-
-            сhildWindow.Show();
+            if (showDialog)
+                сhildWindow.ShowDialog();
+            else
+                сhildWindow.Show();
         }
 
         static void SaveWindowPosition(Window window)

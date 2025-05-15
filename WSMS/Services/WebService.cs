@@ -27,7 +27,7 @@ namespace WSMS.Services
             { "Send button", "div[aria-label='Отправить']" },
             { "Delete img btn", "div[aria-label='Закрыть']" },
             { "Delete SearchText btn", "button[aria-label='Отменить поиск']" },
-            {"QRcode", "canvas[aria-label='Scan this QR code to link a device!']" }
+            { "QRcode", "canvas[aria-label='Scan this QR code to link a device!']" }
         };
 
         //
@@ -71,8 +71,10 @@ namespace WSMS.Services
         private static bool CheckAuthorization()
         {
             var searchField = FindElementWithWait(By.CssSelector(ElementsPaths["Search field"]), 2);
-            if (searchField != null) { 
-                return true; }
+            if (searchField != null)
+            {
+                return true;
+            }
             else
             {
                 var QRcode = FindElementWithWait(By.CssSelector(ElementsPaths["QRcode"]), 2);

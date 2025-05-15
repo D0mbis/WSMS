@@ -51,8 +51,8 @@ namespace WSMS.ViewModels
         public ICommand LoadCustomersCommand { get; }
         #endregion
         #region CreateSendingCommand
-        ICommand createSendingCommand;
-        public ICommand CreateSendingCommand => createSendingCommand ?? new MyActionCommand(OnCreateSendingCommandCommandExecuted, CanOpenCreateSendingWindow);
+        ICommand createTemplateCommand;
+        public ICommand CreateTemplateCommand => createTemplateCommand ?? new MyActionCommand(OnCreateSendingCommandCommandExecuted, CanOpenCreateSendingWindow);
         private bool CanOpenCreateSendingWindow(object p)
         {
             var openedWindow = Application.Current.Windows.OfType<CreateSendingWindow>().FirstOrDefault(w => w.IsVisible);
@@ -61,7 +61,9 @@ namespace WSMS.ViewModels
         private void OnCreateSendingCommandCommandExecuted(object p)
         {
             CreateSendingWindow window = new();
-            WindowMenager.OpenWindowCentered<MainWindow>(window);
+            WindowMenager.OpenWindowCentered<MainWindow>(window, true);
+            //window.ShowDialog();
+            OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
         #region DeleteTemplateCommand

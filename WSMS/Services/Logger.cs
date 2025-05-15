@@ -9,7 +9,7 @@ namespace WSMS.Services
     public static class Logger
     {
         public static string Message { get; set; }
-        private static readonly string dateNow = DateTime.Now.ToString("dd.MM.yy (HH'h'MM'm')");
+        private static readonly string dateNow = DateTime.Now.ToString("dd.MM.yy (HH'h'mm'm')");
         public static void SaveSendingLogs(Dictionary<string, List<string>> resultSending)
         {
             try
