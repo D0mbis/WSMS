@@ -93,13 +93,13 @@ namespace WSMS.Services
         /// <param name="myMessage">Message for the user</param>
         public static void ShowMyReportMessageBox(string exMessage, string filename, string myMessage, bool show = true)
         {
-            Message += $"\nError message: {exMessage}\n";
+            Message += $"\nError message: {exMessage} {myMessage}\n";
             SaveReport($"{filename}.txt");
             if (show)
             {
-                var result = MessageBox.Show($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
+                var result = CustomMessageBox.ShowTopMost($"{myMessage}\nDetails in {filename}.txt.\nOpen Reports folder?", "Update error",
                     MessageBoxButton.YesNo,
-                    MessageBoxImage.Question, MessageBoxResult.Yes);
+                    MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
                     Process.Start("explorer.exe", $"{Environment.CurrentDirectory}\\Reports");

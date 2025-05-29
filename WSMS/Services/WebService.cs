@@ -72,21 +72,21 @@ namespace WSMS.Services
             bool notFound = true;
             while (notFound)
             {
-                var searchField = FindElementWithWait(By.CssSelector(ElementsPaths["Search field"]), 2);
+                var searchField = FindElementWithWait(ElementsPaths["Search field"], 2);
                 if (searchField != null)
                 {
                     return true;
                 }
                 else
                 {
-                    var QRcode = FindElementWithWait(By.CssSelector(ElementsPaths["QRcode"]), 2);
+                    var QRcode = FindElementWithWait((ElementsPaths["QRcode"]), 2);
                     if (QRcode != null)
                     {
                         MessageBoxResult result = CustomMessageBox.ShowTopMost($"The previous session has expired. To continue, please scan the QR code with your phone and press \"OK.\"",
                         "Account is not authorized.", MessageBoxButton.OK, MessageBoxImage.Information);
                         if (result == MessageBoxResult.OK)
                         {
-                            searchField = FindElementWithWait(By.CssSelector(ElementsPaths["Search field"]), 2);
+                            searchField = FindElementWithWait(ElementsPaths["Search field"], 2);
                             if (searchField != null)
                             { return true; }
                             else
@@ -190,33 +190,28 @@ namespace WSMS.Services
         /// Searching for a web element using a locator to insert content and checking the element's availability after
         /// </summary>
 
-        [DebuggerStepThrough]
-        private static IWebElement FindElementWithWait(By locator, int time)
+        private static IWebElement FindElementWithWait(string locator, int time)
         {
             IWebElement? element = default;
             int counter = 0;
-
+            string? caller = null;
+            var stackTrace = new StackTrace();
+            if (stackTrace.FrameCount > 1)
+                caller = stackTrace.GetFrame(1)?.GetMethod()?.Name;
             while (counter < 2)
             {
                 try
                 {
                     WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(time));
-                    element = wait.Until(d => d.FindElement(locator));
-                    return element; // Элемент найден, возвращаем его
+                    element = wait.Until(d => d.FindElement(By.CssSelector(locator)));
+                    return element;
                 }
-                /*catch (WebDriverTimeoutException ex)
-                {
-                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", "The search time has expired.", false);
-                    counter++;
-                }*/
                 catch
                 {
-                    // Другие ошибки (например, StaleElementReferenceException)
-                    //Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", "", false);
                     counter++;
                 }
             }
-            Logger.ShowMyReportMessageBox("Element was not found:", "WebServiceErrors", $" {locator}", false);
+            Logger.ShowMyReportMessageBox("Element was not found:", "WebServiceErrors", $" {locator} (called from: {caller})", false);
             return element;
         }
 
@@ -297,7 +292,7 @@ namespace WSMS.Services
                 }
             }
         }
-        private static async Task SendKeysWithWait3(By locator, string[]? content = default)
+        private static async Task SendKeysWithWait3(string locator, string[]? content = default)
         {
             int counter = 0;
 
@@ -338,7 +333,7 @@ namespace WSMS.Services
                                     await Task.Delay(200);
                                     if (retryCount == 5)
                                     {
-                                        Errors += $"\nSendKeysWithWait error:\n{locator.Criteria}";
+                                        Errors += $"\nSendKeysWithWait error:\n{locator}";
                                         break;
                                     }
                                 }
@@ -360,7 +355,7 @@ namespace WSMS.Services
             }
         }
 
-        private static void SendKeysWithWait2(By locator, string[]? content = default)
+        private static void SendKeysWithWait2(string locator, string[]? content = default)
         {
             int counter = 0;
             IWebElement element = FindElementWithWait(locator, 2);
@@ -383,7 +378,7 @@ namespace WSMS.Services
                                 counter1++;
                                 if (counter1 == 5)
                                 {
-                                    Errors += $"\nSendKeysWithWait error:\n{locator.Criteria}";
+                                    Errors += $"\nSendKeysWithWait error:\n{locator}";
                                     break;
                                 }
                             }
