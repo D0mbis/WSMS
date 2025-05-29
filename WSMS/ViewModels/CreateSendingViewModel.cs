@@ -134,7 +134,7 @@ namespace WSMS.ViewModels
             bool? result = window.ShowDialog();
             if (result == false)
             {
-                MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+                MessagesView = CollectionViewSource.GetDefaultView(MessagesService.LoadMessages());
             }
         }
         #endregion
@@ -162,7 +162,7 @@ namespace WSMS.ViewModels
         public ICommand AddTemplateCommand => addTemplateCommand ??= new MyActionCommand(OnAddTemplateCommand, CanAddTemplateCommandCommandExecute);
         private void OnAddTemplateCommand(object p)
         {
-            MessageService.AddTemplate(new SendingTemplate()
+            MessagesService.AddTemplate(new SendingTemplate()
             {
                 Account = SelectedWhatsAppAccount.Name,
                 Message = SelectedMessage.Message,
@@ -187,7 +187,7 @@ namespace WSMS.ViewModels
             SubDirections = CollectionViewSource.GetDefaultView(AllSubDirections);
             SelectedSubDirections = new(AllSubDirections.Where(sd => sd.IsChecked));
             SelectedContactsCount = CustomersRepository.Instance.GetCheckedCustomersCount();
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            MessagesView = CollectionViewSource.GetDefaultView(MessagesService.LoadMessages());
             WhatsAppAccounts = WhatsAppAccountsService.GetAccounts(true);
         }
 

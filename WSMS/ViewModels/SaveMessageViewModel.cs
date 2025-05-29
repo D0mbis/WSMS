@@ -37,7 +37,7 @@ namespace WSMS.ViewModels
         }
         private void OnSaveMessageCommandExecuted(object p)
         {
-            MessageService.EditMessages(MessageWrapper);
+            MessagesService.EditMessages(MessageWrapper);
             var window = Application.Current.Windows.OfType<SaveMessageWindow>().FirstOrDefault(window => window.IsVisible);
 
             window?.Close();
@@ -74,7 +74,7 @@ namespace WSMS.ViewModels
                 SelectAllButtonContent = "Select all";
                 flag = false;
             }
-            MessageWrapper.Message.Directions = MessageService.ChangeIsCheck(MessageWrapper.Message.Directions, flag);
+            MessageWrapper.Message.Directions = MessagesService.ChangeIsCheck(MessageWrapper.Message.Directions, flag);
         }
         #endregion
 

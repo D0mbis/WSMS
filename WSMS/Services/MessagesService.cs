@@ -11,7 +11,7 @@ using WSMS.Models;
 
 namespace WSMS.Services
 {
-    public class MessageService
+    public class MessagesService
     {
         /* TODO:
             1. Interactive progress sending
@@ -195,7 +195,7 @@ namespace WSMS.Services
 
         public static void AddTemplate(SendingTemplate sendingTemplate)
         {
-            var oldTemplates = loadMessageTemplates();
+            var oldTemplates = LoadMessageTemplates();
             oldTemplates.Add(sendingTemplate);
             string json = JsonConvert.SerializeObject(oldTemplates, Formatting.Indented);
             if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
@@ -220,7 +220,7 @@ namespace WSMS.Services
             stream.Write(json);
         }
 
-        public static ObservableCollection<SendingTemplate> loadMessageTemplates()
+        public static ObservableCollection<SendingTemplate> LoadMessageTemplates()
         {
             if (!Directory.Exists(FolderPath)) { Directory.CreateDirectory(FolderPath); }
             string templatesFilePath = FolderPath + "\\sending templates.json";
@@ -250,7 +250,7 @@ namespace WSMS.Services
                 LogSendResults(template);
             }
         }
-        static async Task LogSendResults(SendingTemplate template)
+        static void LogSendResults(SendingTemplate template)
         {
 
             Dictionary<string, List<string>> resultSending = new();
@@ -289,7 +289,7 @@ namespace WSMS.Services
             {
                 foreach (var customer in subDirection.Customers)
                 {
-                    if (WebService.ToSend(customer.Name, message.Text, message.Image))
+                    if (WebService.ToSend(customer.Name, message.Text, message.ImagePath))
                     {
                         outputD["Successful sent"].Add(customer.Name);
                     }
@@ -297,7 +297,6 @@ namespace WSMS.Services
                     {
                         outputD["Not sent"].Add(customer.Name);
                     }
-
                 }
             }
             return outputD;

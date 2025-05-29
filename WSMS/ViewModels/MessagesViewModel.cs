@@ -74,8 +74,8 @@ namespace WSMS.ViewModels
         }
         private void OnDeleteMessageCommandExecuted(object p)
         {
-            MessageService.EditMessages(SelectedMessage, true);
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            MessagesService.EditMessages(SelectedMessage, true);
+            MessagesView = CollectionViewSource.GetDefaultView(MessagesService.LoadMessages());
             SelectedMessage = new MessageWrapper(new Message());
         }
         #endregion
@@ -91,7 +91,7 @@ namespace WSMS.ViewModels
                     var filePath = files[0];
                     try
                     {
-                        SelectedMessage.Message.Image = MessageService.GetImage(filePath);
+                        SelectedMessage.Message.Image = MessagesService.GetImage(filePath);
                         SelectedMessage.Message.ImagePath = filePath;
                         //CommandManager.InvalidateRequerySuggested();
                         (OpenSaveMessageWindowCommand as MyActionCommand).RaiseCanExecuteChanged();
@@ -116,7 +116,7 @@ namespace WSMS.ViewModels
 
         private void OnUpdateData()
         {
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            MessagesView = CollectionViewSource.GetDefaultView(MessagesService.LoadMessages());
             SelectedMessage = new MessageWrapper(new Message());
         }
 
@@ -125,7 +125,7 @@ namespace WSMS.ViewModels
             SelectedMessage = selectedMessage;
             vmUpdateService = new VMUpdateService();
             vmUpdateService.DataUpdated += OnUpdateData;
-            MessagesView = CollectionViewSource.GetDefaultView(MessageService.LoadMessages());
+            MessagesView = CollectionViewSource.GetDefaultView(MessagesService.LoadMessages());
             OpenSaveMessageWindowCommand = new MyActionCommand(OnOpenSaveMessageWindowExecuted, CanOpenSaveMessageWindowExecute);
             DeleteMessageCommand = new MyActionCommand(OnDeleteMessageCommandExecuted, CanDeleteMessageCommandExecute);
             ImageDropCommand = new MyActionCommand(OnImageDropCommandExecuted);

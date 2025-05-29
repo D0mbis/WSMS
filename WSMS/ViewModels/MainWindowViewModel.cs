@@ -71,7 +71,7 @@ namespace WSMS.ViewModels
         public ICommand DeleteTemplateCommand => deleteTemplateCommand ?? new MyActionCommand(OnDeleteTemplateCommandCommandExecuted);
         private void OnDeleteTemplateCommandCommandExecuted(object p)
         {
-            MessageService.DeleteTemplates(CollectionTemplates);
+            MessagesService.DeleteTemplates(CollectionTemplates);
             OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
@@ -82,8 +82,8 @@ namespace WSMS.ViewModels
         private void OnStartSendingCommandExecuted(object p)
         {
             ObservableCollection<SendingTemplate> selectedTemplates = new(CollectionTemplates.Where(template => template.IsChecked));
-            MessageService.StartSending(selectedTemplates);
-            MessageService.DeleteTemplates(CollectionTemplates);
+            MessagesService.StartSending(selectedTemplates);
+            MessagesService.DeleteTemplates(CollectionTemplates);
             OnTemplatesUpdateCommandExecuted(new());
         }
         #endregion
@@ -114,7 +114,7 @@ namespace WSMS.ViewModels
 
         private void OnTemplatesUpdateCommandExecuted(object obj)
         {
-            Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
+            Templates = CollectionViewSource.GetDefaultView(MessagesService.LoadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
             CollectionTemplates = new(Templates.Cast<SendingTemplate>());
             MessageBox.Show("Templates updated!");
         }
@@ -157,7 +157,7 @@ namespace WSMS.ViewModels
         {
             CheckDeliveryCommand = new MyActionCommand(OnStartCheckDeliveryCommandExecuted, CanStartCheckDeliveryCommandExecute);
             OpenCustomersCommand = new MyActionCommand(OnOpenCustomersCommandExecuted, CanOpenCustomersCommandExecute);
-            Templates = CollectionViewSource.GetDefaultView(MessageService.loadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
+            Templates = CollectionViewSource.GetDefaultView(MessagesService.LoadMessageTemplates() ?? new ObservableCollection<SendingTemplate>());
             CollectionTemplates = new(Templates.Cast<SendingTemplate>());
         }
     }

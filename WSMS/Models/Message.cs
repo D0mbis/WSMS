@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Windows.Media.Imaging;
 using WSMS.Models.Base;
 
@@ -12,11 +13,7 @@ namespace WSMS.Models
         private string? text;
         public string? Text
         {
-            get => text;
-            set
-            {
-                Set(ref text, value);
-            }
+            get => text; set => Set(ref text, Regex.Unescape(value ?? ""));
         }
         private string? imagePath;
         public string? ImagePath
