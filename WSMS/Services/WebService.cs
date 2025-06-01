@@ -1,11 +1,13 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,7 +23,7 @@ namespace WSMS.Services
         private static readonly Dictionary<string, string> ElementsPaths = new()
         {
             { "Search field", ".x1n2onr6.xh8yej3.lexical-rich-text-input div"},
-            { "Message input", "div[aria-placeholder='Введите сообщение']" },
+            { "Message input", "div[aria-label='Введите сообщение'][role='textbox'][contenteditable='true']" },
             { "Send button", "div[aria-label='Отправить']" },
             { "Delete img btn", "div[aria-label='Закрыть']" },
             { "Delete SearchText btn", "button[aria-label='Отменить поиск']" },
@@ -72,21 +74,21 @@ namespace WSMS.Services
             bool notFound = true;
             while (notFound)
             {
-                var searchField = FindElementWithWait(ElementsPaths["Search field"], 2);
+                var searchField = FindElementWithWait(ElementsPaths["Search field"], 2000);
                 if (searchField != null)
                 {
                     return true;
                 }
                 else
                 {
-                    var QRcode = FindElementWithWait((ElementsPaths["QRcode"]), 2);
+                    var QRcode = FindElementWithWait((ElementsPaths["QRcode"]), 2000);
                     if (QRcode != null)
                     {
                         MessageBoxResult result = CustomMessageBox.ShowTopMost($"The previous session has expired. To continue, please scan the QR code with your phone and press \"OK.\"",
                         "Account is not authorized.", MessageBoxButton.OK, MessageBoxImage.Information);
                         if (result == MessageBoxResult.OK)
                         {
-                            searchField = FindElementWithWait(ElementsPaths["Search field"], 2);
+                            searchField = FindElementWithWait(ElementsPaths["Search field"], 2000);
                             if (searchField != null)
                             { return true; }
                             else
@@ -127,7 +129,8 @@ namespace WSMS.Services
         }
         private static void SearchContact(WebDriverWait wait, string contact)
         {
-            SendKeysWithWait(ElementsPaths["Search field"], new string[] { "", contact });
+            IWebElement element = FindElementWithWait(ElementsPaths["Search field"], 2000);
+            element.SendKeys(contact);
             int counter = 0;
             // checking contact paste result:
             while (counter < 2)
@@ -139,7 +142,7 @@ namespace WSMS.Services
                 });
                 if (pasteResult) { break; }
                 counter++;
-                SendKeysWithWait(ElementsPaths["Search field"], new string[] { "", contact });
+                InsertTextWithWait(ElementsPaths["Search field"], contact);
             }
 
             wait.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector($"[title='{contact}']"))).Click();
@@ -153,44 +156,130 @@ namespace WSMS.Services
             try
             {
                 SearchContact(wait5sec, contact);
-
                 try
                 {
-                    SendKeysWithWait(ElementsPaths["Message input"], new string[] { "", text });
+                    InsertTextWithWait(ElementsPaths["Message input"], text);
+                    var resault = wait2sec.Until(d => d.FindElement(By.CssSelector(ElementsPaths["Message input"])).Text.Contains(text));
+                    if (!resault)
+                    {
+                        CustomMessageBox.ShowTopMost($"Error while insert text to {contact}.\n", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
                     // Эмулируем клик по кнопке "Прикрепить" через JavaScript
                     string script = @"
-                                    const attachButton = document.querySelector('button[title=""Прикрепить""]');
-                                    if (attachButton) {
-                                        attachButton.click();
-                                        return true;
-                                    }
-                                    return false;
+                                      const attachButton = document.querySelector('button[title=""Прикрепить""]');
+                                      if (attachButton) {
+                                          attachButton.click();
+                                          return true;
+                                      }
+                                      return false;
                                     ";
                     bool attachSuccess = (bool)js.ExecuteScript(script);
+
                     // Ждём появления меню
                     wait2sec.Until(ExpectedConditions.ElementIsVisible(By.CssSelector("div[role='application']")));
-                    IWebElement fileInput3 = wait2sec.Until(ExpectedConditions.ElementExists(By.CssSelector("input[accept='image/*,video/mp4,video/3gpp,video/quicktime']")));
+                    IWebElement fileInput3 = FindElementWithWait("input[accept='image/*,video/mp4,video/3gpp,video/quicktime']", 200, 10);
                     fileInput3.SendKeys(imagePath);
+
+                    // Ждём появления элемента с изображением
+                    FindElementWithWait("div .x1n2onr6.xvungr5.xminmjj", 200, 10);
 
                 }
                 catch (Exception ex)
                 {
                     Errors += $"Contact name: {contact} {DateTime.Now}\nClipboard error:\n{ex.Message}\n";
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(3, 10)));
-                wait5sec.Until(ExpectedConditions.ElementToBeClickable(By.CssSelector(ElementsPaths["Send button"]))).Click();
-                return true;
+                Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(1, 3)));
+                try
+                {
+                    var sendButton = FindElementWithWait(ElementsPaths["Send button"], 2000, 3);
+                    ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", sendButton);
+                    //sendButton.Click();
+                    try
+                    {
+                        var r = IsTextInputed(ElementsPaths["Message input"], text);
+                        if (r) { return true; }
+                    }
+                    catch (Exception ex)
+                    {
+                        CustomMessageBox.ShowTopMost($"Error while checking message inputed to {contact}.\n{ex.Message}", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
             }
             catch { return false; }
         }
+        private static bool IsTextInputed(string locator, string text)
+        {
+            // Получаем первое слово из сообщения
+            var sendTime = DateTime.Now;
+            string firstWord = text.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)[0];
+            try
+            {
+                var messages = Driver.FindElements(By.CssSelector("div.x9f619.x1hx0egp"))
+                    .Where(msg => msg.FindElements(By.CssSelector("span._ao3e.selectable-text.copyable-text span"))
+                                   .Any(span => span.Text.Contains(firstWord)))
+                    .ToList();
 
+                foreach (var message in messages)
+                {
+                    // Находим элемент с временем
+                    var timeElement = message.FindElement(By.CssSelector("span.x1rg5ohu.x16dsc37"));
+                    string timeText = timeElement.GetAttribute("dir") == "auto" ? timeElement.Text : "";
+                    IWebElement delivered = null;
+                    try
+                    {
+                        delivered = FindElementWithWait("div.x1pn4fmt.x1rg5ohu.x1w4ip6v", 200, 10);
 
+                      //  CustomMessageBox.ShowTopMost($"delivered: {delivered.Enabled}", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        CustomMessageBox.ShowTopMost($"Error while checking delivery status: {ex.Message}", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    if (string.IsNullOrEmpty(timeText))
+                        continue;
+
+                    // Парсим время сообщения   x1pn4fmt x1rg5ohu x1w4ip6v
+                    if (DateTime.TryParseExact(timeText, "HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime messageTime))
+                    {
+                        // Устанавливаем сегодняшнюю дату
+                        messageTime = DateTime.Today.Add(messageTime.TimeOfDay);
+
+                        // Проверяем условия:
+                        // 1. Сообщение отправлено сегодня
+                        // 2. Разница во времени не более 2 минут
+                        // 3. Сообщение содержит блок с галочками о доставке
+                        var timeDiff = sendTime - messageTime;
+                        if (messageTime.Date == DateTime.Today &&
+                            Math.Abs(timeDiff.TotalMinutes) <= 2 && delivered != null)
+                        {
+                            CustomMessageBox.ShowTopMost($"delivered: {delivered.Enabled}", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Information);
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            catch
+            {
+                CustomMessageBox.ShowTopMost($"Error while checking message inputed to {locator}.\n{DateTime.Now}", "WebServiceErrors", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
         /// <summary>
-        /// Searching for a web element using a locator to insert content and checking the element's availability after
+        /// Improved web element search with smart waits and retry attempts at configurable intervals.
         /// </summary>
-
-        private static IWebElement FindElementWithWait(string locator, int time)
+        /// <param name="locator">String for only CSS locator</param>
+        /// <param name="time">Wait time for WebDriverWait (in milliseconds)</param>
+        /// <param name="interval">Time interval between repetitions (in milliseconds)</param>
+        /// <param name="attempts">Number of attempts</param>
+        /// <returns></returns>
+        private static IWebElement FindElementWithWait(string locator, int time, int attempts = 2, int interval = 200)
         {
             IWebElement? element = default;
             int counter = 0;
@@ -198,24 +287,25 @@ namespace WSMS.Services
             var stackTrace = new StackTrace();
             if (stackTrace.FrameCount > 1)
                 caller = stackTrace.GetFrame(1)?.GetMethod()?.Name;
-            while (counter < 2)
+            while (counter < attempts)
             {
                 try
                 {
-                    WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(time));
+                    WebDriverWait wait = new(Driver, TimeSpan.FromMilliseconds(time));
                     element = wait.Until(d => d.FindElement(By.CssSelector(locator)));
+                    wait.Until(ExpectedConditions.ElementToBeClickable(element));
                     return element;
                 }
                 catch
                 {
+                    Thread.Sleep(TimeSpan.FromMilliseconds(interval));
                     counter++;
                 }
             }
             Logger.ShowMyReportMessageBox("Element was not found:", "WebServiceErrors", $" {locator} (called from: {caller})", false);
             return element;
         }
-
-        private static void SendKeysWithWait(string locator, string[]? content = default)
+        private static void InsertTextWithWait(string locator, string content = default)
         {
             int counter = 0;
 
@@ -223,162 +313,51 @@ namespace WSMS.Services
             {
                 try
                 {
-                    //IWebElement element = FindElementWithWait(locator, 2);
-                    //WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(2));
-                    // wait.Until(ExpectedConditions.ElementToBeClickable(element));
-                    // element.Clear(); // Очищаем поле перед вводом (опционально)
-                    IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
-                    string script = $@"
-            const editor = document.querySelector(""{locator}"");
-            if (editor) {{
-                editor.focus();
-                document.execCommand('insertText', false, arguments[0]);
-                return true;
-            }}
-            return false;
-        ";
-
-                    if (content != null)
-                    {
-                        foreach (var text in content)
-                        {
-                            if (text != "")
-                            {
-                                int retryCount = 0;
-                                while (retryCount < 5)
-                                {
-                                    try
-                                    {
-                                        //   element.SendKeys(text);
-                                        bool success = (bool)js.ExecuteScript(script, text);
-                                        //js.ExecuteScript("arguments[0].value = arguments[1];", element, text);
-                                        // element.SendKeys(Keys.Shift + Keys.Enter);
-                                        Task.Delay(100); // Краткая задержка для стабильности
-                                        break; // Успешно, выходим из внутреннего цикла
-                                    }
-                                    catch (StaleElementReferenceException)
-                                    {
-                                        // Элемент устарел, пытаемся найти заново
-                                        // element = FindElementWithWait(locator, 2);
-                                        retryCount++;
-                                        Task.Delay(200);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"SendKeysWithWait->locator: {locator}", false);
-                                        retryCount++;
-                                        Task.Delay(200);
-                                        if (retryCount == 5)
-                                        {
-                                            // Errors += $"\nSendKeysWithWait error:\n{locator.Criteria}";
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break; // Успешно, выходим из внешнего цикла
-                }
-                catch (WebDriverTimeoutException ex)
-                {
-                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"WebService->SendKeysWithWait->locator: {locator}", false);
-                    counter++;
-                }
-                catch (Exception ex)
-                {
-                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"SendKeysWithWait->locator: {locator}", false);
-                    counter++;
-                }
-            }
-        }
-        private static async Task SendKeysWithWait3(string locator, string[]? content = default)
-        {
-            int counter = 0;
-
-            while (counter < 2)
-            {
-                try
-                {
-                    IWebElement element = await Task.Run(() => FindElementWithWait(locator, 2));
+                    IWebElement element = FindElementWithWait(locator, 2000);
                     WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(2));
-                    await Task.Run(() => wait.Until(ExpectedConditions.ElementToBeClickable(element)));
-
-                    element.Clear(); // Очищаем поле перед вводом (опционально)
-                    if (content != null)
+                    wait.Until(ExpectedConditions.ElementToBeClickable(element));
+                    IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
+                    Actions actions = new(Driver);
+                    actions.Click(element)
+                          .KeyDown(Keys.Control)
+                          .SendKeys("a")
+                          .KeyUp(Keys.Control)
+                          .SendKeys(Keys.Delete)
+                          .Perform();
+                    // Ждем очистки
+                    wait.Until(d => string.IsNullOrEmpty(element.Text));
+                    string script = $@"const editor = document.querySelector(""{locator}"");
+                                       if (editor) {{
+                                           editor.focus();
+                                           document.execCommand('insertText', false, arguments[0]);
+                                           return true;
+                                       }}
+                                       return false;
+                                     ";
+                    if (content != null && content != "")
                     {
-                        foreach (var text in content)
+                        int retryCount = 0;
+                        while (retryCount < 5)
                         {
-                            int retryCount = 0;
-                            while (retryCount < 5)
+                            try
                             {
-                                try
-                                {
-                                    element.SendKeys(text);
-                                    element.SendKeys(Keys.Shift + Keys.Enter);
-                                    await Task.Delay(100); // Краткая задержка для стабильности
-                                    break; // Успешно, выходим из внутреннего цикла
-                                }
-                                catch (StaleElementReferenceException)
-                                {
-                                    // Элемент устарел, пытаемся найти заново
-                                    element = await Task.Run(() => FindElementWithWait(locator, 2));
-                                    retryCount++;
-                                    await Task.Delay(200);
-                                }
-                                catch (Exception ex)
+                                js.ExecuteScript(script, content);
+                                Task.Delay(100); // Краткая задержка для стабильности
+                                break;
+                            }
+                            catch (StaleElementReferenceException)
+                            {
+                                element = FindElementWithWait(locator, 2000);
+                                retryCount++;
+                                Task.Delay(200);
+                            }
+                            catch (Exception ex)
+                            {
+                                retryCount++;
+                                Task.Delay(200);
+                                if (retryCount == 5)
                                 {
                                     Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"SendKeysWithWait->locator: {locator}", false);
-                                    retryCount++;
-                                    await Task.Delay(200);
-                                    if (retryCount == 5)
-                                    {
-                                        Errors += $"\nSendKeysWithWait error:\n{locator}";
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break; // Успешно, выходим из внешнего цикла
-                }
-                catch (WebDriverTimeoutException ex)
-                {
-                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"WebService->SendKeysWithWait->locator: {locator}", false);
-                    counter++;
-                }
-                catch (Exception ex)
-                {
-                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"SendKeysWithWait->locator: {locator}", false);
-                    counter++;
-                }
-            }
-        }
-
-        private static void SendKeysWithWait2(string locator, string[]? content = default)
-        {
-            int counter = 0;
-            IWebElement element = FindElementWithWait(locator, 2);
-            WebDriverWait wait = new(Driver, TimeSpan.FromSeconds(2));
-            while (counter < 2)
-            {
-                try
-                {
-                    wait.Until(ExpectedConditions.ElementToBeClickable(element));
-                    int counter1 = 0;
-                    for (int i = 0; i < content.Length; i++)
-                    {
-                        element.SendKeys(content[i]);
-                        while (counter1 < 5)
-                        {
-                            Thread.Sleep(200);
-                            if (element.Enabled == true) break;
-                            else
-                            {
-                                counter1++;
-                                if (counter1 == 5)
-                                {
-                                    Errors += $"\nSendKeysWithWait error:\n{locator}";
                                     break;
                                 }
                             }
@@ -386,7 +365,16 @@ namespace WSMS.Services
                     }
                     break;
                 }
-                catch { counter++; }
+                catch (WebDriverTimeoutException ex)
+                {
+                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"WebService->SendKeysWithWait->locator: {locator}", false);
+                    counter++;
+                }
+                catch (Exception ex)
+                {
+                    Logger.ShowMyReportMessageBox(ex.Message, "WebServiceErrors", $"SendKeysWithWait->locator: {locator}", false);
+                    counter++;
+                }
             }
         }
         public static void CloseBrowser(string accountName)
